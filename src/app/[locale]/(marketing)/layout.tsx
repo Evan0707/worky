@@ -25,7 +25,7 @@ export default async function MarketingLayout({
             {/* Brand */}
             <div className="sm:col-span-2 lg:col-span-2">
               <div className="flex items-center gap-2.5 mb-4">
-                <Logo className="h-5 w-5" color="white" />
+                <Logo className="h-5 w-5"  />
                 <span className="text-[15px] font-semibold tracking-tight text-white">
                   Worky
                 </span>

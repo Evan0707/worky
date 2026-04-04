@@ -47,5 +47,47 @@
   "empty": {
     "noData": "Keine Daten",
     "noResults": "Keine Ergebnisse"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "recentProjects": "Aktuelle Baustellen",
+    "viewAll": "Alle anzeigen"
+  },
+  "greeting": {
+    "morning": "Guten Morgen",
+    "afternoon": "Guten Tag",
+    "evening": "Guten Abend"
+  },
+  "table": {
+    "filterPlaceholder": "Filtern...",
+    "noResults": "Keine Ergebnisse.",
+    "rowsSelected": "{selected} von {total} Zeile(n) ausgewählt",
+    "rowsPerPage": "Zeilen pro Seite",
+    "pageInfo": "Seite {page} von {total}"
+  },
+  "subpages": {
+    "time": "Zeiterfassung",
+    "materials": "Materialien und Einkäufe",
+    "photos": "Fotos",
+    "timeHint": "Stunden im Formular eintragen",
+    "materialsHint": "Materialien im Formular hinzufügen"
+  },
+  "commandMenu": {
+    "placeholder": "Suchen...",
+    "mobilePlaceholder": "Suche...",
+    "inputPlaceholder": "Befehl eingeben oder Baustelle suchen...",
+    "noResults": "Keine Ergebnisse gefunden.",
+    "groups": {
+      "navigation": "Navigation",
+      "settings": "Einstellungen",
+      "recentProjects": "Aktuelle Baustellen"
+    },
+    "items": {
+      "dashboard": "Dashboard",
+      "projects": "Baustellen",
+      "invoices": "Rechnungen",
+      "profile": "Mein Profil",
+      "billing": "Abonnement & Team"
+    }
   }
 }

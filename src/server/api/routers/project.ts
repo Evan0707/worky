@@ -101,6 +101,8 @@ export const projectRouter = createTRPCRouter({
         name: z.string().min(1).max(200).optional(),
         address: z.string().min(1).max(500).optional(),
         status: z.enum(["ACTIVE", "PAUSED", "DONE"]).optional(),
+        progress: z.number().min(0).max(100).optional(),
+        budget: z.number().positive().nullable().optional(),
         clientName: z.string().min(1).max(200).optional(),
         clientPhone: z.string().optional(),
         clientEmail: z.string().email().optional(),

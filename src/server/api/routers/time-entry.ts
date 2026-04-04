@@ -2,16 +2,16 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { getArtisanContext } from "@/server/lib/team-context";
 
 export const timeEntryRouter = createTRPCRouter({
-  /**
-   * List time entries for a project
-   */
   listByProject: protectedProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ ctx, input }) => {
+      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+
       const project = await ctx.db.project.findFirst({
-        where: { id: input.projectId, artisanId: ctx.session.user.id },
+        where: { id: input.projectId, artisanId },
       });
 
       if (!project) throw new TRPCError({ code: "NOT_FOUND" });
@@ -21,17 +21,11 @@ export const timeEntryRouter = createTRPCRouter({
         orderBy: { date: "desc" },
       });
 
-      const totalHours = entries.reduce(
-        (sum, e) => sum + Number(e.hours),
-        0,
-      );
+      const totalHours = entries.reduce((sum, e) => sum + Number(e.hours), 0);
 
       return { entries, totalHours };
     }),
 
-  /**
-   * Create a time entry
-   */
   create: protectedProcedure
     .input(
       z.object({
@@ -42,13 +36,14 @@ export const timeEntryRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+
       const project = await ctx.db.project.findFirst({
-        where: { id: input.projectId, artisanId: ctx.session.user.id },
+        where: { id: input.projectId, artisanId },
       });
 
       if (!project) throw new TRPCError({ code: "NOT_FOUND" });
 
-      // Validate date is not in the future
       const inputDate = new Date(input.date);
       inputDate.setHours(0, 0, 0, 0);
       const today = new Date();
@@ -57,7 +52,7 @@ export const timeEntryRouter = createTRPCRouter({
       if (inputDate > today) {
         throw new TRPCError({
           code: "BAD_REQUEST",
-          message: "La date de pointage ne peut pas être dans le futur.",
+          message: "Time entry date cannot be in the future.",
         });
       }
 
@@ -65,15 +60,12 @@ export const timeEntryRouter = createTRPCRouter({
         data: {
           projectId: input.projectId,
           date: input.date,
-          hours: (input.hours),
+          hours: input.hours,
           description: input.description,
         },
       });
     }),
 
-  /**
-   * Update a time entry
-   */
   update: protectedProcedure
     .input(
       z.object({
@@ -84,8 +76,10 @@ export const timeEntryRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+
       const entry = await ctx.db.timeEntry.findFirst({
-        where: { id: input.id, project: { artisanId: ctx.session.user.id } },
+        where: { id: input.id, project: { artisanId } },
       });
 
       if (!entry) throw new TRPCError({ code: "NOT_FOUND" });
@@ -96,19 +90,18 @@ export const timeEntryRouter = createTRPCRouter({
         where: { id },
         data: {
           ...rest,
-          ...(hours !== undefined ? { hours: (hours) } : {}),
+          ...(hours !== undefined ? { hours } : {}),
         },
       });
     }),
 
-  /**
-   * Delete a time entry
-   */
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+
       const entry = await ctx.db.timeEntry.findFirst({
-        where: { id: input.id, project: { artisanId: ctx.session.user.id } },
+        where: { id: input.id, project: { artisanId } },
       });
 
       if (!entry) throw new TRPCError({ code: "NOT_FOUND" });

@@ -22,9 +22,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { DataTablePagination } from "./pagination";
 import { cn } from "@/lib/utils";
+import { Grid2X2X } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -40,11 +42,12 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   filterColumn,
-  filterPlaceholder = "Filtrer...",
+  filterPlaceholder,
   hidePagination = false,
   hideFilter = false,
   fullHeight = false,
 }: DataTableProps<TData, TValue>) {
+  const tCommon = useTranslations("common");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -77,7 +80,7 @@ export function DataTable<TData, TValue>({
       {filterColumn && !hideFilter && (
         <div className="flex items-center">
           <Input
-            placeholder={filterPlaceholder}
+            placeholder={filterPlaceholder ?? tCommon("table.filterPlaceholder")}
             value={(table.getColumn(filterColumn)?.getFilterValue() as string) ?? ""}
             onChange={(event) =>
               table.getColumn(filterColumn)?.setFilterValue(event.target.value)
@@ -92,8 +95,9 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
+                  const meta = header.column.columnDef.meta as { className?: string } | undefined;
                   return (
-                    <TableHead key={header.id} className="h-12">
+                    <TableHead key={header.id} className={cn("h-12", meta?.className)}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -115,14 +119,14 @@ export function DataTable<TData, TValue>({
                   className="hover:bg-muted/20 transition-colors cursor-pointer animate-row-in"
                   style={{ animationDelay: `${i * 35}ms` }}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="py-3">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    const meta = cell.column.columnDef.meta as { className?: string } | undefined;
+                    return (
+                      <TableCell key={cell.id} className={cn("py-3", meta?.className)}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (
@@ -131,7 +135,9 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-32 text-center text-muted-foreground"
                 >
-                  Aucun résultat.
+
+                  <Grid2X2X className="mx-auto mb-2 w-[50px] h-[50px] opacity-40" />
+                  {tCommon("table.noResults")}
                 </TableCell>
               </TableRow>
             )}

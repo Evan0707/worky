@@ -47,11 +47,6 @@ export default async function DashboardLayout({
           label: t("nav.invoices"),
           icon: "FileText" as const,
         },
-        {
-          href: `/${locale}/analytics`,
-          label: t("nav.analytics"),
-          icon: "BarChart3" as const,
-        },
       ],
     },
     {
@@ -91,6 +86,7 @@ export default async function DashboardLayout({
               height={32} 
               className="h-8 w-auto object-contain"
             />
+            <p className="font-heading ml-1">Qoworkr</p>
           </Link>
         </div>
 
@@ -126,7 +122,6 @@ export default async function DashboardLayout({
       <main className="flex-1 lg:ml-[260px] h-screen flex flex-col overflow-hidden">
         {/* Top bar */}
         <div className="hidden lg:flex h-12 items-center justify-between border-b bg-background/80 backdrop-blur-sm px-6 shrink-0">
-          <div className="flex-1" />
           <div className="flex items-center gap-4">
             <CommandMenu />
             <LocaleSwitcher />

@@ -42,26 +42,22 @@ export default async function DashboardPage({
       label: tProjects("title"),
       value: statsData.totalProjects,
       icon: "FolderKanban" as const,
-      iconClass: "icon-blue",
     },
     {
       label: tProjects("status.ACTIVE"),
       value: statsData.activeProjects,
       icon: "Zap" as const,
-      iconClass: "icon-green",
     },
     {
       label: tProjects("tabs.photos"),
       value: statsData.totalPhotos,
       icon: "Camera" as const,
-      iconClass: "icon-orange",
     },
     {
       label: tProjects("tabs.time"),
       value: Math.round(statsData.totalHours),
       suffix: "h",
       icon: "Clock" as const,
-      iconClass: "icon-violet",
     },
   ];
 
@@ -69,9 +65,9 @@ export default async function DashboardPage({
 
   const greeting = () => {
     const h = new Date().getHours();
-    if (h < 12) return "Bonjour";
-    if (h < 18) return "Bon après-midi";
-    return "Bonsoir";
+    if (h < 12) return t("greeting.morning");
+    if (h < 18) return t("greeting.afternoon");
+    return t("greeting.evening");
   };
 
   return (
@@ -80,7 +76,7 @@ export default async function DashboardPage({
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mt-0.5">
-            Dashboard
+            {t("dashboard.title")}
           </h1>
         </div>
         <Button asChild size="sm" className="shadow-md shadow-primary/20 shrink-0">
@@ -100,7 +96,6 @@ export default async function DashboardPage({
             value={stat.value}
             suffix={"suffix" in stat ? stat.suffix : undefined}
             icon={stat.icon}
-            iconClass={stat.iconClass}
             delay={i * 80}
           />
         ))}
@@ -112,11 +107,11 @@ export default async function DashboardPage({
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              <h2 className="text-base font-semibold tracking-tight">Chantiers récents</h2>
+              <h2 className="text-base font-semibold tracking-tight">{t("dashboard.recentProjects")}</h2>
             </div>
             <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-primary text-xs gap-1">
               <Link href={`/${locale}/chantiers`}>
-                Voir tout
+                {t("dashboard.viewAll")}
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </Button>

@@ -1,82 +1,82 @@
 {
-  "title": "Settings",
-  "description": "Manage your professional information and preferences.",
-  "profile": {
-    "title": "Artisan Profile",
-    "name": "Full Name",
-    "companyName": "Company Name",
-    "companyAddress": "Company Address",
-    "hourlyRate": "Hourly Rate (excl. VAT)",
-    "currency": "Default Currency",
-    "locale": "Default Language",
-    "save": "Save changes"
-  },
-  "billing": {
-    "title": "Billing & Legal",
-    "siret": "SIRET Number",
-    "steuernummer": "Steuernummer",
-    "bceNumber": "BCE Number",
-    "vatNumber": "EU VAT Number",
-    "iban": "IBAN",
-    "vatScheme": "VAT Scheme"
-  },
-  "plans": {
-    "title": "Subscription & Limits",
-    "currentPlan": "Your current plan:",
-    "free": "Free",
-    "pro": "PRO",
-    "projectsUsed": "{used}/{total} active projects",
-    "projectsUnlimited": "Unlimited projects",
-    "trialDays": "Trial period: 14 free days",
-    "trialEnding": "Trial ends on {date}",
-    "renewDate": "Next renewal on {date}",
-    "cancelDate": "Subscription will end on {date}",
-    "upgrade": "Upgrade to PRO",
-    "upgradeDesc": "Unlock unlimited projects and Factur-X invoicing with the PRO plan.",
-    "cancel": "Cancel subscription",
-    "resume": "Resume subscription",
-    "success": "Payment successful! Welcome to PRO plan.",
-    "canceled": "Trial period activated. You can cancel anytime."
-  },
-  "vatSchemes": {
-    "STANDARD": "Standard (20%)",
-    "REDUCED": "Reduced (10%)",
-    "MICRO_ENTREPRENEUR": "Micro-entrepreneur (Tax Exempt)",
-    "EXEMPT": "Exempt",
-    "REVERSE_CHARGE": "Reverse Charge"
-  },
-  "toasts": {
-    "saved": "Settings updated",
-    "error": "An error occurred"
-  },
-  "upgrade": {
-    "dialogTitle": "Upgrade to PRO",
-    "heading": "Unlock all of Worky PRO",
-    "subheading": "Replace paper, Excel and WhatsApp with one unified tool.",
-    "trial": "14-day free trial",
-    "cancelAnytime": "Cancel anytime",
-    "perMonth": "/ month",
-    "htVat": "excl. VAT, no commitment",
-    "paymentTitle": "Payment details",
-    "paymentDesc": "Your card will only be charged after the 14-day trial.",
-    "cta": "Start free trial",
-    "retry": "Try again",
-    "error": "An error occurred",
-    "limitReached": "Limit reached. Upgrade to PRO to add more projects.",
-    "stripeStatus": "Status",
-    "cancelScheduled": "Cancellation scheduled",
-    "autoRenew": "Auto-renewal",
-    "nextBilling": "Next billing date",
-    "successTitle": "Welcome to Worky PRO!",
-    "successDesc": "Your 14-day trial has started. Enjoy all the features.",
-    "successCta": "Let's go!",
-    "feat": {
-      "projects": "Unlimited projects",
-      "invoices": "PDF quotes & invoices + e-invoicing",
-      "analytics": "Profitability dashboard",
-      "reminders": "Automatic reminders",
-      "clientActions": "Client validation / comment / signature",
-      "support": "Priority support"
-    }
-  }
+    "title":  "Settings",
+    "description":  "Manage your professional information and preferences.",
+    "profile":  {
+                    "title":  "Artisan Profile",
+                    "name":  "Full Name",
+                    "companyName":  "Company Name",
+                    "companyAddress":  "Company Address",
+                    "hourlyRate":  "Hourly Rate (excl. VAT)",
+                    "currency":  "Default Currency",
+                    "locale":  "Default Language",
+                    "save":  "Save changes"
+                },
+    "billing":  {
+                    "title":  "Billing \u0026 Legal",
+                    "siret":  "SIRET Number",
+                    "steuernummer":  "Steuernummer",
+                    "bceNumber":  "BCE Number",
+                    "vatNumber":  "EU VAT Number",
+                    "iban":  "IBAN",
+                    "vatScheme":  "VAT Scheme"
+                },
+    "plans":  {
+                  "title":  "Subscription \u0026 Limits",
+                  "currentPlan":  "Your current plan:",
+                  "free":  "Free",
+                  "pro":  "PRO",
+                  "projectsUsed":  "{used}/{total} active projects",
+                  "projectsUnlimited":  "Unlimited projects",
+                  "trialDays":  "Trial period: 14 free days",
+                  "trialEnding":  "Trial ends on {date}",
+                  "renewDate":  "Next renewal on {date}",
+                  "cancelDate":  "Subscription will end on {date}",
+                  "upgrade":  "Upgrade to PRO",
+                  "upgradeDesc":  "Unlock unlimited projects and Factur-X invoicing with the PRO plan.",
+                  "cancel":  "Cancel subscription",
+                  "resume":  "Resume subscription",
+                  "success":  "Payment successful! Welcome to PRO plan.",
+                  "canceled":  "Trial period activated. You can cancel anytime."
+              },
+    "vatSchemes":  {
+                       "STANDARD":  "Standard (20%)",
+                       "REDUCED":  "Reduced (10%)",
+                       "MICRO_ENTREPRENEUR":  "Micro-entrepreneur (Tax Exempt)",
+                       "EXEMPT":  "Exempt",
+                       "REVERSE_CHARGE":  "Reverse Charge"
+                   },
+    "toasts":  {
+                   "saved":  "Settings updated",
+                   "error":  "An error occurred"
+               },
+    "upgrade":  {
+                    "dialogTitle":  "Upgrade to PRO",
+                    "heading":  "Unlock all of Worky PRO",
+                    "subheading":  "Replace paper, Excel and WhatsApp with one unified tool.",
+                    "trial":  "14-day free trial",
+                    "cancelAnytime":  "Cancel anytime",
+                    "perMonth":  "/ month",
+                    "htVat":  "excl. VAT, no commitment",
+                    "paymentTitle":  "Payment details",
+                    "paymentDesc":  "Your card will only be charged after the 14-day trial.",
+                    "cta":  "Start free trial",
+                    "retry":  "Try again",
+                    "error":  "An error occurred",
+                    "limitReached":  "Limit reached. Upgrade to PRO to add more projects.",
+                    "stripeStatus":  "Status",
+                    "cancelScheduled":  "Cancellation scheduled",
+                    "autoRenew":  "Auto-renewal",
+                    "nextBilling":  "Next billing date",
+                    "successTitle":  "Welcome to Worky PRO!",
+                    "successDesc":  "Your 14-day trial has started. Enjoy all the features.",
+                    "successCta":  "Let\u0027s go!",
+                    "feat":  {
+                                 "projects":  "Unlimited projects",
+                                 "invoices":  "PDF quotes \u0026 invoices + e-invoicing",
+                                 "analytics":  "Profitability dashboard",
+                                 "reminders":  "Automatic reminders",
+                                 "clientActions":  "Client validation / comment / signature",
+                                 "support":  "Priority support"
+                             }
+                }
 }

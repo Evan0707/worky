@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface ShareProjectButtonProps {
   url: string;
@@ -98,20 +99,22 @@ export function ShareProjectButton({ url, projectId }: ShareProjectButtonProps) 
       </div>
 
       <div className="relative pt-4 flex">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-xs text-muted-foreground hover:text-destructive w-auto ml-auto"
-          onClick={() => {
-            if (confirm(t("regenerateWarning"))) {
-              regenerateMutation.mutate({ id: projectId });
-            }
-          }}
-          disabled={regenerateMutation.isPending}
-        >
-          <RefreshCw className={`mr-1.5 h-3 w-3 ${regenerateMutation.isPending ? "animate-spin" : ""}`} />
-          {t("regenerate")}
-        </Button>
+        <ConfirmDialog
+          title={t("regenerateWarning")}
+          confirmLabel={t("regenerate")}
+          onConfirm={() => regenerateMutation.mutate({ id: projectId })}
+          trigger={
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs text-muted-foreground hover:text-destructive w-auto ml-auto"
+              disabled={regenerateMutation.isPending}
+            >
+              <RefreshCw className={`mr-1.5 h-3 w-3 ${regenerateMutation.isPending ? "animate-spin" : ""}`} />
+              {t("regenerate")}
+            </Button>
+          }
+        />
       </div>
     </div>
   );

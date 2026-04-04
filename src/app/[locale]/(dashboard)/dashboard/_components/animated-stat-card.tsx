@@ -13,7 +13,6 @@ interface AnimatedStatCardProps {
   value: number;
   suffix?: string;
   icon: IconName;
-  iconClass: string;
   delay?: number;
 }
 
@@ -32,7 +31,6 @@ export function AnimatedStatCard({
   value,
   suffix,
   icon,
-  iconClass,
   delay = 0,
 }: AnimatedStatCardProps) {
   const ResolvedIcon = ICONS[icon];
@@ -46,7 +44,7 @@ export function AnimatedStatCard({
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {label}
         </CardTitle>
-        <div className={cn("h-9 w-9 rounded-xl flex items-center justify-center shrink-0", iconClass)}>
+        <div className={cn("h-9 w-9 rounded-xl flex items-center justify-center shrink-0")}>
           <ResolvedIcon className="h-4 w-4" />
         </div>
       </CardHeader>

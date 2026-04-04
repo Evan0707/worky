@@ -48,6 +48,30 @@
     "noData": "Aucune donnée",
     "noResults": "Aucun résultat"
   },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "recentProjects": "Chantiers récents",
+    "viewAll": "Voir tout"
+  },
+  "greeting": {
+    "morning": "Bonjour",
+    "afternoon": "Bon après-midi",
+    "evening": "Bonsoir"
+  },
+  "table": {
+    "filterPlaceholder": "Filtrer...",
+    "noResults": "Aucun résultat.",
+    "rowsSelected": "{selected} de {total} ligne(s) sélectionnée(s)",
+    "rowsPerPage": "Lignes par page",
+    "pageInfo": "Page {page} sur {total}"
+  },
+  "subpages": {
+    "time": "Suivi des heures",
+    "materials": "Matériaux et Achats",
+    "photos": "Photos",
+    "timeHint": "Ajoutez vos heures dans le formulaire ci-contre",
+    "materialsHint": "Ajoutez vos matériaux dans le formulaire ci-contre"
+  },
   "commandMenu": {
     "placeholder": "Rechercher...",
     "mobilePlaceholder": "Recherche...",

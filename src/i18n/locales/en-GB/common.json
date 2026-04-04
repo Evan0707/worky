@@ -48,6 +48,30 @@
     "noData": "No data",
     "noResults": "No results"
   },
+  "dashboard": {
+    "title": "Dashboard",
+    "recentProjects": "Recent projects",
+    "viewAll": "View all"
+  },
+  "greeting": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening"
+  },
+  "table": {
+    "filterPlaceholder": "Filter...",
+    "noResults": "No results.",
+    "rowsSelected": "{selected} of {total} row(s) selected",
+    "rowsPerPage": "Rows per page",
+    "pageInfo": "Page {page} of {total}"
+  },
+  "subpages": {
+    "time": "Time tracking",
+    "materials": "Materials & Purchases",
+    "photos": "Photos",
+    "timeHint": "Add your hours using the form",
+    "materialsHint": "Add your materials using the form"
+  },
   "commandMenu": {
     "placeholder": "Search...",
     "mobilePlaceholder": "Search...",

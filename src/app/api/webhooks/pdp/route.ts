@@ -9,11 +9,16 @@ export async function POST(req: Request) {
     const rawBody = await req.text();
     const signature = req.headers.get("x-tiime-signature");
 
-    // Optional (but recommended) signature verification
-    // if (process.env.TIIME_WEBHOOK_SECRET && signature) {
-    //   const expectedSig = crypto.createHmac("sha256", process.env.TIIME_WEBHOOK_SECRET).update(rawBody).digest("hex");
-    //   if (expectedSig !== signature) return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
-    // }
+    // Signature verification — required when TIIME_WEBHOOK_SECRET is set
+    if (process.env.TIIME_WEBHOOK_SECRET) {
+      const expectedSig = crypto
+        .createHmac("sha256", process.env.TIIME_WEBHOOK_SECRET)
+        .update(rawBody)
+        .digest("hex");
+      if (!signature || expectedSig !== signature) {
+        return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+      }
+    }
 
     const event = JSON.parse(rawBody);
 

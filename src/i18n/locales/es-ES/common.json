@@ -47,5 +47,47 @@
   "empty": {
     "noData": "Sin datos",
     "noResults": "Sin resultados"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "recentProjects": "Obras recientes",
+    "viewAll": "Ver todo"
+  },
+  "greeting": {
+    "morning": "Buenos días",
+    "afternoon": "Buenas tardes",
+    "evening": "Buenas noches"
+  },
+  "table": {
+    "filterPlaceholder": "Filtrar...",
+    "noResults": "Sin resultados.",
+    "rowsSelected": "{selected} de {total} fila(s) seleccionada(s)",
+    "rowsPerPage": "Filas por página",
+    "pageInfo": "Página {page} de {total}"
+  },
+  "subpages": {
+    "time": "Seguimiento de horas",
+    "materials": "Materiales y Compras",
+    "photos": "Fotos",
+    "timeHint": "Añade tus horas en el formulario",
+    "materialsHint": "Añade tus materiales en el formulario"
+  },
+  "commandMenu": {
+    "placeholder": "Buscar...",
+    "mobilePlaceholder": "Buscar...",
+    "inputPlaceholder": "Escribe un comando o busca una obra...",
+    "noResults": "Sin resultados.",
+    "groups": {
+      "navigation": "Navegación",
+      "settings": "Ajustes",
+      "recentProjects": "Obras recientes"
+    },
+    "items": {
+      "dashboard": "Panel",
+      "projects": "Obras",
+      "invoices": "Facturas",
+      "profile": "Mi Perfil",
+      "billing": "Suscripción & Equipo"
+    }
   }
 }

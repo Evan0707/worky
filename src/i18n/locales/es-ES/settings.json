@@ -1,82 +1,82 @@
 {
-  "title": "Ajustes",
-  "description": "Gestione su información profesional y preferencias.",
-  "profile": {
-    "title": "Perfil del artesano",
-    "name": "Nombre completo",
-    "companyName": "Nombre de la empresa",
-    "companyAddress": "Dirección de la empresa",
-    "hourlyRate": "Tarifa por hora (sin IVA)",
-    "currency": "Moneda predeterminada",
-    "locale": "Idioma predeterminado",
-    "save": "Guardar cambios"
-  },
-  "billing": {
-    "title": "Facturación y Legal",
-    "siret": "Número SIRET",
-    "steuernummer": "Steuernummer",
-    "bceNumber": "Número BCE",
-    "vatNumber": "NIF-IVA intracomunitario",
-    "iban": "IBAN",
-    "vatScheme": "Régimen de IVA"
-  },
-  "vatSchemes": {
-    "STANDARD": "General (21%)",
-    "REDUCED": "Reducido (10%)",
-    "MICRO_ENTREPRENEUR": "Autónomo (Recargo de equivalencia)",
-    "EXEMPT": "Exento",
-    "REVERSE_CHARGE": "Inversión del sujeto pasivo"
-  },
-  "toasts": {
-    "saved": "Ajustes actualizados",
-    "error": "Se ha producido un error"
-  },
-  "plans": {
-    "title": "Suscripción y Límites",
-    "currentPlan": "Su plan actual:",
-    "free": "Gratuito",
-    "pro": "PRO",
-    "projectsUsed": "{used}/{total} obras activas",
-    "projectsUnlimited": "Obras ilimitadas",
-    "trialDays": "Período de prueba: 14 días gratis",
-    "trialEnding": "La prueba termina el {date}",
-    "renewDate": "Próxima renovación el {date}",
-    "cancelDate": "La suscripción finalizará el {date}",
-    "upgrade": "Pasarse al plan PRO",
-    "upgradeDesc": "Desbloquee obras ilimitadas y facturación electrónica con el plan PRO.",
-    "cancel": "Cancelar suscripción",
-    "resume": "Reanudar suscripción",
-    "success": "¡Pago exitoso! Bienvenido al plan PRO.",
-    "canceled": "Período de prueba activado. Puede cancelar en cualquier momento."
-  },
-  "upgrade": {
-    "dialogTitle": "Pasarse al plan PRO",
-    "heading": "Desbloquee todo Worky PRO",
-    "subheading": "Reemplace papel, Excel y WhatsApp con una sola herramienta.",
-    "trial": "14 días de prueba gratuita",
-    "cancelAnytime": "Cancelable en cualquier momento",
-    "perMonth": "/ mes",
-    "htVat": "sin IVA, sin compromiso",
-    "paymentTitle": "Datos de pago",
-    "paymentDesc": "Su tarjeta solo se cargará después de los 14 días de prueba.",
-    "cta": "Iniciar prueba gratuita",
-    "retry": "Reintentar",
-    "error": "Se ha producido un error",
-    "limitReached": "Límite alcanzado. Pásese al PRO para añadir más obras.",
-    "stripeStatus": "Estado",
-    "cancelScheduled": "Cancelación programada",
-    "autoRenew": "Renovación automática",
-    "nextBilling": "Próxima fecha de facturación",
-    "successTitle": "¡Bienvenido a Worky PRO!",
-    "successDesc": "Su prueba de 14 días ha comenzado. Disfrute de todas las funciones.",
-    "successCta": "¡Vamos!",
-    "feat": {
-      "projects": "Obras ilimitadas",
-      "invoices": "Presupuestos y facturas PDF + facturación electrónica",
-      "analytics": "Dashboard de rentabilidad",
-      "reminders": "Recordatorios automáticos",
-      "clientActions": "Validación / comentario / firma del cliente",
-      "support": "Soporte prioritario"
-    }
-  }
+    "title":  "Ajustes",
+    "description":  "Gestione su información profesional y preferencias.",
+    "profile":  {
+                    "title":  "Perfil del artesano",
+                    "name":  "Nombre completo",
+                    "companyName":  "Nombre de la empresa",
+                    "companyAddress":  "Dirección de la empresa",
+                    "hourlyRate":  "Tarifa por hora (sin IVA)",
+                    "currency":  "Moneda predeterminada",
+                    "locale":  "Idioma predeterminado",
+                    "save":  "Guardar cambios"
+                },
+    "billing":  {
+                    "title":  "Facturación y Legal",
+                    "siret":  "Número SIRET",
+                    "steuernummer":  "Steuernummer",
+                    "bceNumber":  "Número BCE",
+                    "vatNumber":  "NIF-IVA intracomunitario",
+                    "iban":  "IBAN",
+                    "vatScheme":  "Régimen de IVA"
+                },
+    "vatSchemes":  {
+                       "STANDARD":  "General (21%)",
+                       "REDUCED":  "Reducido (10%)",
+                       "MICRO_ENTREPRENEUR":  "Autónomo (Recargo de equivalencia)",
+                       "EXEMPT":  "Exento",
+                       "REVERSE_CHARGE":  "Inversión del sujeto pasivo"
+                   },
+    "toasts":  {
+                   "saved":  "Ajustes actualizados",
+                   "error":  "Se ha producido un error"
+               },
+    "plans":  {
+                  "title":  "Suscripción y Límites",
+                  "currentPlan":  "Su plan actual:",
+                  "free":  "Gratuito",
+                  "pro":  "PRO",
+                  "projectsUsed":  "{used}/{total} obras activas",
+                  "projectsUnlimited":  "Obras ilimitadas",
+                  "trialDays":  "Período de prueba: 14 días gratis",
+                  "trialEnding":  "La prueba termina el {date}",
+                  "renewDate":  "Próxima renovación el {date}",
+                  "cancelDate":  "La suscripción finalizará el {date}",
+                  "upgrade":  "Pasarse al plan PRO",
+                  "upgradeDesc":  "Desbloquee obras ilimitadas y facturación electrónica con el plan PRO.",
+                  "cancel":  "Cancelar suscripción",
+                  "resume":  "Reanudar suscripción",
+                  "success":  "¡Pago exitoso! Bienvenido al plan PRO.",
+                  "canceled":  "Período de prueba activado. Puede cancelar en cualquier momento."
+              },
+    "upgrade":  {
+                    "dialogTitle":  "Pasarse al plan PRO",
+                    "heading":  "Desbloquee todo Worky PRO",
+                    "subheading":  "Reemplace papel, Excel y WhatsApp con una sola herramienta.",
+                    "trial":  "14 días de prueba gratuita",
+                    "cancelAnytime":  "Cancelable en cualquier momento",
+                    "perMonth":  "/ mes",
+                    "htVat":  "sin IVA, sin compromiso",
+                    "paymentTitle":  "Datos de pago",
+                    "paymentDesc":  "Su tarjeta solo se cargará después de los 14 días de prueba.",
+                    "cta":  "Iniciar prueba gratuita",
+                    "retry":  "Reintentar",
+                    "error":  "Se ha producido un error",
+                    "limitReached":  "Límite alcanzado. Pásese al PRO para añadir más obras.",
+                    "stripeStatus":  "Estado",
+                    "cancelScheduled":  "Cancelación programada",
+                    "autoRenew":  "Renovación automática",
+                    "nextBilling":  "Próxima fecha de facturación",
+                    "successTitle":  "¡Bienvenido a Worky PRO!",
+                    "successDesc":  "Su prueba de 14 días ha comenzado. Disfrute de todas las funciones.",
+                    "successCta":  "¡Vamos!",
+                    "feat":  {
+                                 "projects":  "Obras ilimitadas",
+                                 "invoices":  "Presupuestos y facturas PDF + facturación electrónica",
+                                 "analytics":  "Dashboard de rentabilidad",
+                                 "reminders":  "Recordatorios automáticos",
+                                 "clientActions":  "Validación / comentario / firma del cliente",
+                                 "support":  "Soporte prioritario"
+                             }
+                }
 }

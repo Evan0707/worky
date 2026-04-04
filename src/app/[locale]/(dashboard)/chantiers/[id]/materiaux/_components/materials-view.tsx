@@ -7,8 +7,10 @@ import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Trash2, PackagePlus, Package, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/i18n-helpers";
 
@@ -19,6 +21,7 @@ export function MaterialsView({ projectId, locale }: { projectId: string; locale
 
   const [label, setLabel] = useState<string>("");
   const [quantity, setQuantity] = useState<string>("1");
+  const [unit, setUnit] = useState<string>("u");
   const [price, setPrice] = useState<string>("");
 
   const { data, isLoading } = api.material.listByProject.useQuery({ projectId });
@@ -28,6 +31,7 @@ export function MaterialsView({ projectId, locale }: { projectId: string; locale
       toast.success(t("toasts.created"));
       setLabel("");
       setQuantity("1");
+      setUnit("u");
       setPrice("");
       utils.material.listByProject.invalidate({ projectId });
     },
@@ -48,6 +52,7 @@ export function MaterialsView({ projectId, locale }: { projectId: string; locale
       projectId,
       label,
       quantity: parseFloat(quantity),
+      unit,
       unitPrice: Math.round(parseFloat(price) * 100),
     });
   };
@@ -105,15 +110,27 @@ export function MaterialsView({ projectId, locale }: { projectId: string; locale
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("materials.quantity")}</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    min="0.01"
-                    required
-                    value={quantity}
-                    onChange={(e) => setQuantity(e.target.value)}
-                    className="h-9 text-sm"
-                  />
+                  <div className="flex gap-1.5">
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      required
+                      value={quantity}
+                      onChange={(e) => setQuantity(e.target.value)}
+                      className="h-9 text-sm flex-1 min-w-0"
+                    />
+                    <Select value={unit} onValueChange={setUnit}>
+                      <SelectTrigger className="h-9 w-[62px] text-xs px-2 shrink-0">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {["u", "h", "m²", "m³", "ml", "m", "cm", "kg", "t", "pcs", "forfait"].map((u) => (
+                          <SelectItem key={u} value={u} className="text-xs">{u}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 <div className="space-y-1.5">
                   <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("materials.unitPriceHT")}</Label>
@@ -179,7 +196,7 @@ export function MaterialsView({ projectId, locale }: { projectId: string; locale
                     <div className="flex-1 min-w-0 space-y-0.5">
                       <div className="text-sm font-medium truncate">{item.label}</div>
                       <div className="text-xs text-muted-foreground">
-                        {Number(item.quantity)} × {formatCurrency(Number(item.unitPrice), "EUR", locale)}
+                        {Number(item.quantity)} {item.unit} × {formatCurrency(Number(item.unitPrice), "EUR", locale)}
                       </div>
                     </div>
                     {/* Total */}
@@ -187,19 +204,23 @@ export function MaterialsView({ projectId, locale }: { projectId: string; locale
                       {formatCurrency(Number(item.quantity) * Number(item.unitPrice), "EUR", locale)}
                     </div>
                     {/* Delete */}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
-                      onClick={() => {
-                        if (confirm(t("deleteConfirm.description"))) {
-                          deleteMutation.mutate({ id: item.id });
-                        }
-                      }}
-                      disabled={deleteMutation.isPending}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
+                    <ConfirmDialog
+                      title={t("deleteConfirm.title")}
+                      description={t("deleteConfirm.description")}
+                      confirmLabel={tCommon("buttons.delete")}
+                      cancelLabel={tCommon("buttons.cancel")}
+                      onConfirm={() => deleteMutation.mutate({ id: item.id })}
+                      trigger={
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
+                          disabled={deleteMutation.isPending}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      }
+                    />
                   </div>
                 ))}
               </div>
@@ -209,7 +230,7 @@ export function MaterialsView({ projectId, locale }: { projectId: string; locale
                   <Package className="h-5 w-5" />
                 </div>
                 <p className="text-sm font-medium">{t("materials.empty")}</p>
-                <p className="text-xs text-muted-foreground">Ajoutez vos matériaux dans le formulaire</p>
+                <p className="text-xs text-muted-foreground">{tCommon("subpages.materialsHint")}</p>
               </div>
             )}
           </CardContent>

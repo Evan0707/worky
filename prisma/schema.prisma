@@ -208,6 +208,8 @@ model Project {
   name           String
   address        String
   status         ProjectStatus @default(ACTIVE)
+  progress       Int           @default(0) // 0-100 — % completion
+  budget         Int?          // cents — optional budget prévisionnel
   clientName     String
   clientPhone    String?
   clientEmail    String?
@@ -266,6 +268,7 @@ model Material {
   projectId String
   label     String
   quantity  Decimal @db.Decimal(10, 3)
+  unit      String  @default("u") // e.g. u, m², m³, kg, t, h, ml, cm, pcs, forfait
   unitPrice Decimal @db.Decimal(10, 2)
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -298,6 +301,7 @@ model Invoice {
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
+  @@index([projectId, status])
 }
 
 model ClientAction {

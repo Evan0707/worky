@@ -6,6 +6,7 @@ import Resend from "next-auth/providers/resend";
 import { db } from "@/server/db";
 import { env } from "@/env";
 import { authConfig } from "@/server/auth.config";
+import { getArtisanContext } from "@/server/lib/team-context";
 
 // Full auth with Prisma adapter — Node.js only, never import in middleware
 export const { auth, handlers, signIn, signOut } = NextAuth({
@@ -37,11 +38,13 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     }),
     jwt: async ({ token, user }) => {
       if (user) {
-        const dbUser = await db.user.findUnique({
-          where: { id: user.id },
+        // Resolve effective artisanId so team members inherit the owner's plan
+        const { artisanId } = await getArtisanContext(user.id!, db);
+        const owner = await db.user.findUnique({
+          where: { id: artisanId },
           select: { plan: true },
         });
-        token.plan = dbUser?.plan ?? "FREE";
+        token.plan = owner?.plan ?? "FREE";
       }
       return token;
     },

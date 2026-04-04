@@ -3,14 +3,14 @@ import { TRPCError } from "@trpc/server";
 import { type VatScheme } from "@prisma/client";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { getArtisanContext } from "@/server/lib/team-context";
 
-/** Map VatScheme enum to the standard percentage for that regime. */
 function vatRateForScheme(scheme: VatScheme): number {
   switch (scheme) {
     case "STANDARD":
-      return 20; // FR 20%, adjust per country at display layer
+      return 20;
     case "REDUCED":
-      return 10; // FR 10% construction works
+      return 10;
     case "MICRO_ENTREPRENEUR":
     case "EXEMPT":
     case "REVERSE_CHARGE":
@@ -21,14 +21,13 @@ function vatRateForScheme(scheme: VatScheme): number {
 }
 
 export const materialRouter = createTRPCRouter({
-  /**
-   * List materials for a project
-   */
   listByProject: protectedProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ ctx, input }) => {
+      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+
       const project = await ctx.db.project.findFirst({
-        where: { id: input.projectId, artisanId: ctx.session.user.id },
+        where: { id: input.projectId, artisanId },
       });
 
       if (!project) throw new TRPCError({ code: "NOT_FOUND" });
@@ -37,13 +36,13 @@ export const materialRouter = createTRPCRouter({
         where: { projectId: input.projectId },
       });
 
-      // Derive VAT rate from artisan's vatScheme (CDC §10.2 — stored in schema not on invoice)
-      const user = await ctx.db.user.findUnique({
-        where: { id: ctx.session.user.id },
+      // Resolve VAT from the artisan owner (artisanId), not necessarily the current user
+      const owner = await ctx.db.user.findUnique({
+        where: { id: artisanId },
         select: { vatScheme: true },
       });
 
-      const vatRate = vatRateForScheme(user?.vatScheme ?? "STANDARD");
+      const vatRate = vatRateForScheme(owner?.vatScheme ?? "STANDARD");
 
       const totalHT = materials.reduce(
         (sum, m) => sum + Number(m.unitPrice) * Number(m.quantity),
@@ -55,21 +54,21 @@ export const materialRouter = createTRPCRouter({
       return { materials, totalHT, totalTVA, totalTTC, vatRate };
     }),
 
-  /**
-   * Create a material
-   */
   create: protectedProcedure
     .input(
       z.object({
         projectId: z.string(),
         label: z.string().min(1).max(300),
         quantity: z.number().positive(),
+        unit: z.string().default("u"),
         unitPrice: z.number().nonnegative(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+
       const project = await ctx.db.project.findFirst({
-        where: { id: input.projectId, artisanId: ctx.session.user.id },
+        where: { id: input.projectId, artisanId },
       });
 
       if (!project) throw new TRPCError({ code: "NOT_FOUND" });
@@ -78,27 +77,28 @@ export const materialRouter = createTRPCRouter({
         data: {
           projectId: input.projectId,
           label: input.label,
-          quantity: (input.quantity),
-          unitPrice: (input.unitPrice),
+          quantity: input.quantity,
+          unit: input.unit,
+          unitPrice: input.unitPrice,
         },
       });
     }),
 
-  /**
-   * Update a material
-   */
   update: protectedProcedure
     .input(
       z.object({
         id: z.string(),
         label: z.string().min(1).max(300).optional(),
         quantity: z.number().positive().optional(),
+        unit: z.string().optional(),
         unitPrice: z.number().nonnegative().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+
       const material = await ctx.db.material.findFirst({
-        where: { id: input.id, project: { artisanId: ctx.session.user.id } },
+        where: { id: input.id, project: { artisanId } },
       });
 
       if (!material) throw new TRPCError({ code: "NOT_FOUND" });
@@ -109,22 +109,19 @@ export const materialRouter = createTRPCRouter({
         where: { id },
         data: {
           ...rest,
-          ...(quantity !== undefined ? { quantity: (quantity) } : {}),
-          ...(unitPrice !== undefined
-            ? { unitPrice: (unitPrice) }
-            : {}),
+          ...(quantity !== undefined ? { quantity } : {}),
+          ...(unitPrice !== undefined ? { unitPrice } : {}),
         },
       });
     }),
 
-  /**
-   * Delete a material
-   */
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+
       const material = await ctx.db.material.findFirst({
-        where: { id: input.id, project: { artisanId: ctx.session.user.id } },
+        where: { id: input.id, project: { artisanId } },
       });
 
       if (!material) throw new TRPCError({ code: "NOT_FOUND" });

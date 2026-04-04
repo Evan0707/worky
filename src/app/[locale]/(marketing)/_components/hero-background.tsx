@@ -131,11 +131,11 @@ export function HeroBackground() {
       {/* Canvas dot grid */}
       <canvas ref={canvasRef} className="absolute inset-0" />
 
-      {/* Radial glow — neutral warm instead of blue */}
-      <div className="absolute top-[-30%] left-1/2 -translate-x-1/2 h-[800px] w-[1200px] rounded-full bg-white/[0.02] blur-[150px]" />
+      {/* Radial glow */}
+      <div className="absolute top-[-30%] left-1/2 -translate-x-1/2 h-[800px] w-[1200px] rounded-full bg-black/[0.015] dark:bg-white/[0.02] blur-[150px]" />
 
       {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-neutral-50 dark:from-[#0a0a0a] to-transparent" />
     </div>
   );
 }

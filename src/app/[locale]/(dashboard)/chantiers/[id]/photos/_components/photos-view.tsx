@@ -11,6 +11,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Loader2, Trash2, UploadCloud, X, ImagePlus, GripHorizontal, Mic, MicIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -76,18 +77,22 @@ function SortablePhotoCard({ photo, locale, onDelete, onEditNote, isPending }: a
           >
             <GripHorizontal className="h-4 w-4 text-white" />
           </div>
-          <Button
-            variant="destructive"
-            size="icon"
-            className="h-6 w-6 rounded-full opacity-80 hover:opacity-100 shadow-sm ml-2"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(photo.id);
-            }}
-            disabled={isPending}
-          >
-            <X className="h-3 w-3" />
-          </Button>
+          <ConfirmDialog
+            title={t("deleteConfirm.title")}
+            description={t("deleteConfirm.description")}
+            onConfirm={() => onDelete(photo.id)}
+            trigger={
+              <Button
+                variant="destructive"
+                size="icon"
+                className="h-6 w-6 rounded-full opacity-80 hover:opacity-100 shadow-sm ml-2"
+                onClick={(e) => e.stopPropagation()}
+                disabled={isPending}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            }
+          />
         </div>
         <div className="absolute inset-x-0 bottom-0 p-2 pt-6 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end">
           {photo.note && (
@@ -280,9 +285,7 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
   };
 
   const handleDelete = (id: string) => {
-    if (confirm(t("deleteConfirm.description"))) {
-      deletePhoto.mutate({ id });
-    }
+    deletePhoto.mutate({ id });
   };
 
   const handleUpload = useCallback(

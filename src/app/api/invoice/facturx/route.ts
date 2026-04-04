@@ -11,10 +11,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Require PRO plan for Factur-X generation
-    // [TEMPORARY DISABLE FOR LOCAL TESTING MVP]
-    /* if (session.user.plan !== "PRO") {
+    if (session.user.plan !== "PRO") {
       return NextResponse.json({ error: "Forbidden - PRO plan required" }, { status: 403 });
-    } */
+    }
 
     const { invoiceId } = await req.json();
 

@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type TeamRole } from "@prisma/client";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 // ─── Role badge ────────────────────────────────────────────────────────────────
 
@@ -278,17 +279,20 @@ function MembersCard({
                     <SelectItem value="ADMIN">{t("invite.roleAdmin")}</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => {
-                    if (confirm(t("actions.removeConfirm")))
-                      removeMutation.mutate({ memberId: m.id });
-                  }}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
+                <ConfirmDialog
+                  title={t("actions.removeConfirm")}
+                  confirmLabel={t("actions.remove")}
+                  onConfirm={() => removeMutation.mutate({ memberId: m.id })}
+                  trigger={
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  }
+                />
               </div>
             ) : (
               <RoleBadge role={m.role} t={t} />
@@ -471,17 +475,21 @@ export function TeamView({ currentUserId }: { currentUserId: string }) {
 
         {/* Leave */}
         <div className="pt-2 border-t border-border/50">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-destructive hover:text-destructive hover:bg-destructive/5 text-xs"
-            onClick={() => {
-              if (confirm(t("actions.leaveConfirm"))) leaveMutation.mutate();
-            }}
-          >
-            <LogOut className="h-3.5 w-3.5 mr-1.5" />
-            {t("actions.leave")}
-          </Button>
+          <ConfirmDialog
+            title={t("actions.leaveConfirm")}
+            confirmLabel={t("actions.leave")}
+            onConfirm={() => leaveMutation.mutate()}
+            trigger={
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-destructive hover:text-destructive hover:bg-destructive/5 text-xs"
+              >
+                <LogOut className="h-3.5 w-3.5 mr-1.5" />
+                {t("actions.leave")}
+              </Button>
+            }
+          />
         </div>
       </div>
     );
@@ -533,17 +541,21 @@ export function TeamView({ currentUserId }: { currentUserId: string }) {
 
       {/* Danger zone */}
       <div className="pt-2 border-t border-border/50">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-destructive hover:text-destructive hover:bg-destructive/5 text-xs"
-          onClick={() => {
-            if (confirm(t("actions.deleteConfirm"))) deleteMutation.mutate();
-          }}
-        >
-          <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-          {t("actions.deleteTeam")}
-        </Button>
+        <ConfirmDialog
+          title={t("actions.deleteConfirm")}
+          confirmLabel={t("actions.deleteTeam")}
+          onConfirm={() => deleteMutation.mutate()}
+          trigger={
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-destructive hover:text-destructive hover:bg-destructive/5 text-xs"
+            >
+              <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+              {t("actions.deleteTeam")}
+            </Button>
+          }
+        />
       </div>
     </div>
   );

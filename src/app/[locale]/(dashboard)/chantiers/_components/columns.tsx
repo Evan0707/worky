@@ -32,6 +32,7 @@ export function getColumns(locale: string, translations: any): ColumnDef<Project
   return [
     {
       id: "select",
+      meta: { className: "hidden sm:table-cell" },
       header: ({ table }) => (
         <Checkbox
           checked={
@@ -90,12 +91,14 @@ export function getColumns(locale: string, translations: any): ColumnDef<Project
     },
     {
       accessorKey: "clientName",
+      meta: { className: "hidden md:table-cell" },
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title={translations("fields.clientName")} />
       ),
     },
     {
       accessorKey: "createdAt",
+      meta: { className: "hidden lg:table-cell" },
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Date" />
       ),

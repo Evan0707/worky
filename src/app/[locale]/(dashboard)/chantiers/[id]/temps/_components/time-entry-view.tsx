@@ -7,6 +7,7 @@ import { formatDate } from "@/lib/i18n-helpers";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Trash2, Clock, CalendarDays, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -182,19 +183,23 @@ export function TimeEntryView({ projectId, locale }: { projectId: string; locale
                             <p className="text-xs text-muted-foreground pl-5 truncate">{entry.description}</p>
                           )}
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
-                          onClick={() => {
-                            if (confirm(t("deleteConfirm.description"))) {
-                              deleteMutation.mutate({ id: entry.id });
-                            }
-                          }}
-                          disabled={deleteMutation.isPending}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
+                        <ConfirmDialog
+                          title={t("deleteConfirm.title")}
+                          description={t("deleteConfirm.description")}
+                          confirmLabel={tCommon("buttons.delete")}
+                          cancelLabel={tCommon("buttons.cancel")}
+                          onConfirm={() => deleteMutation.mutate({ id: entry.id })}
+                          trigger={
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 shrink-0 text-muted-foreground opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
+                              disabled={deleteMutation.isPending}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          }
+                        />
                       </div>
                     </div>
                   ))}
@@ -206,7 +211,7 @@ export function TimeEntryView({ projectId, locale }: { projectId: string; locale
                   <Clock className="h-5 w-5" />
                 </div>
                 <p className="text-sm font-medium">{t("time.empty")}</p>
-                <p className="text-xs text-muted-foreground">Ajoutez vos heures dans le formulaire</p>
+                <p className="text-xs text-muted-foreground">{tCommon("subpages.timeHint")}</p>
               </div>
             )}
           </CardContent>
