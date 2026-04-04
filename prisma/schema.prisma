@@ -6,9 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DATABASE_URL_UNPOOLED")
+  provider = "postgresql"
+  // Connection URLs are configured in prisma.config.ts (Prisma 7)
 }
 
 // ==============================
@@ -53,7 +52,7 @@ model VerificationToken {
 }
 
 // ==============================
-// Application Models
+// Enums
 // ==============================
 
 enum Plan {
@@ -61,54 +60,167 @@ enum Plan {
   PRO
 }
 
-model User {
-  id                   String    @id @default(cuid())
-  name                 String?
-  email                String?   @unique
-  emailVerified        DateTime?
-  image                String?
-  plan                 Plan      @default(FREE)
-  stripeCustomerId     String?   @unique
-  stripeSubscriptionId String?   @unique
-  // Artisan profile
-  companyName          String?
-  siret                String?
-  companyAddress       String?
-  logoUrl              String?
-  logoKey              String?
-  hourlyRate           Decimal?  @db.Decimal(10, 2)
-  vatRate              Decimal?  @db.Decimal(5, 2) // e.g. 20.0
-  iban                 String?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
-
-  accounts Account[]
-  sessions Session[]
-  projects Project[]
+enum TeamRole {
+  OWNER
+  ADMIN
+  MEMBER
 }
 
 enum ProjectStatus {
   ACTIVE
   PAUSED
   DONE
+  ARCHIVED
+}
+
+enum InvoiceType {
+  QUOTE
+  INVOICE
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REFUSED
+  PAID
+  OVERDUE
+}
+
+/// Electronic invoicing format per country
+enum InvoiceFormat {
+  STANDARD_PDF
+  FACTURX   // France — EN 16931 / PDF/A-3
+  ZUGFERD   // Germany — ZUGFeRD / XRechnung
+  PEPPOL    // Belgium, Netherlands, Spain, EU
+  FACTURAE  // Spain — Facturae / Verifactu
+}
+
+enum ClientActionType {
+  STEP_VALIDATED
+  COMMENT
+  SIGNATURE
+}
+
+/// VAT scheme per country/status
+enum VatScheme {
+  STANDARD          // Standard rate (20% FR, 19% DE, 21% BE...)
+  REDUCED           // Reduced rate for construction works
+  MICRO_ENTREPRENEUR // FR: micro-entreprise (franchise en base de TVA)
+  EXEMPT            // VAT exempt
+  REVERSE_CHARGE    // Autoliquidation (B2B cross-border)
+}
+
+// ==============================
+// Application Models
+// ==============================
+
+model User {
+  id                   String     @id @default(cuid())
+  name                 String?
+  email                String?    @unique
+  emailVerified        DateTime?
+  image                String?
+  plan                 Plan       @default(FREE)
+  stripeCustomerId     String?    @unique
+  stripeSubscriptionId String?    @unique
+  proTrialUsed         Boolean    @default(false)
+
+  // i18n & localisation (CDC §5.3 + §2)
+  locale               String     @default("fr-FR") // BCP 47
+  country              String     @default("FR")    // ISO 3166-1 alpha-2
+  currency             String     @default("EUR")   // ISO 4217
+
+  // VAT & compliance
+  vatScheme            VatScheme  @default(STANDARD)
+  vatNumber            String?    // Generic VAT number
+  siret                String?    // France
+  steuernummer         String?    // Germany
+  bceNumber            String?    // Belgium
+
+  // Artisan profile
+  companyName          String?
+  companyAddress       String?
+  logoUrl              String?
+  logoKey              String?
+  hourlyRate           Decimal?   @db.Decimal(10, 2)
+  iban                 String?
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  accounts     Account[]
+  sessions     Session[]
+  projects     Project[]
+  ownedTeam    Team?        @relation("TeamOwner")
+  teamMember   TeamMember?
+}
+
+// ==============================
+// Team Models
+// ==============================
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  ownerId     String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner       User             @relation("TeamOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members     TeamMember[]
+  invitations TeamInvitation[]
+
+  @@index([ownerId])
+}
+
+model TeamMember {
+  id       String   @id @default(cuid())
+  teamId   String
+  userId   String   @unique  // one team membership per user
+  role     TeamRole @default(MEMBER)
+  joinedAt DateTime @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
+}
+
+model TeamInvitation {
+  id         String    @id @default(cuid())
+  teamId     String
+  email      String
+  role       TeamRole  @default(MEMBER)
+  token      String    @unique @default(uuid())
+  expiresAt  DateTime
+  acceptedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, email])
+  @@index([teamId])
+  @@index([token])
 }
 
 model Project {
-  id              String        @id @default(cuid())
-  name            String
-  address         String
-  status          ProjectStatus @default(ACTIVE)
-  clientName      String
-  clientPhone     String?
-  clientEmail     String?
-  description     String?       @db.Text
-  startDate       DateTime?
-  endDate         DateTime?
-  shareToken      String        @unique @default(uuid())
-  shareExpiresAt  DateTime?
-  artisanId       String
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  id             String        @id @default(cuid())
+  name           String
+  address        String
+  status         ProjectStatus @default(ACTIVE)
+  clientName     String
+  clientPhone    String?
+  clientEmail    String?
+  clientLocale   String?       // BCP 47 — used for client-facing emails and magic link
+  clientLastViewedAt DateTime?
+  description    String?       @db.Text
+  startDate      DateTime?
+  endDate        DateTime?
+  shareToken     String        @unique @default(uuid())
+  shareExpiresAt DateTime?
+  artisanId      String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   artisan       User           @relation(fields: [artisanId], references: [id], onDelete: Cascade)
   photos        Photo[]
@@ -130,6 +242,7 @@ model Photo {
   lat       Float?
   lng       Float?
   takenAt   DateTime @default(now())
+  order     Int      @default(0)
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
@@ -160,20 +273,6 @@ model Material {
   @@index([projectId])
 }
 
-enum InvoiceType {
-  QUOTE
-  INVOICE
-}
-
-enum InvoiceStatus {
-  DRAFT
-  SENT
-  ACCEPTED
-  REFUSED
-  PAID
-  OVERDUE
-}
-
 model Invoice {
   id              String        @id @default(cuid())
   projectId       String
@@ -181,13 +280,17 @@ model Invoice {
   type            InvoiceType
   status          InvoiceStatus @default(DRAFT)
   lines           Json
-  totalHT         Decimal       @db.Decimal(10, 2)
-  totalTVA        Decimal       @db.Decimal(10, 2)
-  totalTTC        Decimal       @db.Decimal(10, 2)
+  // Amounts stored as integer cents (CDC §10.2)
+  totalHT         Int           // cents
+  totalTVA        Int           // cents
+  totalTTC        Int           // cents
+  currency        String        @default("EUR") // ISO 4217
+  locale          String        @default("fr-FR") // BCP 47 — for PDF rendering
+  invoiceFormat   InvoiceFormat @default(STANDARD_PDF)
   issuedAt        DateTime?
   dueAt           DateTime?
   paidAt          DateTime?
-  facturXPath     String?
+  facturXPath     String?       // UploadThing key for Factur-X/ZUGFeRD PDF
   remindersSentAt DateTime[]
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
@@ -195,12 +298,6 @@ model Invoice {
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
-}
-
-enum ClientActionType {
-  STEP_VALIDATED
-  COMMENT
-  SIGNATURE
 }
 
 model ClientAction {

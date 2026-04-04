@@ -1,0 +1,84 @@
+{
+  "title": "Devis & Factures",
+  "newQuote": "Nouveau devis",
+  "newInvoice": "Nouvelle facture",
+  "type": {
+    "QUOTE": "Devis",
+    "INVOICE": "Facture"
+  },
+  "status": {
+    "DRAFT": "Brouillon",
+    "SENT": "Envoyé",
+    "ACCEPTED": "Accepté",
+    "REFUSED": "Refusé",
+    "PAID": "Payé",
+    "OVERDUE": "En retard"
+  },
+  "format": {
+    "STANDARD_PDF": "PDF standard",
+    "FACTURX": "Factur-X (France)",
+    "ZUGFERD": "ZUGFeRD (Allemagne)",
+    "PEPPOL": "Peppol BIS",
+    "FACTURAE": "Facturae (Espagne)"
+  },
+  "fields": {
+    "number": "Numéro",
+    "issuedAt": "Date d'émission",
+    "dueAt": "Date d'échéance",
+    "totalHT": "Total HT",
+    "totalTVA": "TVA",
+    "totalTTC": "Total TTC",
+    "currency": "Devise",
+    "type": "Type",
+    "status": "Statut",
+    "lines": "Lignes"
+  },
+  "line": {
+    "description": "Description",
+    "quantity": "Qté",
+    "unitPrice": "Prix unitaire",
+    "total": "Total"
+  },
+  "actions": {
+    "generate": "Générer",
+    "send": "Envoyer par email",
+    "download": "Télécharger PDF",
+    "markPaid": "Marquer comme payé",
+    "markSent": "Marquer comme envoyé"
+  },
+  "proRequired": {
+    "title": "Fonctionnalité PRO",
+    "description": "La génération de devis et factures est disponible avec le plan PRO."
+  },
+  "toasts": {
+    "generated": "Devis/Facture généré",
+    "sent": "Envoyé par email",
+    "markedPaid": "Marqué comme payé",
+    "deleted": "Document supprimé",
+    "created": "Document créé avec succès"
+  },
+  "empty": {
+    "title": "Aucune facture",
+    "description": "Générez vos devis et factures conformes Factur-X en quelques instants."
+  },
+  "table": {
+    "search": "Chercher un numéro..."
+  },
+  "form": {
+    "project": "Chantier assigné",
+    "selectProject": "Sélectionnez un chantier",
+    "docType": "Type de document",
+    "lines": "Lignes",
+    "addLine": "Ajouter une ligne",
+    "designation": "Désignation",
+    "quantity": "Qté",
+    "priceHT": "Prix U. (HT)",
+    "vatRate": "TVA (%)",
+    "save": "Enregistrer le document",
+    "cancel": "Annuler",
+    "placeholderLabel": "Prestation...",
+    "confirmDelete": "Supprimer ce document ?"
+  },
+  "newDocument": "Nouveau Document",
+  "newSubtitle": "Créez un document conforme pour un de vos chantiers."
+}

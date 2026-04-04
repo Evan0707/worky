@@ -1,0 +1,48 @@
+{
+  "title": "Abonnement",
+  "currentPlan": "Aktueller Plan",
+  "plans": {
+    "free": {
+      "name": "Kostenlos",
+      "price": "0 €",
+      "period": "für immer",
+      "features": [
+        "Max. 3 aktive Baustellen",
+        "Fotos & Zeiterfassung unbegrenzt",
+        "Unbegrenzte Client-Links"
+      ]
+    },
+    "pro": {
+      "name": "PRO",
+      "price": "15 €",
+      "period": "pro Monat",
+      "features": [
+        "Unbegrenzte Baustellen",
+        "PDF-Angebote & Rechnungen",
+        "E-Rechnung (ZUGFeRD / XRechnung)",
+        "Automatische Mahnungen",
+        "Rentabilitäts-Dashboard",
+        "Kundenfreigabe / Kommentar / Unterschrift",
+        "Prioritärer Support"
+      ]
+    }
+  },
+  "upgrade": {
+    "title": "Auf PRO upgraden",
+    "description": "Schalten Sie alle Funktionen frei, um Ihr Geschäft auszubauen.",
+    "cta": "Abonnieren — 15 € / Monat",
+    "cancel": "Jederzeit kündbar"
+  },
+  "manage": "Abonnement verwalten",
+  "portal": "Abrechnungsportal",
+  "cancelSubscription": "Abonnement kündigen",
+  "status": {
+    "active": "Aktiv",
+    "canceled": "Gekündigt",
+    "pastDue": "Überfällig"
+  },
+  "toasts": {
+    "upgraded": "Willkommen im PRO-Plan!",
+    "canceled": "Abonnement gekündigt"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "title": "Photos",
+  "upload": "Add photos",
+  "uploading": "Uploading...",
+  "noPhotos": "No photos for this project",
+  "addFirst": "Add your first photo",
+  "note": "Note",
+  "notePlaceholder": "Add a note...",
+  "takenAt": "Taken on",
+  "location": "Location",
+  "delete": "Delete photo",
+  "deleteConfirm": {
+    "title": "Delete photo?",
+    "description": "This action is irreversible."
+  },
+  "toasts": {
+    "uploaded": "{count, plural, one {# photo added} other {# photos added}}",
+    "deleted": "Photo deleted",
+    "noteUpdated": "Note updated",
+    "uploadError": "Error uploading photo"
+  },
+  "compression": "Compressing..."
+}

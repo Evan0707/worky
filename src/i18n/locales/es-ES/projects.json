@@ -1,0 +1,121 @@
+{
+  "title": "Obras",
+
+  "edit": "Editar obra",
+  "delete": "Eliminar obra",
+  "details": "Detalles de la obra",
+  "fields": {
+    "name": "Nombre de la obra",
+    "address": "Dirección",
+    "clientName": "Nombre del cliente",
+    "clientPhone": "Teléfono del cliente",
+    "clientEmail": "Email del cliente",
+    "description": "Descripción",
+    "startDate": "Fecha de inicio",
+    "endDate": "Fecha de fin"
+  },
+  "placeholders": {
+    "name": "Ej: Reforma cocina",
+    "address": "Ej: Calle Mayor 12, 28001 Madrid",
+    "clientName": "Ej: Juan García",
+    "clientPhone": "Ej: 612 345 678",
+    "clientEmail": "Ej: juan.garcia@email.es",
+    "description": "Descripción de los trabajos..."
+  },
+  "status": {
+    "ACTIVE": "En curso",
+    "PAUSED": "Pausada",
+    "DONE": "Terminada",
+    "ARCHIVED": "Archivada"
+  },
+  "statusBadge": {
+    "ACTIVE": "En curso",
+    "PAUSED": "Pausada",
+    "DONE": "Terminada",
+    "ARCHIVED": "Archivada"
+  },
+  "tabs": {
+    "overview": "Resumen",
+    "photos": "Fotos",
+    "time": "Horas",
+    "materials": "Materiales",
+    "invoice": "Presupuesto / Factura"
+  },
+  "share": {
+    "title": "Compartir con el cliente",
+    "description": "Envíe este enlace a su cliente para que pueda seguir el progreso de la obra.",
+    "copyLink": "Copiar enlace",
+    "copied": "¡Enlace copiado!",
+    "sendSms": "Enviar por SMS",
+    "sendEmail": "Enviar por email",
+    "sendWhatsapp": "Enviar por WhatsApp",
+    "regenerate": "Regenerar enlace",
+    "regenerateWarning": "El enlace anterior quedará inmediatamente invalidado.",
+    "smsMessage": "Hola, siga el progreso de su obra aquí: {url}",
+    "emailSubject": "Actualizaciones de su obra - Worky",
+    "emailBody": "Hola,\n\nPuede seguir el progreso de su obra aquí:\n{url}\n\nAtentamente"
+  },
+  "limit": {
+    "title": "Límite alcanzado",
+    "description": "El plan gratuito está limitado a 3 obras activas o pausadas. Actualice al plan PRO para obras ilimitadas.",
+    "upgrade": "Actualizar a PRO"
+  },
+  "deleteConfirm": {
+    "title": "¿Eliminar obra?",
+    "description": "Esta acción es irreversible. Se eliminarán todas las fotos, horas y materiales asociados."
+  },
+  "empty": {
+    "title": "Sin obras",
+    "description": "Cree su primera obra para empezar."
+  },
+  "toasts": {
+    "created": "Obra creada correctamente",
+    "updated": "Obra actualizada",
+    "deleted": "Obra eliminada",
+    "shared": "Enlace copiado al portapapeles",
+    "regenerated": "Enlace regenerado correctamente"
+  },
+  "new": {
+    "title": "Nueva obra",
+    "subtitle": "Introduzca los datos básicos para iniciar una nueva obra."
+  },
+  "overview": {
+    "generalInfo": "Información general",
+    "client": "Cliente",
+    "undefined": "No definido"
+  },
+  "actions": {
+    "label": "Acciones",
+    "view": "Ver obra",
+    "copyId": "Copiar ID",
+    "deactivate": "Desactivar"
+  },
+  "time": {
+    "totalHours": "Total de horas",
+    "addEntry": "Añadir tiempo",
+    "date": "Fecha",
+    "hours": "Horas",
+    "descriptionOptional": "Descripción (opcional)",
+    "descriptionPlaceholder": "Instalación eléctrica...",
+    "history": "Historial de tiempos",
+    "empty": "Sin registros. Añada sus horas de trabajo en el formulario."
+  },
+  "materials": {
+    "totalTTC": "Total materiales (IVA incluido)",
+    "addMaterial": "Añadir material",
+    "label": "Nombre / Descripción",
+    "labelPlaceholder": "Pintura blanca mate...",
+    "quantity": "Cantidad",
+    "unitPriceHT": "Precio unitario (sin IVA)",
+    "list": "Lista de materiales",
+    "empty": "Sin materiales añadidos. Use el formulario para registrar sus compras.",
+    "ht": "sin IVA",
+    "vat": "IVA"
+  },
+  "photos": {
+    "uploadSuccess": "{count} foto(s) añadida(s)",
+    "uploadError": "Error al subir",
+    "photoAlt": "Foto de la obra",
+    "empty": "Sin fotos por el momento. Suba imágenes arriba."
+  }
+}

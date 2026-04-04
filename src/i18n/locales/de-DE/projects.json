@@ -1,0 +1,121 @@
+{
+  "title": "Baustellen",
+
+  "edit": "Baustelle bearbeiten",
+  "delete": "Baustelle löschen",
+  "details": "Baustellendetails",
+  "fields": {
+    "name": "Name der Baustelle",
+    "address": "Adresse",
+    "clientName": "Kundenname",
+    "clientPhone": "Kundentelefon",
+    "clientEmail": "Kunden-E-Mail",
+    "description": "Beschreibung",
+    "startDate": "Startdatum",
+    "endDate": "Enddatum"
+  },
+  "placeholders": {
+    "name": "z.B. Küchenrenovierung",
+    "address": "z.B. Musterstraße 12, 10115 Berlin",
+    "clientName": "z.B. Hans Müller",
+    "clientPhone": "z.B. 0151 12345678",
+    "clientEmail": "z.B. hans.mueller@email.de",
+    "description": "Beschreibung der Arbeiten..."
+  },
+  "status": {
+    "ACTIVE": "Aktiv",
+    "PAUSED": "Pausiert",
+    "DONE": "Abgeschlossen",
+    "ARCHIVED": "Archiviert"
+  },
+  "statusBadge": {
+    "ACTIVE": "Aktiv",
+    "PAUSED": "Pausiert",
+    "DONE": "Abgeschlossen",
+    "ARCHIVED": "Archiviert"
+  },
+  "tabs": {
+    "overview": "Übersicht",
+    "photos": "Fotos",
+    "time": "Zeit",
+    "materials": "Materialien",
+    "invoice": "Angebot / Rechnung"
+  },
+  "share": {
+    "title": "Mit Kunden teilen",
+    "description": "Senden Sie diesen Link an Ihren Kunden, damit er den Baufortschritt verfolgen kann.",
+    "copyLink": "Link kopieren",
+    "copied": "Link kopiert!",
+    "sendSms": "Per SMS senden",
+    "sendEmail": "Per E-Mail senden",
+    "sendWhatsapp": "Via WhatsApp senden",
+    "regenerate": "Link neu generieren",
+    "regenerateWarning": "Der alte Link wird sofort ungültig.",
+    "smsMessage": "Hallo, verfolgen Sie Ihren Baufortschritt hier: {url}",
+    "emailSubject": "Ihre Baustellen-Updates - Worky",
+    "emailBody": "Hallo,\n\nSie können den Fortschritt Ihrer Baustelle hier verfolgen:\n{url}\n\nMit freundlichen Grüßen"
+  },
+  "limit": {
+    "title": "Limit erreicht",
+    "description": "Der kostenlose Plan ist auf 3 aktive oder pausierte Baustellen begrenzt. Wechseln Sie zu PRO für unbegrenzte Baustellen.",
+    "upgrade": "Auf PRO upgraden"
+  },
+  "deleteConfirm": {
+    "title": "Baustelle löschen?",
+    "description": "Diese Aktion ist unwiderruflich. Alle zugehörigen Fotos, Zeiteinträge und Materialien werden gelöscht."
+  },
+  "empty": {
+    "title": "Keine Baustellen",
+    "description": "Erstellen Sie Ihre erste Baustelle, um loszulegen."
+  },
+  "toasts": {
+    "created": "Baustelle erfolgreich erstellt",
+    "updated": "Baustelle aktualisiert",
+    "deleted": "Baustelle gelöscht",
+    "shared": "Link in die Zwischenablage kopiert",
+    "regenerated": "Link erfolgreich neu generiert"
+  },
+  "new": {
+    "title": "Neue Baustelle",
+    "subtitle": "Geben Sie die grundlegenden Informationen ein, um eine neue Baustelle zu starten."
+  },
+  "overview": {
+    "generalInfo": "Allgemeine Informationen",
+    "client": "Kunde",
+    "undefined": "Nicht festgelegt"
+  },
+  "actions": {
+    "label": "Aktionen",
+    "view": "Baustelle ansehen",
+    "copyId": "ID kopieren",
+    "deactivate": "Deaktivieren"
+  },
+  "time": {
+    "totalHours": "Gesamtstunden",
+    "addEntry": "Zeit hinzufügen",
+    "date": "Datum",
+    "hours": "Stunden",
+    "descriptionOptional": "Beschreibung (optional)",
+    "descriptionPlaceholder": "Elektroinstallation...",
+    "history": "Zeitverlauf",
+    "empty": "Keine Einträge. Fügen Sie Ihre Arbeitsstunden im Formular hinzu."
+  },
+  "materials": {
+    "totalTTC": "Materialien gesamt (inkl. MwSt.)",
+    "addMaterial": "Material hinzufügen",
+    "label": "Name / Bezeichnung",
+    "labelPlaceholder": "Weiße Mattfarbe...",
+    "quantity": "Menge",
+    "unitPriceHT": "Einzelpreis (netto)",
+    "list": "Materialliste",
+    "empty": "Noch keine Materialien. Verwenden Sie das Formular, um Einkäufe zu verfolgen.",
+    "ht": "netto",
+    "vat": "MwSt."
+  },
+  "photos": {
+    "uploadSuccess": "{count} Foto(s) hinzugefügt",
+    "uploadError": "Upload-Fehler",
+    "photoAlt": "Baustellenfoto",
+    "empty": "Noch keine Fotos. Laden Sie Bilder oben hoch."
+  }
+}

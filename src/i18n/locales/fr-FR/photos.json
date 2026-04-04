@@ -1,0 +1,23 @@
+{
+  "title": "Photos",
+  "upload": "Ajouter des photos",
+  "uploading": "Envoi en cours...",
+  "noPhotos": "Aucune photo pour ce chantier",
+  "addFirst": "Ajoutez votre première photo",
+  "note": "Note",
+  "notePlaceholder": "Ajouter une note...",
+  "takenAt": "Prise le",
+  "location": "Localisation",
+  "delete": "Supprimer la photo",
+  "deleteConfirm": {
+    "title": "Supprimer la photo ?",
+    "description": "Cette action est irréversible."
+  },
+  "toasts": {
+    "uploaded": "{count, plural, one {# photo ajoutée} other {# photos ajoutées}}",
+    "deleted": "Photo supprimée",
+    "noteUpdated": "Note mise à jour",
+    "uploadError": "Erreur lors de l'envoi de la photo"
+  },
+  "compression": "Compression en cours..."
+}

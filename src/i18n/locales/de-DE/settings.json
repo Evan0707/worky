@@ -1,0 +1,82 @@
+{
+  "title": "Einstellungen",
+  "description": "Verwalten Sie Ihre beruflichen Informationen und Präferenzen.",
+  "profile": {
+    "title": "Handwerkerprofil",
+    "name": "Vollständiger Name",
+    "companyName": "Firmenname",
+    "companyAddress": "Firmenadresse",
+    "hourlyRate": "Stundensatz (netto)",
+    "currency": "Standardwährung",
+    "locale": "Standardsprache",
+    "save": "Änderungen speichern"
+  },
+  "billing": {
+    "title": "Abrechnung & Rechtliches",
+    "siret": "SIRET-Nummer",
+    "steuernummer": "Steuernummer",
+    "bceNumber": "KBO-Nummer",
+    "vatNumber": "USt-IdNr.",
+    "iban": "IBAN",
+    "vatScheme": "Umsatzsteuerregelung"
+  },
+  "vatSchemes": {
+    "STANDARD": "Standard (19%)",
+    "REDUCED": "Ermäßigt (7%)",
+    "MICRO_ENTREPRENEUR": "Kleinunternehmer (§19 UStG)",
+    "EXEMPT": "Befreit",
+    "REVERSE_CHARGE": "Reverse Charge"
+  },
+  "toasts": {
+    "saved": "Einstellungen aktualisiert",
+    "error": "Ein Fehler ist aufgetreten"
+  },
+  "plans": {
+    "title": "Abonnement & Limits",
+    "currentPlan": "Ihr aktueller Plan:",
+    "free": "Kostenlos",
+    "pro": "PRO",
+    "projectsUsed": "{used}/{total} aktive Baustellen",
+    "projectsUnlimited": "Unbegrenzte Baustellen",
+    "trialDays": "Testphase: 14 kostenlose Tage",
+    "trialEnding": "Testphase endet am {date}",
+    "renewDate": "Nächste Verlängerung am {date}",
+    "cancelDate": "Abonnement endet am {date}",
+    "upgrade": "Auf PRO upgraden",
+    "upgradeDesc": "Unbegrenzte Baustellen und ZUGFeRD-Rechnungen mit dem PRO-Plan.",
+    "cancel": "Abonnement kündigen",
+    "resume": "Abonnement fortsetzen",
+    "success": "Zahlung erfolgreich! Willkommen beim PRO-Plan.",
+    "canceled": "Testzeitraum aktiviert. Sie können jederzeit kündigen."
+  },
+  "upgrade": {
+    "dialogTitle": "Auf PRO upgraden",
+    "heading": "Alle Worky PRO-Funktionen freischalten",
+    "subheading": "Ersetzen Sie Papier, Excel und WhatsApp durch ein einziges Tool.",
+    "trial": "14 Tage kostenlos testen",
+    "cancelAnytime": "Jederzeit kündbar",
+    "perMonth": "/ Monat",
+    "htVat": "zzgl. MwSt., keine Bindung",
+    "paymentTitle": "Zahlungsdetails",
+    "paymentDesc": "Ihre Karte wird erst nach der 14-tägigen Testphase belastet.",
+    "cta": "Kostenlose Testphase starten",
+    "retry": "Erneut versuchen",
+    "error": "Ein Fehler ist aufgetreten",
+    "limitReached": "Limit erreicht. Upgraden Sie auf PRO, um weitere Baustellen hinzuzufügen.",
+    "stripeStatus": "Status",
+    "cancelScheduled": "Kündigung geplant",
+    "autoRenew": "Automatische Verlängerung",
+    "nextBilling": "Nächstes Abrechnungsdatum",
+    "successTitle": "Willkommen bei Worky PRO!",
+    "successDesc": "Ihre 14-tägige Testphase hat begonnen. Genießen Sie alle Funktionen.",
+    "successCta": "Los geht's!",
+    "feat": {
+      "projects": "Unbegrenzte Baustellen",
+      "invoices": "PDF-Angebote & -Rechnungen + ZUGFeRD",
+      "analytics": "Rentabilitäts-Dashboard",
+      "reminders": "Automatische Erinnerungen",
+      "clientActions": "Kundenvalidierung / Kommentar / Unterschrift",
+      "support": "Prioritätssupport"
+    }
+  }
+}

@@ -1,12 +1,18 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaNeon } from "@prisma/adapter-neon";
 
 import { env } from "@/env";
 
-const createPrismaClient = () =>
-  new PrismaClient({
+const createPrismaClient = () => {
+  // PrismaNeon takes a PoolConfig — Neon serverless WebSocket driver
+  const adapter = new PrismaNeon({ connectionString: env.DATABASE_URL });
+
+  return new PrismaClient({
+    adapter,
     log:
       env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
+};
 
 const globalForPrisma = globalThis as unknown as {
   prisma: ReturnType<typeof createPrismaClient> | undefined;

@@ -5,8 +5,11 @@ import Resend from "next-auth/providers/resend";
 
 import { db } from "@/server/db";
 import { env } from "@/env";
+import { authConfig } from "@/server/auth.config";
 
+// Full auth with Prisma adapter — Node.js only, never import in middleware
 export const { auth, handlers, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(db),
   providers: [
     Google({
@@ -20,9 +23,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   ],
   session: {
     strategy: "jwt",
-    maxAge: 14 * 24 * 60 * 60, // 14 jours
+    maxAge: 14 * 24 * 60 * 60, // 14 days
   },
   callbacks: {
+    ...authConfig.callbacks,
     session: ({ session, token }) => ({
       ...session,
       user: {
@@ -33,7 +37,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     }),
     jwt: async ({ token, user }) => {
       if (user) {
-        // On first sign in, fetch plan from DB
         const dbUser = await db.user.findUnique({
           where: { id: user.id },
           select: { plan: true },
@@ -42,10 +45,5 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       }
       return token;
     },
-  },
-  pages: {
-    signIn: "/login",
-    verifyRequest: "/login/verify",
-    error: "/login/error",
   },
 });

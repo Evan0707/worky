@@ -21,8 +21,39 @@ export const photoRouter = createTRPCRouter({
 
       return ctx.db.photo.findMany({
         where: { projectId: input.projectId },
-        orderBy: { takenAt: "desc" },
+        orderBy: [{ order: "asc" }, { takenAt: "desc" }],
       });
+    }),
+
+  /**
+   * Update photos order
+   */
+  updateOrder: protectedProcedure
+    .input(z.object({
+      projectId: z.string(),
+      orders: z.array(z.object({ id: z.string(), order: z.number() })),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      // Verify ownership
+      const project = await ctx.db.project.findFirst({
+        where: { id: input.projectId, artisanId: ctx.session.user.id },
+      });
+
+      if (!project) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
+      // Execute a transaction to update all orders
+      await ctx.db.$transaction(
+        input.orders.map((item) =>
+          ctx.db.photo.update({
+            where: { id: item.id },
+            data: { order: item.order },
+          })
+        )
+      );
+
+      return { success: true };
     }),
 
   /**

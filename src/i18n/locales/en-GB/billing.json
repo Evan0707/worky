@@ -1,0 +1,48 @@
+{
+  "title": "Billing",
+  "currentPlan": "Current plan",
+  "plans": {
+    "free": {
+      "name": "Free",
+      "price": "£0",
+      "period": "forever",
+      "features": [
+        "3 active projects max",
+        "Unlimited photos & time tracking",
+        "Unlimited client link"
+      ]
+    },
+    "pro": {
+      "name": "PRO",
+      "price": "£13",
+      "period": "per month",
+      "features": [
+        "Unlimited projects",
+        "PDF quotes & invoices",
+        "E-invoicing",
+        "Automatic reminders",
+        "Profitability dashboard",
+        "Client validation / comments / signature",
+        "Priority support"
+      ]
+    }
+  },
+  "upgrade": {
+    "title": "Upgrade to PRO",
+    "description": "Unlock all features to grow your business.",
+    "cta": "Subscribe — £13 / month",
+    "cancel": "Cancel at any time"
+  },
+  "manage": "Manage subscription",
+  "portal": "Billing portal",
+  "cancelSubscription": "Cancel subscription",
+  "status": {
+    "active": "Active",
+    "canceled": "Cancelled",
+    "pastDue": "Past due"
+  },
+  "toasts": {
+    "upgraded": "Welcome to the PRO plan!",
+    "canceled": "Subscription cancelled"
+  }
+}

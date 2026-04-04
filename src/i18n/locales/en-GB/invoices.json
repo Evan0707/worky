@@ -1,0 +1,84 @@
+{
+  "title": "Quotes & Invoices",
+  "newQuote": "New quote",
+  "newInvoice": "New invoice",
+  "newDocument": "New Document",
+  "newSubtitle": "Create a compliant document for one of your projects.",
+  "type": {
+    "QUOTE": "Quote",
+    "INVOICE": "Invoice"
+  },
+  "status": {
+    "DRAFT": "Draft",
+    "SENT": "Sent",
+    "ACCEPTED": "Accepted",
+    "REFUSED": "Refused",
+    "PAID": "Paid",
+    "OVERDUE": "Overdue"
+  },
+  "format": {
+    "STANDARD_PDF": "Standard PDF",
+    "FACTURX": "Factur-X (France)",
+    "ZUGFERD": "ZUGFeRD (Germany)",
+    "PEPPOL": "Peppol BIS",
+    "FACTURAE": "Facturae (Spain)"
+  },
+  "fields": {
+    "number": "Number",
+    "issuedAt": "Issue date",
+    "dueAt": "Due date",
+    "totalHT": "Net total",
+    "totalTVA": "VAT",
+    "totalTTC": "Gross total",
+    "currency": "Currency",
+    "type": "Type",
+    "status": "Status",
+    "lines": "Lines"
+  },
+  "line": {
+    "description": "Description",
+    "quantity": "Qty",
+    "unitPrice": "Unit price",
+    "total": "Total"
+  },
+  "actions": {
+    "generate": "Generate",
+    "send": "Send by email",
+    "download": "Download PDF",
+    "markPaid": "Mark as paid",
+    "markSent": "Mark as sent"
+  },
+  "proRequired": {
+    "title": "PRO feature",
+    "description": "Quote and invoice generation is available on the PRO plan."
+  },
+  "toasts": {
+    "generated": "Quote/Invoice generated",
+    "sent": "Sent by email",
+    "markedPaid": "Marked as paid",
+    "deleted": "Document deleted",
+    "created": "Document created successfully"
+  },
+  "empty": {
+    "title": "No invoices yet",
+    "description": "Generate your Factur-X compliant quotes and invoices in just a few steps."
+  },
+  "table": {
+    "search": "Search a number..."
+  },
+  "form": {
+    "project": "Assigned Project",
+    "selectProject": "Select a project",
+    "docType": "Document type",
+    "lines": "Lines",
+    "addLine": "Add line",
+    "designation": "Designation",
+    "quantity": "Qty",
+    "priceHT": "Price (Ex. VAT)",
+    "vatRate": "VAT (%)",
+    "save": "Save document",
+    "cancel": "Cancel",
+    "placeholderLabel": "Service...",
+    "confirmDelete": "Delete this document?"
+  }
+}

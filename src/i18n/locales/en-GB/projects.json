@@ -1,0 +1,121 @@
+{
+  "title": "Projects",
+
+  "edit": "Edit project",
+  "delete": "Delete project",
+  "details": "Project details",
+  "fields": {
+    "name": "Project name",
+    "address": "Address",
+    "clientName": "Client name",
+    "clientPhone": "Client phone",
+    "clientEmail": "Client email",
+    "description": "Description",
+    "startDate": "Start date",
+    "endDate": "End date"
+  },
+  "placeholders": {
+    "name": "e.g. Kitchen renovation",
+    "address": "e.g. 12 High Street, London, EC1A 1BB",
+    "clientName": "e.g. John Smith",
+    "clientPhone": "e.g. 07700 900000",
+    "clientEmail": "e.g. john.smith@email.co.uk",
+    "description": "Description of works..."
+  },
+  "status": {
+    "ACTIVE": "Active",
+    "PAUSED": "Paused",
+    "DONE": "Completed",
+    "ARCHIVED": "Archived"
+  },
+  "statusBadge": {
+    "ACTIVE": "Active",
+    "PAUSED": "Paused",
+    "DONE": "Completed",
+    "ARCHIVED": "Archived"
+  },
+  "tabs": {
+    "overview": "Overview",
+    "photos": "Photos",
+    "time": "Time",
+    "materials": "Materials",
+    "invoice": "Quote / Invoice"
+  },
+  "share": {
+    "title": "Share with client",
+    "description": "Send this link to your client so they can track project progress.",
+    "copyLink": "Copy link",
+    "copied": "Link copied!",
+    "sendSms": "Send via SMS",
+    "sendEmail": "Send via email",
+    "sendWhatsapp": "Send via WhatsApp",
+    "regenerate": "Regenerate link",
+    "regenerateWarning": "The old link will be immediately invalidated.",
+    "smsMessage": "Hello, track your project progress here: {url}",
+    "emailSubject": "Your project updates - Worky",
+    "emailBody": "Hello,\n\nYou can track your project progress here:\n{url}\n\nKind regards"
+  },
+  "limit": {
+    "title": "Limit reached",
+    "description": "The free plan is limited to 3 active or paused projects. Upgrade to PRO for unlimited projects.",
+    "upgrade": "Upgrade to PRO"
+  },
+  "deleteConfirm": {
+    "title": "Delete project?",
+    "description": "This action is irreversible. All associated photos, time entries and materials will be deleted."
+  },
+  "empty": {
+    "title": "No projects",
+    "description": "Create your first project to get started."
+  },
+  "toasts": {
+    "created": "Project created successfully",
+    "updated": "Project updated",
+    "deleted": "Project deleted",
+    "shared": "Link copied to clipboard",
+    "regenerated": "Link regenerated successfully"
+  },
+  "new": {
+    "title": "New project",
+    "subtitle": "Enter the basic details to start a new project."
+  },
+  "overview": {
+    "generalInfo": "General information",
+    "client": "Client",
+    "undefined": "Not set"
+  },
+  "actions": {
+    "label": "Actions",
+    "view": "View project",
+    "copyId": "Copy ID",
+    "deactivate": "Deactivate"
+  },
+  "time": {
+    "totalHours": "Total hours",
+    "addEntry": "Add time",
+    "date": "Date",
+    "hours": "Hours",
+    "descriptionOptional": "Description (optional)",
+    "descriptionPlaceholder": "Electrical installation...",
+    "history": "Time history",
+    "empty": "No entries yet. Add your working hours in the form."
+  },
+  "materials": {
+    "totalTTC": "Total materials (incl. VAT)",
+    "addMaterial": "Add material",
+    "label": "Name / Description",
+    "labelPlaceholder": "White matt paint...",
+    "quantity": "Quantity",
+    "unitPriceHT": "Unit price (excl. VAT)",
+    "list": "Materials list",
+    "empty": "No materials added yet. Use the form to track your purchases.",
+    "ht": "excl. VAT",
+    "vat": "VAT"
+  },
+  "photos": {
+    "uploadSuccess": "{count} photo(s) added",
+    "uploadError": "Upload error",
+    "photoAlt": "Site photo",
+    "empty": "No photos yet. Upload images above."
+  }
+}

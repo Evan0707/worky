@@ -1,0 +1,70 @@
+{
+  "title": "Mi equipo",
+  "description": "Invite colaboradores y gestione el acceso a sus obras.",
+  "noTeam": {
+    "heading": "Trabaje en equipo",
+    "sub": "Cree un equipo para invitar a artesanos o colaboradores a sus obras.",
+    "cta": "Crear mi equipo"
+  },
+  "create": {
+    "label": "Nombre del equipo",
+    "placeholder": "Ej.: Obras García SL",
+    "submit": "Crear equipo"
+  },
+  "member": {
+    "heading": "Es miembro de",
+    "yourRole": "Su rol",
+    "joined": "Miembro desde el {date}"
+  },
+  "roles": {
+    "OWNER": "Propietario",
+    "ADMIN": "Administrador",
+    "MEMBER": "Miembro"
+  },
+  "members": {
+    "title": "Miembros",
+    "empty": "Aún no hay otros miembros."
+  },
+  "invite": {
+    "title": "Invitar a un colaborador",
+    "email": "Dirección de correo",
+    "emailPlaceholder": "colaborador@ejemplo.es",
+    "role": "Rol",
+    "roleMember": "Miembro",
+    "roleAdmin": "Administrador",
+    "submit": "Enviar invitación",
+    "sent": "Invitación enviada a {email}",
+    "pendingTitle": "Invitaciones pendientes",
+    "expires": "Caduca el {date}",
+    "revoke": "Revocar"
+  },
+  "actions": {
+    "rename": "Renombrar",
+    "leave": "Abandonar el equipo",
+    "leaveConfirm": "¿Está seguro de que desea abandonar el equipo?",
+    "remove": "Eliminar",
+    "removeConfirm": "¿Eliminar a este miembro del equipo?",
+    "deleteTeam": "Eliminar equipo",
+    "deleteConfirm": "¿Eliminar el equipo permanentemente? Todos los miembros perderán el acceso."
+  },
+  "toasts": {
+    "created": "¡Equipo creado!",
+    "renamed": "Equipo renombrado",
+    "invited": "Invitación enviada",
+    "revoked": "Invitación revocada",
+    "removed": "Miembro eliminado",
+    "left": "Ha abandonado el equipo",
+    "deleted": "Equipo eliminado",
+    "roleUpdated": "Rol actualizado",
+    "error": "Se ha producido un error"
+  },
+  "inviteErrors": {
+    "not_found": "Invitación no encontrada.",
+    "used": "Esta invitación ya ha sido utilizada.",
+    "expired": "Esta invitación ha caducado.",
+    "email_mismatch": "Esta invitación fue enviada a otra dirección de correo.",
+    "already_member": "Ya es miembro de un equipo.",
+    "is_owner": "Es propietario de un equipo. Elimínelo antes de unirse a otro."
+  },
+  "inviteSuccess": "¡Bienvenido al equipo {team}!"
+}

@@ -1,0 +1,179 @@
+Oui — **si tu veux être conforme légalement en France, tu dois passer par un service tiers** (une PDP). Il n’y a pas vraiment de raccourci propre ici.
+
+Je vais te donner **le plan concret, étape par étape**, sans blabla 👇
+
+---
+
+# 🧩 1. Le principe simple
+
+Ton SaaS **ne devient pas une plateforme légale**.
+
+👉 Tu fais :
+
+* UI (facture, chantier, client)
+* logique métier
+
+👉 La **PDP** (Plateforme de Dématérialisation Partenaire) fait :
+
+* génération du bon format (Factur-X / UBL)
+* envoi à l’administration (via Direction Générale des Finances Publiques)
+* réception des statuts (acceptée, refusée…)
+
+---
+
+# ⚙️ 2. Concrètement dans ton SaaS Next.js
+
+## Étape 1 — Choisir une PDP avec API
+
+Tu veux un truc **API-first**.
+
+Regarde :
+
+* Pennylane (bon pour MVP)
+* Cegid (plus lourd)
+* Sage
+
+👉 Ou des PDP plus “tech” (souvent les meilleures pour SaaS)
+
+---
+
+## Étape 2 — Ton modèle de facture
+
+Tu dois structurer proprement tes données :
+
+```ts
+type Invoice = {
+  id: string
+  number: string
+  issueDate: string
+
+  seller: {
+    name: string
+    siret: string
+    address: string
+  }
+
+  buyer: {
+    name: string
+    siret?: string
+    address: string
+  }
+
+  items: {
+    description: string
+    quantity: number
+    unitPrice: number
+    vatRate: number
+  }[]
+
+  totalHT: number
+  totalTVA: number
+  totalTTC: number
+}
+```
+
+👉 Ça, c’est **la base minimale exigée légalement**
+
+---
+
+## Étape 3 — Endpoint d’envoi
+
+Dans Next.js (API route) :
+
+```ts
+export async function POST(req: Request) {
+  const invoice = await req.json()
+
+  const res = await fetch("https://api.ta-pdp.com/invoices", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.PDP_API_KEY}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(invoice)
+  })
+
+  const data = await res.json()
+
+  return Response.json(data)
+}
+```
+
+👉 La PDP va :
+
+* transformer en Factur-X
+* envoyer au client + État
+* te retourner un ID + statut
+
+---
+
+## 🔁 4. Gérer les statuts (ULTRA important)
+
+Tu dois gérer :
+
+* envoyée
+* déposée
+* acceptée
+* refusée
+
+👉 Deux options :
+
+1. polling API
+2. webhook (mieux)
+
+Exemple webhook :
+
+```ts
+export async function POST(req: Request) {
+  const event = await req.json()
+
+  // update facture en base
+  await db.invoice.update({
+    where: { id: event.invoiceId },
+    data: { status: event.status }
+  })
+
+  return Response.json({ ok: true })
+}
+```
+
+---
+
+## 💡 5. UX dans ton SaaS (c’est là que tu gagnes)
+
+Ton utilisateur artisan s’en fout de la PDP.
+
+Il veut :
+
+* bouton **“Envoyer la facture”**
+* statut simple :
+
+  * ✅ payée
+  * ⏳ en attente
+  * ❌ refusée
+
+👉 Toi tu traduis :
+
+* statut PDP → statut lisible
+
+---
+
+# 🚨 6. Les pièges à éviter
+
+❌ Générer juste un PDF → NON conforme
+❌ Ignorer SIRET → obligatoire en B2B
+❌ Ne pas gérer les retours → dangereux
+❌ Hardcoder → la réglementation change souvent
+
+---
+
+# 🧠 7. Mon conseil direct
+
+Si tu es en MVP :
+
+👉 Fais simple :
+
+1. crée tes factures en interne
+2. connecte UNE PDP
+3. envoie → récupère statut
+

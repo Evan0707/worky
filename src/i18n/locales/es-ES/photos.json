@@ -1,0 +1,23 @@
+{
+  "title": "Fotos",
+  "upload": "Añadir fotos",
+  "uploading": "Subiendo...",
+  "noPhotos": "Sin fotos para esta obra",
+  "addFirst": "Añada su primera foto",
+  "note": "Nota",
+  "notePlaceholder": "Añadir una nota...",
+  "takenAt": "Tomada el",
+  "location": "Ubicación",
+  "delete": "Eliminar foto",
+  "deleteConfirm": {
+    "title": "¿Eliminar foto?",
+    "description": "Esta acción es irreversible."
+  },
+  "toasts": {
+    "uploaded": "{count, plural, one {# foto añadida} other {# fotos añadidas}}",
+    "deleted": "Foto eliminada",
+    "noteUpdated": "Nota actualizada",
+    "uploadError": "Error al subir la foto"
+  },
+  "compression": "Comprimiendo..."
+}

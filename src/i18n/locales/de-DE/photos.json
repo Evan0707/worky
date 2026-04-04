@@ -1,0 +1,23 @@
+{
+  "title": "Fotos",
+  "upload": "Fotos hinzufügen",
+  "uploading": "Wird hochgeladen...",
+  "noPhotos": "Keine Fotos für diese Baustelle",
+  "addFirst": "Fügen Sie Ihr erstes Foto hinzu",
+  "note": "Notiz",
+  "notePlaceholder": "Notiz hinzufügen...",
+  "takenAt": "Aufgenommen am",
+  "location": "Standort",
+  "delete": "Foto löschen",
+  "deleteConfirm": {
+    "title": "Foto löschen?",
+    "description": "Diese Aktion ist unwiderruflich."
+  },
+  "toasts": {
+    "uploaded": "{count, plural, one {# Foto hinzugefügt} other {# Fotos hinzugefügt}}",
+    "deleted": "Foto gelöscht",
+    "noteUpdated": "Notiz aktualisiert",
+    "uploadError": "Fehler beim Hochladen des Fotos"
+  },
+  "compression": "Wird komprimiert..."
+}

@@ -7,35 +7,48 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "@/server/api/trpc";
+import { getArtisanContext, getEffectivePlan } from "@/server/lib/team-context";
 
-// Max ACTIVE/PAUSED projects for FREE plan
 const FREE_PLAN_PROJECT_LIMIT = 3;
 
 export const projectRouter = createTRPCRouter({
-  /**
-   * List all projects for the authenticated artisan
-   */
   list: protectedProcedure.query(async ({ ctx }) => {
+    const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
     return ctx.db.project.findMany({
-      where: { artisanId: ctx.session.user.id! },
-      include: {
-        _count: { select: { photos: true } },
-      },
+      where: { artisanId },
+      include: { _count: { select: { photos: true } } },
       orderBy: { createdAt: "desc" },
     });
   }),
 
-  /**
-   * Get a single project by ID (must belong to the artisan)
-   */
+  getDashboardStats: protectedProcedure.query(async ({ ctx }) => {
+    const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+
+    const [totalProjects, activeProjects, totalPhotos, totalTimeEntries] =
+      await Promise.all([
+        ctx.db.project.count({ where: { artisanId } }),
+        ctx.db.project.count({ where: { artisanId, status: "ACTIVE" } }),
+        ctx.db.photo.count({ where: { project: { artisanId } } }),
+        ctx.db.timeEntry.findMany({
+          where: { project: { artisanId } },
+          select: { hours: true },
+        }),
+      ]);
+
+    const totalHours = totalTimeEntries.reduce(
+      (sum, entry) => sum + Number(entry.hours),
+      0,
+    );
+
+    return { totalProjects, activeProjects, totalPhotos, totalHours };
+  }),
+
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
+      const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
       const project = await ctx.db.project.findFirst({
-        where: {
-          id: input.id,
-          artisanId: ctx.session.user.id!,
-        },
+        where: { id: input.id, artisanId },
         include: {
           photos: { orderBy: { takenAt: "desc" } },
           timeEntries: { orderBy: { date: "desc" } },
@@ -43,16 +56,10 @@ export const projectRouter = createTRPCRouter({
         },
       });
 
-      if (!project) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-
+      if (!project) throw new TRPCError({ code: "NOT_FOUND" });
       return project;
     }),
 
-  /**
-   * Create a new project (enforces FREE plan limit of 3 active/paused)
-   */
   create: protectedProcedure
     .input(
       z.object({
@@ -67,13 +74,12 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // Check FREE plan limit
-      if (ctx.session.user.plan === "FREE") {
+      const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      const plan = await getEffectivePlan(ctx.session.user.id!, ctx.db);
+
+      if (plan === "FREE") {
         const activeCount = await ctx.db.project.count({
-          where: {
-            artisanId: ctx.session.user.id!,
-            status: { in: ["ACTIVE", "PAUSED"] },
-          },
+          where: { artisanId, status: { in: ["ACTIVE", "PAUSED"] } },
         });
         if (activeCount >= FREE_PLAN_PROJECT_LIMIT) {
           throw new TRPCError({
@@ -84,17 +90,10 @@ export const projectRouter = createTRPCRouter({
       }
 
       return ctx.db.project.create({
-        data: {
-          ...input,
-          artisanId: ctx.session.user.id!,
-          shareToken: uuidv4(),
-        },
+        data: { ...input, artisanId, shareToken: uuidv4() },
       });
     }),
 
-  /**
-   * Update a project
-   */
   update: protectedProcedure
     .input(
       z.object({
@@ -112,35 +111,26 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
       const { id, ...data } = input;
 
       const project = await ctx.db.project.findFirst({
-        where: { id, artisanId: ctx.session.user.id! },
+        where: { id, artisanId },
       });
+      if (!project) throw new TRPCError({ code: "NOT_FOUND" });
 
-      if (!project) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
-
-      return ctx.db.project.update({
-        where: { id },
-        data,
-      });
+      return ctx.db.project.update({ where: { id }, data });
     }),
 
-  /**
-   * Soft delete: set status to DONE
-   */
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const project = await ctx.db.project.findFirst({
-        where: { id: input.id, artisanId: ctx.session.user.id! },
-      });
+      const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
 
-      if (!project) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
+      const project = await ctx.db.project.findFirst({
+        where: { id: input.id, artisanId },
+      });
+      if (!project) throw new TRPCError({ code: "NOT_FOUND" });
 
       return ctx.db.project.update({
         where: { id: input.id },
@@ -149,8 +139,7 @@ export const projectRouter = createTRPCRouter({
     }),
 
   /**
-   * Get project by share token (public - no auth required)
-   * NEVER expose artisanId, stripeCustomerId, or financial data
+   * Public — no auth. NEVER expose artisanId or financial data.
    */
   getByToken: publicProcedure
     .input(z.object({ token: z.string() }))
@@ -162,6 +151,7 @@ export const projectRouter = createTRPCRouter({
           name: true,
           status: true,
           description: true,
+          address: true,
           startDate: true,
           endDate: true,
           clientName: true,
@@ -176,11 +166,7 @@ export const projectRouter = createTRPCRouter({
           },
           _count: { select: { photos: true } },
           artisan: {
-            select: {
-              name: true,
-              companyName: true,
-              image: true,
-            },
+            select: { name: true, companyName: true, image: true, logoUrl: true },
           },
         },
       });
@@ -192,11 +178,7 @@ export const projectRouter = createTRPCRouter({
         });
       }
 
-      // Check expiration
-      if (
-        project.shareExpiresAt &&
-        project.shareExpiresAt < new Date()
-      ) {
+      if (project.shareExpiresAt && project.shareExpiresAt < new Date()) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Ce lien de partage a expiré.",
@@ -206,9 +188,16 @@ export const projectRouter = createTRPCRouter({
       return project;
     }),
 
-  /**
-   * Regenerate share token (invalidates the old link)
-   */
+  markClientViewed: publicProcedure
+    .input(z.object({ token: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.project.update({
+        where: { shareToken: input.token },
+        data: { clientLastViewedAt: new Date() },
+      });
+      return { success: true };
+    }),
+
   regenerateToken: protectedProcedure
     .input(
       z.object({
@@ -217,20 +206,16 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const project = await ctx.db.project.findFirst({
-        where: { id: input.id, artisanId: ctx.session.user.id! },
-      });
+      const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
 
-      if (!project) {
-        throw new TRPCError({ code: "NOT_FOUND" });
-      }
+      const project = await ctx.db.project.findFirst({
+        where: { id: input.id, artisanId },
+      });
+      if (!project) throw new TRPCError({ code: "NOT_FOUND" });
 
       return ctx.db.project.update({
         where: { id: input.id },
-        data: {
-          shareToken: uuidv4(),
-          shareExpiresAt: input.shareExpiresAt,
-        },
+        data: { shareToken: uuidv4(), shareExpiresAt: input.shareExpiresAt },
         select: { shareToken: true, shareExpiresAt: true },
       });
     }),

@@ -1,0 +1,121 @@
+{
+  "title": "Chantiers",
+
+  "edit": "Modifier le chantier",
+  "delete": "Supprimer le chantier",
+  "details": "Détails du chantier",
+  "fields": {
+    "name": "Nom du chantier",
+    "address": "Adresse",
+    "clientName": "Nom du client",
+    "clientPhone": "Téléphone client",
+    "clientEmail": "Email client",
+    "description": "Description",
+    "startDate": "Date de début",
+    "endDate": "Date de fin"
+  },
+  "placeholders": {
+    "name": "Ex: Rénovation cuisine",
+    "address": "Ex: 12 rue de la Paix, 75001 Paris",
+    "clientName": "Ex: Jean Dupont",
+    "clientPhone": "Ex: 06 12 34 56 78",
+    "clientEmail": "Ex: jean.dupont@email.fr",
+    "description": "Description des travaux..."
+  },
+  "status": {
+    "ACTIVE": "En cours",
+    "PAUSED": "En pause",
+    "DONE": "Terminé",
+    "ARCHIVED": "Archivé"
+  },
+  "statusBadge": {
+    "ACTIVE": "En cours",
+    "PAUSED": "En pause",
+    "DONE": "Terminé",
+    "ARCHIVED": "Archivé"
+  },
+  "tabs": {
+    "overview": "Vue générale",
+    "photos": "Photos",
+    "time": "Heures",
+    "materials": "Matériaux",
+    "invoice": "Devis / Facture"
+  },
+  "share": {
+    "title": "Partager avec le client",
+    "description": "Envoyez ce lien à votre client pour qu'il puisse suivre l'avancement du chantier.",
+    "copyLink": "Copier le lien",
+    "copied": "Lien copié !",
+    "sendSms": "Envoyer par SMS",
+    "sendEmail": "Envoyer par email",
+    "sendWhatsapp": "Envoyer via WhatsApp",
+    "regenerate": "Régénérer le lien",
+    "regenerateWarning": "L'ancien lien sera immédiatement invalide.",
+    "smsMessage": "Bonjour, suivez l'avancement de vos travaux ici : {url}",
+    "emailSubject": "Suivi de vos travaux - Worky",
+    "emailBody": "Bonjour,\n\nVous pouvez suivre l'avancement de vos travaux ici :\n{url}\n\nCordialement"
+  },
+  "limit": {
+    "title": "Limite atteinte",
+    "description": "Le plan gratuit est limité à 3 chantiers actifs ou en pause. Passez au plan PRO pour des chantiers illimités.",
+    "upgrade": "Passer au PRO"
+  },
+  "deleteConfirm": {
+    "title": "Supprimer le chantier ?",
+    "description": "Cette action est irréversible. Toutes les photos, heures et matériaux associés seront supprimés."
+  },
+  "empty": {
+    "title": "Aucun chantier",
+    "description": "Créez votre premier chantier pour commencer."
+  },
+  "toasts": {
+    "created": "Chantier créé avec succès",
+    "updated": "Chantier mis à jour",
+    "deleted": "Chantier supprimé",
+    "shared": "Lien copié dans le presse-papier",
+    "regenerated": "Lien régénéré avec succès"
+  },
+  "new": {
+    "title": "Nouveau chantier",
+    "subtitle": "Saisissez les informations de base pour démarrer un nouveau chantier."
+  },
+  "overview": {
+    "generalInfo": "Informations générales",
+    "client": "Client",
+    "undefined": "Non défini"
+  },
+  "actions": {
+    "label": "Actions",
+    "view": "Voir le chantier",
+    "copyId": "Copier l'ID",
+    "deactivate": "Désactiver"
+  },
+  "time": {
+    "totalHours": "Total des heures",
+    "addEntry": "Ajouter du temps",
+    "date": "Date",
+    "hours": "Heures",
+    "descriptionOptional": "Description (optionnel)",
+    "descriptionPlaceholder": "Installation électrique...",
+    "history": "Historique des temps",
+    "empty": "Aucun pointage. Ajoutez vos heures de travail dans le formulaire."
+  },
+  "materials": {
+    "totalTTC": "Total matériaux (TTC)",
+    "addMaterial": "Ajouter un matériel",
+    "label": "Nom / Désignation",
+    "labelPlaceholder": "Peinture blanche mat...",
+    "quantity": "Quantité",
+    "unitPriceHT": "Prix unitaire HT",
+    "list": "Liste des matériaux",
+    "empty": "Aucun matériel ajouté. Utilisez le formulaire pour suivre vos achats.",
+    "ht": "HT",
+    "vat": "TVA"
+  },
+  "photos": {
+    "uploadSuccess": "{count} photo(s) ajoutée(s)",
+    "uploadError": "Erreur lors de l'upload",
+    "photoAlt": "Photo du chantier",
+    "empty": "Aucune photo pour le moment. Uploadez des images ci-dessus."
+  }
+}

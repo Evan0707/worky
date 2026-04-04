@@ -1,0 +1,204 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import { formatCurrency, formatDate } from "@/lib/i18n-helpers";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { FileText, MoreHorizontal, Download, Trash2, Send } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DataTable } from "@/components/data-table/data-table";
+import { ColumnDef } from "@tanstack/react-table";
+import { api } from "@/trpc/react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function InvoiceTable({ data, locale, fullHeight = false }: { data: any[]; locale: string, fullHeight?: boolean }) {
+  const router = useRouter();
+  const utils = api.useUtils();
+  const t = useTranslations("common");
+  const tInvoices = useTranslations("invoices");
+
+  const deleteMutation = api.invoice.delete.useMutation({
+    onSuccess: () => {
+      toast.success(tInvoices("toasts.deleted"));
+      utils.invoice.list.invalidate();
+      router.refresh();
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+
+  const sendToPDPMutation = api.invoice.sendToPDP.useMutation({
+    onSuccess: () => {
+      toast.success("Facture envoyée avec succès via PDP");
+      utils.invoice.list.invalidate();
+      router.refresh();
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
+
+  const columns: ColumnDef<any>[] = [
+    {
+      accessorKey: "number",
+      header: tInvoices("fields.number"),
+      cell: ({ row }) => (
+        <span className="font-medium text-primary cursor-pointer hover:underline">
+          {row.getValue("number")}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "type",
+      header: tInvoices("fields.type"),
+      cell: ({ row }) => {
+        const type = row.getValue("type") as string;
+        return (
+          <Badge variant="outline" className="bg-muted">
+            {type === "INVOICE" ? tInvoices("type.INVOICE") : tInvoices("type.QUOTE")}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: "project.name",
+      header: t("nav.projects"),
+    },
+    {
+      accessorKey: "status",
+      header: tInvoices("fields.status"),
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string;
+        let variant: "default" | "secondary" | "destructive" | "outline" = "outline";
+
+        switch (status) {
+          case "DRAFT": variant = "secondary"; break;
+          case "SENT": variant = "default"; break;
+          case "ACCEPTED":
+          case "PAID": variant = "default"; break;
+          case "REFUSED":
+          case "OVERDUE": variant = "destructive"; break;
+        }
+
+        // status value as key for translation
+        const translatedStatus = tInvoices(`status.${status}` as any) || status;
+
+        return <Badge variant={variant}>{translatedStatus}</Badge>;
+      },
+    },
+    {
+      accessorKey: "totalTTC",
+      header: tInvoices("fields.totalTTC"),
+      cell: ({ row }) => {
+        const amount = row.getValue("totalTTC") as number;
+        const currency = row.original.currency;
+        return <div className="font-medium">{formatCurrency(amount, currency, locale)}</div>;
+      },
+    },
+    {
+      accessorKey: "createdAt",
+      header: tInvoices("fields.issuedAt"),
+      cell: ({ row }) => {
+        const date = row.getValue("createdAt") as Date;
+        return formatDate(date, locale);
+      },
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const invoice = row.original;
+
+        const generateFacturX = async () => {
+          toast.loading(t("status.loading"), { id: "facturx" });
+          try {
+            const res = await fetch("/api/invoice/facturx", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ invoiceId: invoice.id })
+            });
+
+            if (!res.ok) {
+              const err = await res.json();
+              throw new Error(err.error || "Failed");
+            }
+
+            const { pdfBase64 } = await res.json();
+
+            // Trigger download of Base64
+            const linkSource = `data:application/pdf;base64,${pdfBase64}`;
+            const downloadLink = document.createElement("a");
+            const fileName = `${invoice.number}.pdf`;
+
+            downloadLink.href = linkSource;
+            downloadLink.download = fileName;
+            downloadLink.click();
+            toast.success(tInvoices("toasts.generated"), { id: "facturx" });
+          } catch (e: any) {
+            toast.error(e.message, { id: "facturx" });
+          }
+        };
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {invoice.status === "DRAFT" && (
+                <DropdownMenuItem
+                  onClick={() => {
+                    toast.promise(sendToPDPMutation.mutateAsync({ id: invoice.id }), {
+                      loading: "Envoi à la PDP en cours...",
+                      success: "Facture expédiée !",
+                      error: "Erreur lors de l'envoi PDP",
+                    });
+                  }}
+                  disabled={sendToPDPMutation.isPending}
+                >
+                  <Send className="mr-2 h-4 w-4 text-primary" />
+                  Envoyer (PDP)
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem onClick={generateFacturX}>
+                <FileText className="mr-2 h-4 w-4" />
+                {tInvoices("actions.generate")}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
+                onClick={() => {
+                  if (confirm(tInvoices("form.confirmDelete"))) {
+                    deleteMutation.mutate({ id: invoice.id });
+                  }
+                }}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                {t("buttons.delete")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
+
+  return (
+    <DataTable
+      columns={columns}
+      data={data}
+      fullHeight={fullHeight}
+    />
+  );
+}

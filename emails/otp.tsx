@@ -12,40 +12,79 @@ import {
   Text,
 } from "@react-email/components";
 
+type Locale = "fr-FR" | "en-GB" | "de-DE" | "es-ES";
+
 interface OTPEmailProps {
   url: string;
   host: string;
+  locale?: Locale;
 }
 
-export function OTPEmail({ url, host }: OTPEmailProps) {
+const translations: Record<Locale, {
+  preview: string;
+  heading: string;
+  body: string;
+  button: string;
+  ignore: string;
+  footer: string;
+}> = {
+  "fr-FR": {
+    preview: "Cliquez pour vous connecter à Worky",
+    heading: "Connexion à votre compte",
+    body: "Cliquez sur le bouton ci-dessous pour vous connecter à Worky. Ce lien est valable 24 heures et ne peut être utilisé qu'une seule fois.",
+    button: "Se connecter à Worky",
+    ignore: "Si vous n'avez pas demandé ce lien, vous pouvez ignorer cet email en toute sécurité.",
+    footer: "Lien de connexion envoyé depuis",
+  },
+  "en-GB": {
+    preview: "Click to sign in to Worky",
+    heading: "Sign in to your account",
+    body: "Click the button below to sign in to Worky. This link is valid for 24 hours and can only be used once.",
+    button: "Sign in to Worky",
+    ignore: "If you did not request this link, you can safely ignore this email.",
+    footer: "Sign-in link sent from",
+  },
+  "de-DE": {
+    preview: "Klicken Sie hier, um sich bei Worky anzumelden",
+    heading: "Anmeldung bei Ihrem Konto",
+    body: "Klicken Sie auf die Schaltfläche unten, um sich bei Worky anzumelden. Dieser Link ist 24 Stunden gültig und kann nur einmal verwendet werden.",
+    button: "Bei Worky anmelden",
+    ignore: "Wenn Sie diesen Link nicht angefordert haben, können Sie diese E-Mail ignorieren.",
+    footer: "Anmelde-Link gesendet von",
+  },
+  "es-ES": {
+    preview: "Haga clic para iniciar sesión en Worky",
+    heading: "Iniciar sesión en su cuenta",
+    body: "Haga clic en el botón de abajo para iniciar sesión en Worky. Este enlace es válido durante 24 horas y solo puede usarse una vez.",
+    button: "Iniciar sesión en Worky",
+    ignore: "Si no ha solicitado este enlace, puede ignorar este correo electrónico.",
+    footer: "Enlace de inicio de sesión enviado desde",
+  },
+};
+
+export function OTPEmail({ url, host, locale = "fr-FR" }: OTPEmailProps) {
+  const t = translations[locale] ?? translations["fr-FR"];
+
   return (
-    <Html>
+    <Html lang={locale.split("-")[0]}>
       <Head />
-      <Preview>Votre lien de connexion ChantierPro</Preview>
+      <Preview>{t.preview}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Heading style={h1}>ChantierPro</Heading>
-          <Heading style={h2}>Connexion à votre compte</Heading>
-          <Text style={text}>
-            Cliquez sur le bouton ci-dessous pour vous connecter à ChantierPro.
-            Ce lien est valable 24 heures et ne peut être utilisé qu&apos;une
-            seule fois.
-          </Text>
+          <Heading style={h1}>Worky</Heading>
+          <Heading style={h2}>{t.heading}</Heading>
+          <Text style={text}>{t.body}</Text>
           <Section style={buttonContainer}>
             <Button style={button} href={url}>
-              Se connecter à ChantierPro
+              {t.button}
             </Button>
           </Section>
-          <Text style={text}>
-            Si vous n&apos;avez pas demandé ce lien, vous pouvez ignorer cet
-            email en toute sécurité.
-          </Text>
+          <Text style={text}>{t.ignore}</Text>
           <Hr style={hr} />
           <Text style={footer}>
-            Ce lien de connexion a été envoyé depuis {host}. Si vous avez des
-            questions, contactez-nous à{" "}
-            <Link href="mailto:support@chantierpro.fr" style={link}>
-              support@chantierpro.fr
+            {t.footer}{" "}
+            <Link href={`https://${host}`} style={link}>
+              {host}
             </Link>
           </Text>
         </Container>

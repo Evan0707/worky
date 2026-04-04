@@ -1,0 +1,51 @@
+{
+  "app": {
+    "name": "Worky"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "projects": "Obras",
+    "settings": "Ajustes",
+    "billing": "Suscripción",
+    "invoices": "Facturas",
+    "analytics": "Analíticas",
+    "logout": "Cerrar sesión"
+  },
+  "buttons": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Añadir",
+    "back": "Volver",
+    "next": "Siguiente",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "share": "Compartir",
+    "export": "Exportar",
+    "download": "Descargar"
+  },
+  "status": {
+    "loading": "Cargando...",
+    "saving": "Guardando...",
+    "success": "Éxito",
+    "error": "Error"
+  },
+  "errors": {
+    "generic": "Se ha producido un error. Por favor, inténtelo de nuevo.",
+    "unexpected": "Se ha producido un error inesperado.",
+    "unauthorized": "No está autorizado para realizar esta acción.",
+    "notFound": "Recurso no encontrado.",
+    "required": "Este campo es obligatorio.",
+    "invalidEmail": "Dirección de correo electrónico no válida."
+  },
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "page": "Página {current} de {total}"
+  },
+  "empty": {
+    "noData": "Sin datos",
+    "noResults": "Sin resultados"
+  }
+}

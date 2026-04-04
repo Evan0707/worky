@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { Decimal } from "@prisma/client/runtime/library";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 
@@ -66,7 +65,7 @@ export const timeEntryRouter = createTRPCRouter({
         data: {
           projectId: input.projectId,
           date: input.date,
-          hours: new Decimal(input.hours),
+          hours: (input.hours),
           description: input.description,
         },
       });
@@ -97,7 +96,7 @@ export const timeEntryRouter = createTRPCRouter({
         where: { id },
         data: {
           ...rest,
-          ...(hours !== undefined ? { hours: new Decimal(hours) } : {}),
+          ...(hours !== undefined ? { hours: (hours) } : {}),
         },
       });
     }),

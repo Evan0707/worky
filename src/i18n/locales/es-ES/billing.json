@@ -1,0 +1,48 @@
+{
+  "title": "Suscripción",
+  "currentPlan": "Plan actual",
+  "plans": {
+    "free": {
+      "name": "Gratuito",
+      "price": "0 €",
+      "period": "para siempre",
+      "features": [
+        "Máx. 3 obras activas",
+        "Fotos y registro de horas ilimitados",
+        "Enlace de cliente ilimitado"
+      ]
+    },
+    "pro": {
+      "name": "PRO",
+      "price": "15 €",
+      "period": "al mes",
+      "features": [
+        "Obras ilimitadas",
+        "Presupuestos y facturas PDF",
+        "Facturación electrónica (Facturae)",
+        "Recordatorios automáticos",
+        "Panel de rentabilidad",
+        "Validación / comentario / firma del cliente",
+        "Soporte prioritario"
+      ]
+    }
+  },
+  "upgrade": {
+    "title": "Actualizar a PRO",
+    "description": "Desbloquee todas las funcionalidades para hacer crecer su negocio.",
+    "cta": "Suscribirse — 15 € / mes",
+    "cancel": "Cancelar en cualquier momento"
+  },
+  "manage": "Gestionar suscripción",
+  "portal": "Portal de facturación",
+  "cancelSubscription": "Cancelar suscripción",
+  "status": {
+    "active": "Activo",
+    "canceled": "Cancelado",
+    "pastDue": "Impago"
+  },
+  "toasts": {
+    "upgraded": "¡Bienvenido al plan PRO!",
+    "canceled": "Suscripción cancelada"
+  }
+}

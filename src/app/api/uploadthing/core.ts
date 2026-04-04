@@ -19,7 +19,7 @@ export const ourFileRouter = {
       maxFileCount: 10,
     },
   })
-    .middleware(async () => {
+    .middleware(async ({ req: _req }) => {
       const session = await auth();
 
       if (!session?.user) throw new UploadThingError("Unauthorized");
@@ -27,10 +27,11 @@ export const ourFileRouter = {
       return { userId: session.user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
+      // This code RUNS ON YOUR SERVER after upload
       // Return file info to client — actual DB insert is done via tRPC photo.save
       return {
         uploadedBy: metadata.userId,
-        url: file.url,
+        url: file.ufsUrl,
         key: file.key,
         name: file.name,
       };

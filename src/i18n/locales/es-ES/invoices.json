@@ -1,0 +1,56 @@
+{
+  "title": "Presupuestos y Facturas",
+  "newQuote": "Nuevo presupuesto",
+  "newInvoice": "Nueva factura",
+  "type": {
+    "QUOTE": "Presupuesto",
+    "INVOICE": "Factura"
+  },
+  "status": {
+    "DRAFT": "Borrador",
+    "SENT": "Enviado",
+    "ACCEPTED": "Aceptado",
+    "REFUSED": "Rechazado",
+    "PAID": "Pagado",
+    "OVERDUE": "Vencido"
+  },
+  "format": {
+    "STANDARD_PDF": "PDF estándar",
+    "FACTURX": "Factur-X (Francia)",
+    "ZUGFERD": "ZUGFeRD (Alemania)",
+    "PEPPOL": "Peppol BIS",
+    "FACTURAE": "Facturae (España)"
+  },
+  "fields": {
+    "number": "Número",
+    "issuedAt": "Fecha de emisión",
+    "dueAt": "Fecha de vencimiento",
+    "totalHT": "Total sin IVA",
+    "totalTVA": "IVA",
+    "totalTTC": "Total con IVA",
+    "currency": "Moneda",
+    "lines": "Líneas"
+  },
+  "line": {
+    "description": "Descripción",
+    "quantity": "Cant.",
+    "unitPrice": "Precio unitario",
+    "total": "Total"
+  },
+  "actions": {
+    "generate": "Generar",
+    "send": "Enviar por email",
+    "download": "Descargar PDF",
+    "markPaid": "Marcar como pagado",
+    "markSent": "Marcar como enviado"
+  },
+  "proRequired": {
+    "title": "Función PRO",
+    "description": "La generación de presupuestos y facturas está disponible con el plan PRO."
+  },
+  "toasts": {
+    "generated": "Presupuesto/Factura generado",
+    "sent": "Enviado por email",
+    "markedPaid": "Marcado como pagado"
+  }
+}

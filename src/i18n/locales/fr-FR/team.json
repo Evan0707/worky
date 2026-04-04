@@ -1,0 +1,70 @@
+{
+  "title": "Mon équipe",
+  "description": "Invitez des collaborateurs et gérez les accès à vos chantiers.",
+  "noTeam": {
+    "heading": "Travaillez en équipe",
+    "sub": "Créez une équipe pour inviter des artisans ou collaborateurs sur vos chantiers.",
+    "cta": "Créer mon équipe"
+  },
+  "create": {
+    "label": "Nom de l'équipe",
+    "placeholder": "Ex. : Équipe Dupont BTP",
+    "submit": "Créer l'équipe"
+  },
+  "member": {
+    "heading": "Vous êtes membre de",
+    "yourRole": "Votre rôle",
+    "joined": "Membre depuis le {date}"
+  },
+  "roles": {
+    "OWNER": "Propriétaire",
+    "ADMIN": "Administrateur",
+    "MEMBER": "Membre"
+  },
+  "members": {
+    "title": "Membres",
+    "empty": "Aucun autre membre pour l'instant."
+  },
+  "invite": {
+    "title": "Inviter un collaborateur",
+    "email": "Adresse email",
+    "emailPlaceholder": "collaborateur@exemple.fr",
+    "role": "Rôle",
+    "roleMember": "Membre",
+    "roleAdmin": "Administrateur",
+    "submit": "Envoyer l'invitation",
+    "sent": "Invitation envoyée à {email}",
+    "pendingTitle": "Invitations en attente",
+    "expires": "Expire le {date}",
+    "revoke": "Révoquer"
+  },
+  "actions": {
+    "rename": "Renommer",
+    "leave": "Quitter l'équipe",
+    "leaveConfirm": "Êtes-vous sûr de vouloir quitter l'équipe ?",
+    "remove": "Retirer",
+    "removeConfirm": "Retirer ce membre de l'équipe ?",
+    "deleteTeam": "Supprimer l'équipe",
+    "deleteConfirm": "Supprimer définitivement l'équipe ? Tous les membres perdront l'accès."
+  },
+  "toasts": {
+    "created": "Équipe créée !",
+    "renamed": "Équipe renommée",
+    "invited": "Invitation envoyée",
+    "revoked": "Invitation révoquée",
+    "removed": "Membre retiré",
+    "left": "Vous avez quitté l'équipe",
+    "deleted": "Équipe supprimée",
+    "roleUpdated": "Rôle mis à jour",
+    "error": "Une erreur est survenue"
+  },
+  "inviteErrors": {
+    "not_found": "Invitation introuvable.",
+    "used": "Cette invitation a déjà été utilisée.",
+    "expired": "Cette invitation a expiré.",
+    "email_mismatch": "Cette invitation a été envoyée à une autre adresse email.",
+    "already_member": "Vous êtes déjà membre d'une équipe.",
+    "is_owner": "Vous êtes propriétaire d'une équipe. Supprimez-la avant d'en rejoindre une autre."
+  },
+  "inviteSuccess": "Bienvenue dans l'équipe {team} !"
+}

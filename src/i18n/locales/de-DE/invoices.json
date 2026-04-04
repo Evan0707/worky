@@ -1,0 +1,56 @@
+{
+  "title": "Angebote & Rechnungen",
+  "newQuote": "Neues Angebot",
+  "newInvoice": "Neue Rechnung",
+  "type": {
+    "QUOTE": "Angebot",
+    "INVOICE": "Rechnung"
+  },
+  "status": {
+    "DRAFT": "Entwurf",
+    "SENT": "Gesendet",
+    "ACCEPTED": "Akzeptiert",
+    "REFUSED": "Abgelehnt",
+    "PAID": "Bezahlt",
+    "OVERDUE": "Überfällig"
+  },
+  "format": {
+    "STANDARD_PDF": "Standard-PDF",
+    "FACTURX": "Factur-X (Frankreich)",
+    "ZUGFERD": "ZUGFeRD (Deutschland)",
+    "PEPPOL": "Peppol BIS",
+    "FACTURAE": "Facturae (Spanien)"
+  },
+  "fields": {
+    "number": "Nummer",
+    "issuedAt": "Ausstellungsdatum",
+    "dueAt": "Fälligkeitsdatum",
+    "totalHT": "Nettobetrag",
+    "totalTVA": "MwSt.",
+    "totalTTC": "Bruttobetrag",
+    "currency": "Währung",
+    "lines": "Positionen"
+  },
+  "line": {
+    "description": "Beschreibung",
+    "quantity": "Menge",
+    "unitPrice": "Einzelpreis",
+    "total": "Gesamt"
+  },
+  "actions": {
+    "generate": "Generieren",
+    "send": "Per E-Mail senden",
+    "download": "PDF herunterladen",
+    "markPaid": "Als bezahlt markieren",
+    "markSent": "Als gesendet markieren"
+  },
+  "proRequired": {
+    "title": "PRO-Funktion",
+    "description": "Die Erstellung von Angeboten und Rechnungen ist mit dem PRO-Plan verfügbar."
+  },
+  "toasts": {
+    "generated": "Angebot/Rechnung generiert",
+    "sent": "Per E-Mail gesendet",
+    "markedPaid": "Als bezahlt markiert"
+  }
+}

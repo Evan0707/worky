@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
+import { routing } from "@/i18n/routing";
 
 export default function HomePage() {
-  // TODO: Replace with landing page in Phase 4 (SEO)
-  redirect("/login");
+  redirect(`/${routing.defaultLocale}`);
 }

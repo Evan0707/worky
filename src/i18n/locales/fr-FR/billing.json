@@ -1,0 +1,48 @@
+{
+  "title": "Abonnement",
+  "currentPlan": "Plan actuel",
+  "plans": {
+    "free": {
+      "name": "Gratuit",
+      "price": "0 €",
+      "period": "pour toujours",
+      "features": [
+        "3 chantiers actifs max",
+        "Photos & pointage illimités",
+        "Lien client illimité"
+      ]
+    },
+    "pro": {
+      "name": "PRO",
+      "price": "15 €",
+      "period": "par mois",
+      "features": [
+        "Chantiers illimités",
+        "Devis & factures PDF",
+        "Facturation électronique",
+        "Relances automatiques",
+        "Dashboard rentabilité",
+        "Validation / commentaire / signature client",
+        "Support prioritaire"
+      ]
+    }
+  },
+  "upgrade": {
+    "title": "Passer au PRO",
+    "description": "Débloquez toutes les fonctionnalités pour développer votre activité.",
+    "cta": "S'abonner — 15 € / mois",
+    "cancel": "Annuler à tout moment"
+  },
+  "manage": "Gérer mon abonnement",
+  "portal": "Portail de facturation",
+  "cancelSubscription": "Annuler l'abonnement",
+  "status": {
+    "active": "Actif",
+    "canceled": "Annulé",
+    "pastDue": "Impayé"
+  },
+  "toasts": {
+    "upgraded": "Bienvenue dans le plan PRO !",
+    "canceled": "Abonnement annulé"
+  }
+}

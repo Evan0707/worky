@@ -1,0 +1,70 @@
+{
+  "title": "Mein Team",
+  "description": "Laden Sie Mitarbeiter ein und verwalten Sie den Zugriff auf Ihre Baustellen.",
+  "noTeam": {
+    "heading": "Als Team arbeiten",
+    "sub": "Erstellen Sie ein Team, um Handwerker oder Mitarbeiter zu Ihren Baustellen einzuladen.",
+    "cta": "Mein Team erstellen"
+  },
+  "create": {
+    "label": "Teamname",
+    "placeholder": "z. B. Müller Bau GmbH",
+    "submit": "Team erstellen"
+  },
+  "member": {
+    "heading": "Sie sind Mitglied von",
+    "yourRole": "Ihre Rolle",
+    "joined": "Mitglied seit {date}"
+  },
+  "roles": {
+    "OWNER": "Inhaber",
+    "ADMIN": "Administrator",
+    "MEMBER": "Mitglied"
+  },
+  "members": {
+    "title": "Mitglieder",
+    "empty": "Noch keine weiteren Mitglieder."
+  },
+  "invite": {
+    "title": "Mitarbeiter einladen",
+    "email": "E-Mail-Adresse",
+    "emailPlaceholder": "mitarbeiter@beispiel.de",
+    "role": "Rolle",
+    "roleMember": "Mitglied",
+    "roleAdmin": "Administrator",
+    "submit": "Einladung senden",
+    "sent": "Einladung an {email} gesendet",
+    "pendingTitle": "Ausstehende Einladungen",
+    "expires": "Läuft ab am {date}",
+    "revoke": "Widerrufen"
+  },
+  "actions": {
+    "rename": "Umbenennen",
+    "leave": "Team verlassen",
+    "leaveConfirm": "Möchten Sie das Team wirklich verlassen?",
+    "remove": "Entfernen",
+    "removeConfirm": "Dieses Mitglied aus dem Team entfernen?",
+    "deleteTeam": "Team löschen",
+    "deleteConfirm": "Team dauerhaft löschen? Alle Mitglieder verlieren den Zugriff."
+  },
+  "toasts": {
+    "created": "Team erstellt!",
+    "renamed": "Team umbenannt",
+    "invited": "Einladung gesendet",
+    "revoked": "Einladung widerrufen",
+    "removed": "Mitglied entfernt",
+    "left": "Sie haben das Team verlassen",
+    "deleted": "Team gelöscht",
+    "roleUpdated": "Rolle aktualisiert",
+    "error": "Ein Fehler ist aufgetreten"
+  },
+  "inviteErrors": {
+    "not_found": "Einladung nicht gefunden.",
+    "used": "Diese Einladung wurde bereits verwendet.",
+    "expired": "Diese Einladung ist abgelaufen.",
+    "email_mismatch": "Diese Einladung wurde an eine andere E-Mail-Adresse gesendet.",
+    "already_member": "Sie sind bereits Mitglied eines Teams.",
+    "is_owner": "Sie besitzen ein Team. Löschen Sie es, bevor Sie einem anderen beitreten."
+  },
+  "inviteSuccess": "Willkommen im Team {team}!"
+}

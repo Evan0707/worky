@@ -1,0 +1,69 @@
+{
+  "app": {
+    "name": "Worky"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "projects": "Chantiers",
+    "settings": "Paramètres",
+    "billing": "Abonnement",
+    "invoices": "Factures",
+    "analytics": "Analytiques",
+    "logout": "Se déconnecter"
+  },
+  "buttons": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "add": "Ajouter",
+    "back": "Retour",
+    "next": "Suivant",
+    "confirm": "Confirmer",
+    "close": "Fermer",
+    "share": "Partager",
+    "export": "Exporter",
+    "download": "Télécharger"
+  },
+  "status": {
+    "loading": "Chargement...",
+    "saving": "Enregistrement...",
+    "success": "Succès",
+    "error": "Erreur"
+  },
+  "errors": {
+    "generic": "Une erreur s'est produite. Veuillez réessayer.",
+    "unexpected": "Une erreur inattendue s'est produite.",
+    "unauthorized": "Vous n'êtes pas autorisé à effectuer cette action.",
+    "notFound": "Ressource introuvable.",
+    "required": "Ce champ est requis.",
+    "invalidEmail": "Adresse email invalide."
+  },
+  "pagination": {
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page {current} sur {total}"
+  },
+  "empty": {
+    "noData": "Aucune donnée",
+    "noResults": "Aucun résultat"
+  },
+  "commandMenu": {
+    "placeholder": "Rechercher...",
+    "mobilePlaceholder": "Recherche...",
+    "inputPlaceholder": "Tapez une commande ou cherchez un chantier...",
+    "noResults": "Aucun résultat trouvé.",
+    "groups": {
+      "navigation": "Navigation",
+      "settings": "Paramètres",
+      "recentProjects": "Chantiers récents"
+    },
+    "items": {
+      "dashboard": "Tableau de bord",
+      "projects": "Chantiers",
+      "invoices": "Factures",
+      "profile": "Mon Profil",
+      "billing": "Abonnement & Équipe"
+    }
+  }
+}

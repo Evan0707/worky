@@ -1,0 +1,82 @@
+{
+  "title": "Paramètres",
+  "description": "Gérez vos informations professionnelles et vos préférences.",
+  "profile": {
+    "title": "Profil Artisan",
+    "name": "Nom complet",
+    "companyName": "Nom de l'entreprise",
+    "companyAddress": "Adresse de l'entreprise",
+    "hourlyRate": "Taux horaire (HT)",
+    "currency": "Devise par défaut",
+    "locale": "Langue par défaut",
+    "save": "Enregistrer les modifications"
+  },
+  "billing": {
+    "title": "Facturation & Légal",
+    "siret": "N° SIRET",
+    "steuernummer": "Steuernummer",
+    "bceNumber": "N° BCE",
+    "vatNumber": "N° TVA Intracommunautaire",
+    "iban": "IBAN",
+    "vatScheme": "Régime de TVA"
+  },
+  "plans": {
+    "title": "Abonnement & Limites",
+    "currentPlan": "Votre plan actuel :",
+    "free": "Gratuit",
+    "pro": "PRO",
+    "projectsUsed": "{used}/{total} chantiers actifs",
+    "projectsUnlimited": "Chantiers illimités",
+    "trialDays": "Période d'essai : 14 jours gratuits",
+    "trialEnding": "Fin de l'essai le {date}",
+    "renewDate": "Prochain renouvellement le {date}",
+    "cancelDate": "L'abonnement s'arrêtera le {date}",
+    "upgrade": "Passer au plan PRO",
+    "upgradeDesc": "Débloquez des chantiers illimités et la facturation Factur-X avec le plan PRO.",
+    "cancel": "Annuler l'abonnement",
+    "resume": "Réactiver l'abonnement",
+    "success": "Paiement réussi ! Bienvenue dans le plan PRO.",
+    "canceled": "Période d'essai activée. Vous pouvez annuler à tout moment."
+  },
+  "vatSchemes": {
+    "STANDARD": "Standard (20%)",
+    "REDUCED": "Réduit (10%)",
+    "MICRO_ENTREPRENEUR": "Micro-entrepreneur (Franchise)",
+    "EXEMPT": "Exonéré",
+    "REVERSE_CHARGE": "Autoliquidation"
+  },
+  "toasts": {
+    "saved": "Paramètres mis à jour",
+    "error": "Une erreur est survenue"
+  },
+  "upgrade": {
+    "dialogTitle": "Passer au plan PRO",
+    "heading": "Débloquez tout Worky PRO",
+    "subheading": "Remplacez le papier, Excel et WhatsApp par un seul outil.",
+    "trial": "14 jours d'essai gratuit",
+    "cancelAnytime": "Annulable à tout moment",
+    "perMonth": "/ mois",
+    "htVat": "HT, sans engagement",
+    "paymentTitle": "Informations de paiement",
+    "paymentDesc": "Votre carte ne sera débitée qu'après les 14 jours d'essai.",
+    "cta": "Commencer l'essai gratuit",
+    "retry": "Réessayer",
+    "error": "Une erreur est survenue",
+    "limitReached": "Limite atteinte. Passez en PRO pour créer d'autres chantiers.",
+    "stripeStatus": "Statut",
+    "cancelScheduled": "Annulation programmée",
+    "autoRenew": "Renouvellement auto",
+    "nextBilling": "Prochaine échéance",
+    "successTitle": "Bienvenue dans Worky PRO !",
+    "successDesc": "Votre essai de 14 jours a démarré. Profitez de toutes les fonctionnalités.",
+    "successCta": "C'est parti !",
+    "feat": {
+      "projects": "Chantiers illimités",
+      "invoices": "Devis & factures PDF + e-facturation",
+      "analytics": "Dashboard rentabilité",
+      "reminders": "Relances automatiques",
+      "clientActions": "Validation / commentaire / signature client",
+      "support": "Support prioritaire"
+    }
+  }
+}

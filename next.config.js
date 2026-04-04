@@ -1,3 +1,7 @@
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+
 /** @type {import("next").NextConfig} */
 const config = {
   images: {
@@ -8,10 +12,10 @@ const config = {
       },
       {
         protocol: "https",
-        hostname: "uploadthing.com",
-      },
+        hostname: "res.cloudinary.com",
+      }
     ],
   },
 };
 
-export default config;
+export default withNextIntl(config);

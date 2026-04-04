@@ -1,0 +1,70 @@
+{
+  "title": "My Team",
+  "description": "Invite collaborators and manage access to your projects.",
+  "noTeam": {
+    "heading": "Work as a team",
+    "sub": "Create a team to invite artisans or collaborators to your projects.",
+    "cta": "Create my team"
+  },
+  "create": {
+    "label": "Team name",
+    "placeholder": "E.g. Smith Construction",
+    "submit": "Create team"
+  },
+  "member": {
+    "heading": "You are a member of",
+    "yourRole": "Your role",
+    "joined": "Member since {date}"
+  },
+  "roles": {
+    "OWNER": "Owner",
+    "ADMIN": "Admin",
+    "MEMBER": "Member"
+  },
+  "members": {
+    "title": "Members",
+    "empty": "No other members yet."
+  },
+  "invite": {
+    "title": "Invite a collaborator",
+    "email": "Email address",
+    "emailPlaceholder": "collaborator@example.com",
+    "role": "Role",
+    "roleMember": "Member",
+    "roleAdmin": "Admin",
+    "submit": "Send invitation",
+    "sent": "Invitation sent to {email}",
+    "pendingTitle": "Pending invitations",
+    "expires": "Expires {date}",
+    "revoke": "Revoke"
+  },
+  "actions": {
+    "rename": "Rename",
+    "leave": "Leave team",
+    "leaveConfirm": "Are you sure you want to leave the team?",
+    "remove": "Remove",
+    "removeConfirm": "Remove this member from the team?",
+    "deleteTeam": "Delete team",
+    "deleteConfirm": "Permanently delete the team? All members will lose access."
+  },
+  "toasts": {
+    "created": "Team created!",
+    "renamed": "Team renamed",
+    "invited": "Invitation sent",
+    "revoked": "Invitation revoked",
+    "removed": "Member removed",
+    "left": "You have left the team",
+    "deleted": "Team deleted",
+    "roleUpdated": "Role updated",
+    "error": "An error occurred"
+  },
+  "inviteErrors": {
+    "not_found": "Invitation not found.",
+    "used": "This invitation has already been used.",
+    "expired": "This invitation has expired.",
+    "email_mismatch": "This invitation was sent to a different email address.",
+    "already_member": "You are already a member of a team.",
+    "is_owner": "You own a team. Delete it before joining another."
+  },
+  "inviteSuccess": "Welcome to the {team} team!"
+}

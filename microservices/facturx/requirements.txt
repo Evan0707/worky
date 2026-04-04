@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+jinja2
+playwright
+factur-x
+pydantic
+python-multipart

@@ -1,8 +1,24 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { Decimal } from "@prisma/client/runtime/library";
+import { type VatScheme } from "@prisma/client";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+
+/** Map VatScheme enum to the standard percentage for that regime. */
+function vatRateForScheme(scheme: VatScheme): number {
+  switch (scheme) {
+    case "STANDARD":
+      return 20; // FR 20%, adjust per country at display layer
+    case "REDUCED":
+      return 10; // FR 10% construction works
+    case "MICRO_ENTREPRENEUR":
+    case "EXEMPT":
+    case "REVERSE_CHARGE":
+      return 0;
+    default:
+      return 20;
+  }
+}
 
 export const materialRouter = createTRPCRouter({
   /**
@@ -21,13 +37,13 @@ export const materialRouter = createTRPCRouter({
         where: { projectId: input.projectId },
       });
 
-      // Fetch artisan VAT rate
+      // Derive VAT rate from artisan's vatScheme (CDC §10.2 — stored in schema not on invoice)
       const user = await ctx.db.user.findUnique({
         where: { id: ctx.session.user.id },
-        select: { vatRate: true },
+        select: { vatScheme: true },
       });
 
-      const vatRate = Number(user?.vatRate ?? 20);
+      const vatRate = vatRateForScheme(user?.vatScheme ?? "STANDARD");
 
       const totalHT = materials.reduce(
         (sum, m) => sum + Number(m.unitPrice) * Number(m.quantity),
@@ -62,8 +78,8 @@ export const materialRouter = createTRPCRouter({
         data: {
           projectId: input.projectId,
           label: input.label,
-          quantity: new Decimal(input.quantity),
-          unitPrice: new Decimal(input.unitPrice),
+          quantity: (input.quantity),
+          unitPrice: (input.unitPrice),
         },
       });
     }),
@@ -93,9 +109,9 @@ export const materialRouter = createTRPCRouter({
         where: { id },
         data: {
           ...rest,
-          ...(quantity !== undefined ? { quantity: new Decimal(quantity) } : {}),
+          ...(quantity !== undefined ? { quantity: (quantity) } : {}),
           ...(unitPrice !== undefined
-            ? { unitPrice: new Decimal(unitPrice) }
+            ? { unitPrice: (unitPrice) }
             : {}),
         },
       });
