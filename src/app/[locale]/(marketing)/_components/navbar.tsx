@@ -37,7 +37,7 @@ export function Navbar({ locale }: { locale: string }) {
             />
           </div>
           <span className="text-[16px] font-semibold font-heading tracking-tight text-neutral-900 dark:text-white">
-            Worky
+            OpenChantier
           </span>
         </Link>
 

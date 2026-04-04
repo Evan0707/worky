@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
             cloudinary.uploader
               .upload_stream(
                 {
-                  folder: `worky/${session.user.id}`,
+                  folder: `OpenChantierkr/${session.user.id}`,
                   resource_type: "image",
                   transformation: [
                     { quality: "auto:good" },
@@ -67,3 +67,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+

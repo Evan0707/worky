@@ -51,7 +51,7 @@
                },
     "upgrade":  {
                     "dialogTitle":  "Passer au plan PRO",
-                    "heading":  "Débloquez tout Worky PRO",
+                    "heading":  "Débloquez tout OpenChantierkr PRO",
                     "subheading":  "Remplacez le papier, Excel et WhatsApp par un seul outil.",
                     "trial":  "14 jours d\u0027essai gratuit",
                     "cancelAnytime":  "Annulable à tout moment",
@@ -67,7 +67,7 @@
                     "cancelScheduled":  "Annulation programmée",
                     "autoRenew":  "Renouvellement auto",
                     "nextBilling":  "Prochaine échéance",
-                    "successTitle":  "Bienvenue dans Worky PRO !",
+                    "successTitle":  "Bienvenue dans OpenChantierkr PRO !",
                     "successDesc":  "Votre essai de 14 jours a démarré. Profitez de toutes les fonctionnalités.",
                     "successCta":  "C\u0027est parti !",
                     "feat":  {
@@ -80,3 +80,4 @@
                              }
                 }
 }
+

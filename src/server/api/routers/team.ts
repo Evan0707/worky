@@ -219,7 +219,7 @@ export const teamRouter = createTRPCRouter({
         await resend.emails.send({
           from: env.AUTH_EMAIL_FROM,
           to: input.email,
-          subject: `${inviterUser?.name ?? "Someone"} vous invite à rejoindre ${invitation.team.name} sur Worky`,
+          subject: `${inviterUser?.name ?? "Someone"} vous invite à rejoindre ${invitation.team.name} sur OpenChantierkr`,
           html: buildInviteEmail({
             teamName: invitation.team.name,
             inviterName: inviterUser?.name ?? inviterUser?.email ?? "Un utilisateur",
@@ -438,11 +438,11 @@ function buildInviteEmail(opts: {
   const roleLabel = opts.role === "ADMIN" ? "Administrateur" : "Membre";
   return `
     <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:40px 20px;background:#fff;border-radius:8px">
-      <h1 style="color:#1a1a1a;font-size:22px;font-weight:700;margin:0 0 8px">Worky</h1>
+      <h1 style="color:#1a1a1a;font-size:22px;font-weight:700;margin:0 0 8px">OpenChantierkr</h1>
       <h2 style="color:#333;font-size:18px;font-weight:600;margin:0 0 20px">Invitation à rejoindre une équipe</h2>
       <p style="color:#444;font-size:15px;line-height:1.6">
         <strong>${opts.inviterName}</strong> vous invite à rejoindre l'équipe <strong>${opts.teamName}</strong>
-        sur Worky en tant que <strong>${roleLabel}</strong>.
+        sur OpenChantierkr en tant que <strong>${roleLabel}</strong>.
       </p>
       <div style="text-align:center;margin:32px 0">
         <a href="${opts.inviteUrl}"
@@ -457,3 +457,4 @@ function buildInviteEmail(opts: {
     </div>
   `;
 }
+

@@ -139,6 +139,8 @@ model User {
   bceNumber            String?    // Belgium
 
   // Artisan profile
+  setupComplete        Boolean    @default(false)
+  industry             String?
   companyName          String?
   companyAddress       String?
   logoUrl              String?

@@ -79,20 +79,10 @@ export default function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="flex items-center gap-2 text-2xl">
-          {t("login.title")}
-          <Sparkles className="h-5 w-5 text-brand" />
-        </CardTitle>
-        <CardDescription>
-          {t("login.subtitle")}
-        </CardDescription>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
+    <Card className="w-full mx-auto border-black/[0.06] dark:border-white/[0.06] bg-white/70 dark:bg-[#111]/70 backdrop-blur-xl shadow-2xl">
+      <CardContent className="p-8 space-y-6">
         {error && (
-          <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive">
+          <div className="rounded-xl bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">
             {error}
           </div>
         )}
@@ -100,7 +90,7 @@ export default function LoginForm() {
         {/* Google Sign In — first for better UX */}
         <Button
           variant="outline"
-          className="w-full"
+          className="w-full h-11 bg-white hover:bg-neutral-50 dark:bg-black/50 dark:hover:bg-white/5 border-black/10 dark:border-white/10"
           onClick={handleGoogleSignIn}
           disabled={isGoogleLoading}
         >
@@ -132,10 +122,10 @@ export default function LoginForm() {
         {/* Divider */}
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
+            <span className="w-full border-t border-black/10 dark:border-white/10" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
+            <span className="bg-[#f0f0f0] dark:bg-[#131313] px-2 text-neutral-500 font-medium">
               {t("login.divider")}
             </span>
           </div>
@@ -144,9 +134,9 @@ export default function LoginForm() {
         {/* Email form */}
         <form onSubmit={handleEmailSignIn} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">{t("login.emailLabel")}</Label>
+            <Label htmlFor="email" className="text-neutral-700 dark:text-neutral-300">{t("login.emailLabel")}</Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500 dark:text-neutral-400" />
               <Input
                 id="email"
                 type="email"
@@ -156,13 +146,13 @@ export default function LoginForm() {
                 required
                 disabled={isEmailLoading}
                 autoComplete="email"
-                className="pl-10"
+                className="pl-10 h-11 bg-white/50 dark:bg-black/50 border-black/10 dark:border-white/10 focus-visible:ring-1 focus-visible:ring-black dark:focus-visible:ring-white"
               />
             </div>
           </div>
           <Button
             type="submit"
-            className="w-full bg-brand hover:bg-brand-600 text-primary-foreground"
+            className="w-full h-11 bg-neutral-900 hover:bg-black dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-black font-medium transition-all"
             disabled={isEmailLoading || !email.trim()}
           >
             {isEmailLoading ? (

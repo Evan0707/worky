@@ -28,6 +28,8 @@ export const userRouter = createTRPCRouter({
         vatScheme: true,
         vatNumber: true,
         companyName: true,
+        industry: true,
+        setupComplete: true,
         siret: true,
         steuernummer: true,
         bceNumber: true,
@@ -56,6 +58,8 @@ export const userRouter = createTRPCRouter({
       z.object({
         name: z.string().min(1).max(200).optional(),
         companyName: z.string().max(200).optional(),
+        industry: z.string().max(200).optional(),
+        setupComplete: z.boolean().optional(),
         siret: z.string().max(14).optional(),
         steuernummer: z.string().max(20).optional(),
         bceNumber: z.string().max(12).optional(),

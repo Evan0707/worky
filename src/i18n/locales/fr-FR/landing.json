@@ -62,8 +62,8 @@
   },
   "mobileApp": {
     "badge": "À venir",
-    "title": "Worky dans votre poche",
-    "subtitle": "L'application mobile Worky arrive très prochainement sur iOS et Android. Prenez vos photos, pointez vos heures et gérez vos chantiers directement depuis le terrain.",
+    "title": "OpenChantier dans votre poche",
+    "subtitle": "L'application mobile OpenChantier arrive très prochainement sur iOS et Android. Prenez vos photos, pointez vos heures et gérez vos chantiers directement depuis le terrain.",
     "features": {
       "offline": "Mode hors-ligne",
       "notifications": "Notifications en temps réel",
@@ -79,7 +79,7 @@
       "price": "0",
       "currency": "€",
       "period": "/ mois",
-      "description": "Pour démarrer et découvrir Worky",
+      "description": "Pour démarrer et découvrir OpenChantier",
       "cta": "Commencer gratuitement",
       "f1": "3 chantiers actifs",
       "f2": "Photos illimitées",
@@ -106,7 +106,7 @@
   },
   "cta": {
     "title": "Prêt à simplifier votre quotidien ?",
-    "subtitle": "Rejoignez les artisans qui gèrent déjà leurs chantiers avec Worky. C'est gratuit.",
+    "subtitle": "Rejoignez les artisans qui gèrent déjà leurs chantiers avec OpenChantier. C'est gratuit.",
     "button": "Commencer maintenant"
   },
   "footer": {
@@ -117,5 +117,10 @@
     "privacy": "Confidentialité",
     "legalNotice": "Mentions légales",
     "rights": "Tous droits réservés."
+  },
+  "seo": {
+    "title": "OpenChantier — Logiciel de gestion de chantier pour artisans du BTP",
+    "description": "OpenChantier est l'application tout-en-un des artisans du bâtiment : gestion de chantier, prise de photos, suivi des heures (pointage), devis et facturation en ligne.",
+    "keywords": "artisan, BTP, gestion de chantier, logiciel, SaaS, facturation, pointage, suivi travaux, application mobile"
   }
 }

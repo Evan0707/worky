@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Worky"
+    "name": "OpenChantierkr"
   },
   "nav": {
     "dashboard": "Tableau de bord",
@@ -91,3 +91,4 @@
     }
   }
 }
+

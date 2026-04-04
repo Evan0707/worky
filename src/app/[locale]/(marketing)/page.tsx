@@ -25,10 +25,25 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "landing" });
+  
   return {
-    title: "Worky — Gestion de chantier pour artisans",
-    description:
-      "Photos, pointage, devis et factures — tout au même endroit. L'outil professionnel des artisans du BTP.",
+    title: t("seo.title"),
+    description: t("seo.description"),
+    keywords: t("seo.keywords"),
+    openGraph: {
+      title: t("seo.title"),
+      description: t("seo.description"),
+      type: "website",
+      locale: locale,
+      url: `/${locale}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("seo.title"),
+      description: t("seo.description"),
+    }
   };
 }
 
@@ -93,7 +108,7 @@ export default async function LandingPage({
           <FadeIn delay={0}>
             <div className="mb-10 flex justify-center">
               <div className="animate-logo-spin">
-                <Logo className="h-14 w-14 opacity-80" />
+                <Logo className="h-14 w-14 opacity-90" />
               </div>
             </div>
           </FadeIn>
@@ -143,7 +158,7 @@ export default async function LandingPage({
         {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
           <div className="h-8 w-[18px] rounded-full border border-black/10 dark:border-white/10 flex items-start justify-center p-1">
-            <div className="h-1.5 w-1 rounded-full bg-white/30 animate-scroll-dot" />
+            <div className="h-1.5 w-1 rounded-full dark:bg-white/30 bg-black/50 animate-scroll-dot" />
           </div>
         </div>
       </section>
@@ -176,7 +191,7 @@ export default async function LandingPage({
             {features.map((feature, i) => (
               <FadeIn key={feature.title} delay={i * 60}>
                 <div className="group relative bg-neutral-50 dark:bg-[#0a0a0a] p-8 transition-colors duration-300 hover:bg-white dark:bg-[#111]">
-                  <feature.icon className="mb-5 h-5 w-5 text-neutral-500 transition-colors group-hover:text-neutral-900 dark:text-white" />
+                  <feature.icon className="mb-5 h-5 w-5 text-neutral-500 transition-colors group-hover:text-neutral-900 dark:group-hover:text-white/70 dark:text-white" />
                   <h3 className="text-[15px] font-semibold text-neutral-900 dark:text-white mb-2">
                     {feature.title}
                   </h3>
@@ -201,7 +216,7 @@ export default async function LandingPage({
             <div className="relative order-last lg:order-none">
               <FadeIn delay={200}>
                 {/* Decorative background gradients */}
-                <div className="absolute inset-0 bg-blue-500/10 blur-[100px] z-0" />
+                <div className="absolute inset-0 bg-blue-500/5 blur-[100px] z-0" />
                 <div className="absolute top-1/4 left-1/4 bg-white/5 blur-[80px] w-64 h-64 rounded-full z-0" />
 
                 <div className="relative z-10 flex justify-center lg:justify-start">
@@ -211,7 +226,7 @@ export default async function LandingPage({
                     width={500}
                     height={600}
                     alt="Mobile app preview"
-                    className="w-full max-w-[320px] lg:max-w-[300px] object-contain drop-shadow-2xl translate-y-4 dark:hidden"
+                    className="w-full max-w-[320px] lg:max-w-[300px] object-contain drop-shadow-xl translate-y-4 dark:hidden"
                     priority
                   />
                   {/* Image for dark mode */}

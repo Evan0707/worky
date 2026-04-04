@@ -1,10 +1,14 @@
 import { type Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { HardHat, Camera, Clock, FileText } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 import { auth } from "@/server/auth";
 import LoginForm from "./_components/login-form";
+import { Logo } from "@/app/[locale]/(marketing)/_components/logo";
+import { HeroBackground } from "@/app/[locale]/(marketing)/_components/hero-background";
+import { FadeIn } from "@/app/[locale]/(marketing)/_components/fade-in";
 
 export async function generateMetadata({
   params,
@@ -33,92 +37,56 @@ export default async function LoginPage({
 
   const t = await getTranslations({ locale, namespace: "auth" });
 
-  const features = [
-    { icon: HardHat, text: t("login.branding.featureProjects") },
-    { icon: Camera, text: t("login.branding.featurePhotos") },
-    { icon: Clock, text: t("login.branding.featureTime") },
-    { icon: FileText, text: t("login.branding.featureInvoicing") },
-  ];
-
   return (
-    <main className="flex min-h-screen">
-      {/* Left panel -- Branding (desktop only) */}
-      <div className="relative hidden w-[45%] flex-col justify-between overflow-hidden bg-brand p-10 text-white lg:flex">
-        <div className="absolute inset-0 opacity-[0.04]">
-          <div className="bg-grid-pattern h-full w-full" />
-        </div>
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-neutral-50 dark:bg-[#0a0a0a] p-6">
+      <HeroBackground />
+      
+      <FadeIn delay={0} direction="none" className="absolute left-6 top-6 z-20">
+        <Link
+          href={`/${locale}`}
+          className="flex items-center gap-2 rounded-full border border-black/10 dark:border-white/10 bg-white/50 dark:bg-black/50 px-4 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-400 backdrop-blur-md transition-all hover:bg-black/5 dark:hover:bg-white/5 hover:text-neutral-900 dark:hover:text-white"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour
+        </Link>
+      </FadeIn>
 
+      <div className="relative z-10 w-full flex flex-col items-center">
         {/* Brand */}
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/15 text-sm font-bold backdrop-blur-sm">
-            W
+        <FadeIn delay={100} className="mb-8 flex flex-col items-center">
+          <div className="animate-logo-spin">
+            <Logo className="h-12 w-12" />
           </div>
-          <span className="text-xl font-semibold tracking-tight">Worky</span>
-        </div>
-
-        {/* Headline + features */}
-        <div className="relative z-10 space-y-8">
-          <div className="space-y-3">
-            <h2 className="max-w-xs text-3xl font-semibold leading-tight">
-              {t("login.branding.headline")}
-            </h2>
-            <p className="max-w-sm text-sm leading-relaxed text-white/60">
-              {t("login.branding.description")}
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            {features.map((feature, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-3 rounded-lg bg-white/8 px-4 py-3"
-              >
-                <feature.icon className="h-4 w-4 text-white/70" />
-                <span className="text-sm text-white/80">{feature.text}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <p className="relative z-10 text-xs text-white/30">
-          &copy; {new Date().getFullYear()} Worky
-        </p>
-      </div>
-
-      {/* Right panel -- Login form */}
-      <div className="flex flex-1 flex-col items-center justify-center p-6 sm:p-10">
-        {/* Mobile brand */}
-        <div className="mb-8 text-center lg:hidden">
-          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-brand text-sm font-bold text-white">
-            W
-          </div>
-          <h1 className="text-xl font-semibold">Worky</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h1 className="mt-6 font-heading text-3xl font-bold tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
+            OpenChantier
+          </h1>
+          <p className="mt-3 text-[17px] text-neutral-500 dark:text-neutral-400">
             {t("login.subtitle")}
           </p>
-        </div>
+        </FadeIn>
 
-        <div className="w-full max-w-[400px]">
+        {/* Login Card */}
+        <FadeIn delay={200} className="w-full max-w-[420px]">
           <LoginForm />
 
-          <p className="mt-6 text-center text-xs text-muted-foreground">
+          <p className="mt-8 text-center text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
             {t("login.legal.text")}{" "}
-            <a
+            <Link
               href={`/${locale}/terms`}
-              className="underline underline-offset-2 hover:text-foreground"
+              className="font-medium underline underline-offset-2 hover:text-neutral-900 dark:hover:text-white"
             >
               {t("login.legal.terms")}
-            </a>{" "}
+            </Link>{" "}
             {t("login.legal.and")}{" "}
-            <a
+            <Link
               href={`/${locale}/privacy`}
-              className="underline underline-offset-2 hover:text-foreground"
+              className="font-medium underline underline-offset-2 hover:text-neutral-900 dark:hover:text-white"
             >
               {t("login.legal.privacy")}
-            </a>
+            </Link>
             .
           </p>
-        </div>
+        </FadeIn>
       </div>
     </main>
   );

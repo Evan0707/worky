@@ -11,6 +11,7 @@ import { CommandMenu } from "@/components/command-menu";
 import { Building2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { db } from "@/server/db";
 
 export default async function DashboardLayout({
   children,
@@ -24,6 +25,15 @@ export default async function DashboardLayout({
 
   if (!session?.user) {
     redirect(`/${locale}/login`);
+  }
+
+  const user = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { setupComplete: true },
+  });
+
+  if (!user?.setupComplete) {
+    redirect(`/${locale}/onboarding`);
   }
 
   const t = await getTranslations({ locale, namespace: "common" });
@@ -81,12 +91,12 @@ export default async function DashboardLayout({
           <Link href={`/${locale}/dashboard`} className="flex items-center gap-2 font-semibold">
             <Image 
               src="/logo.svg" 
-              alt="Worky" 
+              alt="OpenChantier" 
               width={100} 
               height={32} 
               className="h-8 w-auto object-contain"
             />
-            <p className="font-heading ml-1">Qoworkr</p>
+            <p className="font-heading ml-1">OpenChantier</p>
           </Link>
         </div>
 

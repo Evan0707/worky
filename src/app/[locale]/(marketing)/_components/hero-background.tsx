@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-// Dot constellation that echoes the Worky logo pattern
+// Dot constellation that echoes the OpenChantier logo pattern
 export function HeroBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -106,7 +106,7 @@ export function HeroBackground() {
             ctx!.beginPath();
             ctx!.moveTo(dots[i]!.x, dots[i]!.y);
             ctx!.lineTo(dots[j]!.x, dots[j]!.y);
-            ctx!.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+            ctx!.strokeStyle = `rgba(125, 125, 125, ${alpha})`;
             ctx!.lineWidth = 0.5;
             ctx!.stroke();
           }

@@ -152,7 +152,7 @@ export default async function ClientProjectView({
       </main>
       
       <footer className="text-center py-12 text-sm text-muted-foreground animate-slide-up animate-stagger-3">
-        Propulsé par <span className="font-semibold text-foreground/70">Worky</span>
+        Propulsé par <span className="font-semibold text-foreground/70">OpenChantier</span>
       </footer>
     </div>
   );

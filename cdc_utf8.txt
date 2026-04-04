@@ -1,6 +1,6 @@
 ﻿
 
-WORKY
+OpenChantier
 SaaS de gestion de chantier pour artisans
 Future-proof · i18n · T3 Stack
 Document
@@ -8,7 +8,7 @@ Cahier des charges + Taskmap v2.0
 Version
 v2.0 - Mars 2026 (remplace v1.0)
 Nom produit
-Worky (ex ChantierPro)
+OpenChantier (ex ChantierPro)
 Stack
 T3 - Next.js 15 · tRPC v11 · Prisma · NextAuth v5
 i18n
@@ -28,8 +28,8 @@ Aucun suivi de rentabilité par chantier (heures réelles vs estimées)
 Non-conformité imminente à la facturation électronique obligatoire (sept. 2027 en France, 2026-2027 en Belgique/Allemagne/Espagne)
 Problème identique dans toute l'Europe - les artisans allemands, belges, espagnols font face aux mêmes enjeux
 
-1.2 Solution - Worky
-Worky est un SaaS web-first (mobile PWA) de gestion de chantier conçu pour l'artisan solo et la petite équipe. Il est pensé dès le départ pour être multilingue et multi-pays.
+1.2 Solution - OpenChantier
+OpenChantier est un SaaS web-first (mobile PWA) de gestion de chantier conçu pour l'artisan solo et la petite équipe. Il est pensé dès le départ pour être multilingue et multi-pays.
 
 Gestion des chantiers avec photos géolocalisées et horodatées
 Partage temps réel client via magic link sécurisé (sans compte client)
@@ -63,7 +63,7 @@ Batappli
 FR only
 Non
 Web-first lourd
-Worky
+OpenChantier
 0  15 ?
 fr/en/de/es
 Oui (multi-pays)
@@ -95,7 +95,7 @@ Part utilisateurs non-FR (fin S2)
 
 02  Internationalisation (i18n)  - Section nouvelle v2
 2.1 Stratégie i18n globale
-Worky utilise next-intl comme solution i18n. Toutes les chaînes de caractères de l'interface sont externalisées dès le premier commit. Il n'y a aucune chaîne en dur dans le code - zéro exception.
+OpenChantier utilise next-intl comme solution i18n. Toutes les chaînes de caractères de l'interface sont externalisées dès le premier commit. Il n'y a aucune chaîne en dur dans le code - zéro exception.
 
 Contrainte LLM absolue : Ne JAMAIS écrire de texte d'interface directement dans le JSX/TSX. Toujours utiliser useTranslations() (Client Component) ou getTranslations() (Server Component) depuis next-intl. Exemple : const t = useTranslations('projects'); return &lt;h1&gt;{t('title')}&lt;/h1&gt;. Cela s'applique aussi aux messages d'erreur tRPC côté client.
 
@@ -264,7 +264,7 @@ Aucune limite de photos en plan FREE
 
 4.4 Magic link &amp; espace client
 Génération
-URL : https://worky.fr/c/[share_token]
+URL : https://OpenChantier.fr/c/[share_token]
 Partage : copie clipboard, SMS, mailto, WhatsApp
 Régénération invalide l'ancien lien immédiatement
 Expiration optionnelle configurable par l'artisan
@@ -425,7 +425,7 @@ Zod
 Schémas partagés client/serveur, i18n des erreurs
 
 5.2 Structure des dossiers (avec i18n)
-worky/
+OpenChantier/
 src/
   app/
     [locale]/                 segment dynamique next-intl (fr-FR, en-GB, de-DE...)
@@ -886,7 +886,7 @@ Métriques par période : CA facturé, encaissé, heures, rentabilité chantier.
 P2
 4.6
 PWA manifest localisé
-manifest.json avec name et short_name localisés (Worky FR, Worky DE). Service Worker next-pwa. Vue /c/[token] offline.
+manifest.json avec name et short_name localisés (OpenChantier FR, OpenChantier DE). Service Worker next-pwa. Vue /c/[token] offline.
 1j
 P2
 4.7
@@ -1022,6 +1022,6 @@ Marketplace matériaux / catalogues fournisseurs
 IA reconnaissance documents (scan devis papier  données structurées)
 API publique REST pour intégrations tierces
 Support arabe (RTL) - Phase 4
-Worky pour les architectes et bureaux d'études - segment adjacent
+OpenChantier pour les architectes et bureaux d'études - segment adjacent
 
-- Fin du cahier des charges Worky v2.0 - Future-proof + i18n -
+- Fin du cahier des charges OpenChantier v2.0 - Future-proof + i18n -

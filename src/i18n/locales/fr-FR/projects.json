@@ -52,7 +52,7 @@
     "regenerate": "Régénérer le lien",
     "regenerateWarning": "L'ancien lien sera immédiatement invalide.",
     "smsMessage": "Bonjour, suivez l'avancement de vos travaux ici : {url}",
-    "emailSubject": "Suivi de vos travaux - Worky",
+    "emailSubject": "Suivi de vos travaux - OpenChantierkr",
     "emailBody": "Bonjour,\n\nVous pouvez suivre l'avancement de vos travaux ici :\n{url}\n\nCordialement"
   },
   "limit": {
@@ -119,3 +119,4 @@
     "empty": "Aucune photo pour le moment. Uploadez des images ci-dessus."
   }
 }
+

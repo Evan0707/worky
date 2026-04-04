@@ -19,8 +19,8 @@ export async function generateMetadata({
 
   return {
     title: {
-      default: "Worky — Gestion de chantier pour artisans",
-      template: "%s | Worky",
+      default: "OpenChantier — Gestion de chantier pour artisans",
+      template: "%s | OpenChantier",
     },
     description:
       "Gérez vos chantiers, photos, heures et factures. La solution SaaS des artisans BTP.",

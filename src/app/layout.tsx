@@ -17,12 +17,12 @@ const georama = Georama({
 
 export const metadata: Metadata = {
   title: {
-    default: "Worky — Gestion de chantier pour artisans",
-    template: "%s | Worky",
+    default: "OpenChantier — Gestion de chantier pour artisans",
+    template: "%s | OpenChantier",
   },
   description:
     "Gérez vos chantiers, photos, heures et factures depuis votre téléphone. La solution SaaS des artisans BTP.",
-  keywords: ["chantier", "artisan", "BTP", "gestion", "facturation", "worky"],
+  keywords: ["chantier", "artisan", "BTP", "gestion", "facturation", "OpenChantier"],
 };
 
 export default function RootLayout({
@@ -40,3 +40,4 @@ export default function RootLayout({
     </html>
   );
 }
+

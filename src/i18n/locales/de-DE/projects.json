@@ -52,7 +52,7 @@
     "regenerate": "Link neu generieren",
     "regenerateWarning": "Der alte Link wird sofort ungültig.",
     "smsMessage": "Hallo, verfolgen Sie Ihren Baufortschritt hier: {url}",
-    "emailSubject": "Ihre Baustellen-Updates - Worky",
+    "emailSubject": "Ihre Baustellen-Updates - OpenChantierkr",
     "emailBody": "Hallo,\n\nSie können den Fortschritt Ihrer Baustelle hier verfolgen:\n{url}\n\nMit freundlichen Grüßen"
   },
   "limit": {
@@ -119,3 +119,4 @@
     "empty": "Noch keine Fotos. Laden Sie Bilder oben hoch."
   }
 }
+

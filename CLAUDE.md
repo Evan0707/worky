@@ -1,8 +1,8 @@
-# Worky — CLAUDE.md
+# OpenChantier — CLAUDE.md
 
 ## Project Overview
 
-**Worky** is a SaaS web-first (PWA) chantier management app for solo artisans and small construction teams. Built with the T3 stack, multilingue from day one (fr-FR, en-GB, de-DE, es-ES).
+**OpenChantier** is a SaaS web-first (PWA) chantier management app for solo artisans and small construction teams. Built with the T3 stack, multilingue from day one (fr-FR, en-GB, de-DE, es-ES).
 
 **Product goal:** Replace paper notebooks, WhatsApp photos, and Excel sheets with a unified tool. Freemium (FREE: 3 active projects) → PRO at 15 €/month.
 
@@ -159,4 +159,4 @@ See `.env.example`. Required:
 - AI document scanning
 - Public REST API
 - Arabic / RTL support
-- Worky for architects / engineering firms
+- OpenChantier for architects / engineering firms

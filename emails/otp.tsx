@@ -29,34 +29,34 @@ const translations: Record<Locale, {
   footer: string;
 }> = {
   "fr-FR": {
-    preview: "Cliquez pour vous connecter à Worky",
+    preview: "Cliquez pour vous connecter à OpenChantierkr",
     heading: "Connexion à votre compte",
-    body: "Cliquez sur le bouton ci-dessous pour vous connecter à Worky. Ce lien est valable 24 heures et ne peut être utilisé qu'une seule fois.",
-    button: "Se connecter à Worky",
+    body: "Cliquez sur le bouton ci-dessous pour vous connecter à OpenChantierkr. Ce lien est valable 24 heures et ne peut être utilisé qu'une seule fois.",
+    button: "Se connecter à OpenChantierkr",
     ignore: "Si vous n'avez pas demandé ce lien, vous pouvez ignorer cet email en toute sécurité.",
     footer: "Lien de connexion envoyé depuis",
   },
   "en-GB": {
-    preview: "Click to sign in to Worky",
+    preview: "Click to sign in to OpenChantierkr",
     heading: "Sign in to your account",
-    body: "Click the button below to sign in to Worky. This link is valid for 24 hours and can only be used once.",
-    button: "Sign in to Worky",
+    body: "Click the button below to sign in to OpenChantierkr. This link is valid for 24 hours and can only be used once.",
+    button: "Sign in to OpenChantierkr",
     ignore: "If you did not request this link, you can safely ignore this email.",
     footer: "Sign-in link sent from",
   },
   "de-DE": {
-    preview: "Klicken Sie hier, um sich bei Worky anzumelden",
+    preview: "Klicken Sie hier, um sich bei OpenChantierkr anzumelden",
     heading: "Anmeldung bei Ihrem Konto",
-    body: "Klicken Sie auf die Schaltfläche unten, um sich bei Worky anzumelden. Dieser Link ist 24 Stunden gültig und kann nur einmal verwendet werden.",
-    button: "Bei Worky anmelden",
+    body: "Klicken Sie auf die Schaltfläche unten, um sich bei OpenChantierkr anzumelden. Dieser Link ist 24 Stunden gültig und kann nur einmal verwendet werden.",
+    button: "Bei OpenChantierkr anmelden",
     ignore: "Wenn Sie diesen Link nicht angefordert haben, können Sie diese E-Mail ignorieren.",
     footer: "Anmelde-Link gesendet von",
   },
   "es-ES": {
-    preview: "Haga clic para iniciar sesión en Worky",
+    preview: "Haga clic para iniciar sesión en OpenChantierkr",
     heading: "Iniciar sesión en su cuenta",
-    body: "Haga clic en el botón de abajo para iniciar sesión en Worky. Este enlace es válido durante 24 horas y solo puede usarse una vez.",
-    button: "Iniciar sesión en Worky",
+    body: "Haga clic en el botón de abajo para iniciar sesión en OpenChantierkr. Este enlace es válido durante 24 horas y solo puede usarse una vez.",
+    button: "Iniciar sesión en OpenChantierkr",
     ignore: "Si no ha solicitado este enlace, puede ignorar este correo electrónico.",
     footer: "Enlace de inicio de sesión enviado desde",
   },
@@ -71,7 +71,7 @@ export function OTPEmail({ url, host, locale = "fr-FR" }: OTPEmailProps) {
       <Preview>{t.preview}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Heading style={h1}>Worky</Heading>
+          <Heading style={h1}>OpenChantierkr</Heading>
           <Heading style={h2}>{t.heading}</Heading>
           <Text style={text}>{t.body}</Text>
           <Section style={buttonContainer}>
@@ -161,3 +161,4 @@ const footer = {
 const link = {
   color: "#1A4F8A",
 };
+

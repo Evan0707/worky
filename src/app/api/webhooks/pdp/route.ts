@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 
     const { externalId: invoiceId, status: tiimeStatus } = event.data;
 
-    // Convert Tiime PDP Status to Worky Internal Status
+    // Convert Tiime PDP Status to OpenChantier Internal Status
     // Tiime uses specific statuses for B2B/B2G flows
     let internalStatus: "SENT" | "ACCEPTED" | "REFUSED" | "PAID" | "OVERDUE" = "SENT";
 
@@ -68,3 +68,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Webhook processing failed" }, { status: 500 });
   }
 }
+
