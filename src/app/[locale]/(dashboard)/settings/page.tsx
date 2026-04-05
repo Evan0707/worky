@@ -9,6 +9,7 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
   const { locale } = await params;
   const profile = await api.user.getProfile();
   const t = await getTranslations({ locale, namespace: "common.nav" });
+  const tSettings = await getTranslations({ locale, namespace: "settings.profile" });
 
   async function handleLogout() {
     "use server";
@@ -22,9 +23,9 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
       </div>
 
       <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6">
-        <h3 className="text-base font-semibold text-red-600 dark:text-red-400 mb-2">Zone de danger</h3>
+        <h3 className="text-base font-semibold text-red-600 dark:text-red-400 mb-2">{tSettings("dangerZone.title")}</h3>
         <p className="text-[14px] text-neutral-600 dark:text-neutral-400 mb-4">
-          Vous allez être déconnecté de votre compte sur cet appareil.
+          {tSettings("dangerZone.description")}
         </p>
         <form action={handleLogout}>
           <Button variant="destructive" type="submit" className="gap-2">

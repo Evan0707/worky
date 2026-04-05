@@ -1,18 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  // Connection URLs are configured in prisma.config.ts (Prisma 7)
 }
-
-// ==============================
-// NextAuth Tables
-// ==============================
 
 model Account {
   id                       String  @id @default(cuid())
@@ -20,16 +12,15 @@ model Account {
   type                     String
   provider                 String
   providerAccountId        String
-  refresh_token            String? @db.Text
-  access_token             String? @db.Text
+  refresh_token            String?
+  access_token             String?
   expires_at               Int?
   token_type               String?
   scope                    String?
-  id_token                 String? @db.Text
+  id_token                 String?
   session_state            String?
   refresh_token_expires_in Int?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -39,8 +30,7 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -51,9 +41,188 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// ==============================
-// Enums
-// ==============================
+model User {
+  id                   String      @id @default(cuid())
+  name                 String?
+  email                String?     @unique
+  emailVerified        DateTime?
+  image                String?
+  plan                 Plan        @default(FREE)
+  stripeCustomerId     String?     @unique
+  stripeSubscriptionId String?     @unique
+  locale               String      @default("fr-FR")
+  country              String      @default("FR")
+  currency             String      @default("EUR")
+  vatScheme            VatScheme   @default(STANDARD)
+  vatNumber            String?
+  siret                String?
+  steuernummer         String?
+  bceNumber            String?
+  companyName          String?
+  companyAddress       String?
+  logoUrl              String?
+  logoKey              String?
+  hourlyRate           Decimal?    @db.Decimal(10, 2)
+  iban                 String?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  proTrialUsed         Boolean     @default(false)
+  industry             String?
+  setupComplete        Boolean     @default(false)
+  accounts             Account[]
+  projects             Project[]
+  sessions             Session[]
+  ownedTeam            Team?       @relation("TeamOwner")
+  teamMember           TeamMember?
+}
+
+model Team {
+  id          String           @id @default(cuid())
+  name        String
+  ownerId     String           @unique
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  owner       User             @relation("TeamOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  invitations TeamInvitation[]
+  members     TeamMember[]
+
+  @@index([ownerId])
+}
+
+model TeamMember {
+  id       String   @id @default(cuid())
+  teamId   String
+  userId   String   @unique
+  role     TeamRole @default(MEMBER)
+  joinedAt DateTime @default(now())
+  team     Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
+}
+
+model TeamInvitation {
+  id         String    @id @default(cuid())
+  teamId     String
+  email      String
+  role       TeamRole  @default(MEMBER)
+  token      String    @unique @default(uuid())
+  expiresAt  DateTime
+  acceptedAt DateTime?
+  createdAt  DateTime  @default(now())
+  team       Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, email])
+  @@index([teamId])
+  @@index([token])
+}
+
+model Project {
+  id                 String         @id @default(cuid())
+  name               String
+  address            String
+  status             ProjectStatus  @default(ACTIVE)
+  clientName         String
+  clientPhone        String?
+  clientEmail        String?
+  clientLocale       String?
+  description        String?
+  startDate          DateTime?
+  endDate            DateTime?
+  shareToken         String         @unique @default(uuid())
+  shareExpiresAt     DateTime?
+  artisanId          String
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  clientLastViewedAt DateTime?
+  budget             Int?
+  progress           Int            @default(0)
+  nextSteps          Json?
+  clientActions      ClientAction[]
+  invoices           Invoice[]
+  materials          Material[]
+  photos             Photo[]
+  artisan            User           @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  timeEntries        TimeEntry[]
+
+  @@index([artisanId])
+  @@index([shareToken])
+}
+
+model Photo {
+  id        String   @id @default(cuid())
+  projectId String
+  url       String
+  key       String   @unique
+  note      String?
+  lat       Float?
+  lng       Float?
+  takenAt   DateTime @default(now())
+  order     Int      @default(0)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model TimeEntry {
+  id          String   @id @default(cuid())
+  projectId   String
+  date        DateTime @db.Date
+  hours       Decimal  @db.Decimal(4, 2)
+  description String?
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model Material {
+  id        String  @id @default(cuid())
+  projectId String
+  label     String
+  quantity  Decimal @db.Decimal(10, 3)
+  unitPrice Decimal @db.Decimal(10, 2)
+  unit      String  @default("u")
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
+
+model Invoice {
+  id              String        @id @default(cuid())
+  projectId       String
+  number          String        @unique
+  type            InvoiceType
+  status          InvoiceStatus @default(DRAFT)
+  lines           Json
+  totalHT         Int
+  totalTVA        Int
+  totalTTC        Int
+  currency        String        @default("EUR")
+  locale          String        @default("fr-FR")
+  invoiceFormat   InvoiceFormat @default(STANDARD_PDF)
+  issuedAt        DateTime?
+  dueAt           DateTime?
+  paidAt          DateTime?
+  facturXPath     String?
+  remindersSentAt DateTime[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  project         Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([projectId, status])
+}
+
+model ClientAction {
+  id        String           @id @default(cuid())
+  projectId String
+  type      ClientActionType
+  payload   Json?
+  createdAt DateTime         @default(now())
+  project   Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+}
 
 enum Plan {
   FREE
@@ -90,10 +259,10 @@ enum InvoiceStatus {
 /// Electronic invoicing format per country
 enum InvoiceFormat {
   STANDARD_PDF
-  FACTURX   // France — EN 16931 / PDF/A-3
-  ZUGFERD   // Germany — ZUGFeRD / XRechnung
-  PEPPOL    // Belgium, Netherlands, Spain, EU
-  FACTURAE  // Spain — Facturae / Verifactu
+  FACTURX
+  ZUGFERD
+  PEPPOL
+  FACTURAE
 }
 
 enum ClientActionType {
@@ -104,216 +273,9 @@ enum ClientActionType {
 
 /// VAT scheme per country/status
 enum VatScheme {
-  STANDARD          // Standard rate (20% FR, 19% DE, 21% BE...)
-  REDUCED           // Reduced rate for construction works
-  MICRO_ENTREPRENEUR // FR: micro-entreprise (franchise en base de TVA)
-  EXEMPT            // VAT exempt
-  REVERSE_CHARGE    // Autoliquidation (B2B cross-border)
-}
-
-// ==============================
-// Application Models
-// ==============================
-
-model User {
-  id                   String     @id @default(cuid())
-  name                 String?
-  email                String?    @unique
-  emailVerified        DateTime?
-  image                String?
-  plan                 Plan       @default(FREE)
-  stripeCustomerId     String?    @unique
-  stripeSubscriptionId String?    @unique
-  proTrialUsed         Boolean    @default(false)
-
-  // i18n & localisation (CDC §5.3 + §2)
-  locale               String     @default("fr-FR") // BCP 47
-  country              String     @default("FR")    // ISO 3166-1 alpha-2
-  currency             String     @default("EUR")   // ISO 4217
-
-  // VAT & compliance
-  vatScheme            VatScheme  @default(STANDARD)
-  vatNumber            String?    // Generic VAT number
-  siret                String?    // France
-  steuernummer         String?    // Germany
-  bceNumber            String?    // Belgium
-
-  // Artisan profile
-  setupComplete        Boolean    @default(false)
-  industry             String?
-  companyName          String?
-  companyAddress       String?
-  logoUrl              String?
-  logoKey              String?
-  hourlyRate           Decimal?   @db.Decimal(10, 2)
-  iban                 String?
-  createdAt            DateTime   @default(now())
-  updatedAt            DateTime   @updatedAt
-
-  accounts     Account[]
-  sessions     Session[]
-  projects     Project[]
-  ownedTeam    Team?        @relation("TeamOwner")
-  teamMember   TeamMember?
-}
-
-// ==============================
-// Team Models
-// ==============================
-
-model Team {
-  id          String   @id @default(cuid())
-  name        String
-  ownerId     String   @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  owner       User             @relation("TeamOwner", fields: [ownerId], references: [id], onDelete: Cascade)
-  members     TeamMember[]
-  invitations TeamInvitation[]
-
-  @@index([ownerId])
-}
-
-model TeamMember {
-  id       String   @id @default(cuid())
-  teamId   String
-  userId   String   @unique  // one team membership per user
-  role     TeamRole @default(MEMBER)
-  joinedAt DateTime @default(now())
-
-  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([teamId])
-}
-
-model TeamInvitation {
-  id         String    @id @default(cuid())
-  teamId     String
-  email      String
-  role       TeamRole  @default(MEMBER)
-  token      String    @unique @default(uuid())
-  expiresAt  DateTime
-  acceptedAt DateTime?
-  createdAt  DateTime  @default(now())
-
-  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
-
-  @@unique([teamId, email])
-  @@index([teamId])
-  @@index([token])
-}
-
-model Project {
-  id             String        @id @default(cuid())
-  name           String
-  address        String
-  status         ProjectStatus @default(ACTIVE)
-  progress       Int           @default(0) // 0-100 — % completion
-  budget         Int?          // cents — optional budget prévisionnel
-  clientName     String
-  clientPhone    String?
-  clientEmail    String?
-  clientLocale   String?       // BCP 47 — used for client-facing emails and magic link
-  clientLastViewedAt DateTime?
-  description    String?       @db.Text
-  startDate      DateTime?
-  endDate        DateTime?
-  shareToken     String        @unique @default(uuid())
-  shareExpiresAt DateTime?
-  artisanId      String
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-
-  artisan       User           @relation(fields: [artisanId], references: [id], onDelete: Cascade)
-  photos        Photo[]
-  timeEntries   TimeEntry[]
-  materials     Material[]
-  invoices      Invoice[]
-  clientActions ClientAction[]
-
-  @@index([artisanId])
-  @@index([shareToken])
-}
-
-model Photo {
-  id        String   @id @default(cuid())
-  projectId String
-  url       String
-  key       String   @unique // UploadThing file key
-  note      String?  @db.Text
-  lat       Float?
-  lng       Float?
-  takenAt   DateTime @default(now())
-  order     Int      @default(0)
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  @@index([projectId])
-}
-
-model TimeEntry {
-  id          String   @id @default(cuid())
-  projectId   String
-  date        DateTime @db.Date
-  hours       Decimal  @db.Decimal(4, 2)
-  description String?
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  @@index([projectId])
-}
-
-model Material {
-  id        String  @id @default(cuid())
-  projectId String
-  label     String
-  quantity  Decimal @db.Decimal(10, 3)
-  unit      String  @default("u") // e.g. u, m², m³, kg, t, h, ml, cm, pcs, forfait
-  unitPrice Decimal @db.Decimal(10, 2)
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  @@index([projectId])
-}
-
-model Invoice {
-  id              String        @id @default(cuid())
-  projectId       String
-  number          String        @unique
-  type            InvoiceType
-  status          InvoiceStatus @default(DRAFT)
-  lines           Json
-  // Amounts stored as integer cents (CDC §10.2)
-  totalHT         Int           // cents
-  totalTVA        Int           // cents
-  totalTTC        Int           // cents
-  currency        String        @default("EUR") // ISO 4217
-  locale          String        @default("fr-FR") // BCP 47 — for PDF rendering
-  invoiceFormat   InvoiceFormat @default(STANDARD_PDF)
-  issuedAt        DateTime?
-  dueAt           DateTime?
-  paidAt          DateTime?
-  facturXPath     String?       // UploadThing key for Factur-X/ZUGFeRD PDF
-  remindersSentAt DateTime[]
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  @@index([projectId])
-  @@index([projectId, status])
-}
-
-model ClientAction {
-  id        String           @id @default(cuid())
-  projectId String
-  type      ClientActionType
-  payload   Json?
-  createdAt DateTime         @default(now())
-
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  @@index([projectId])
+  STANDARD
+  REDUCED
+  MICRO_ENTREPRENEUR
+  EXEMPT
+  REVERSE_CHARGE
 }

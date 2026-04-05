@@ -1,6 +1,5 @@
 {
   "title": "Projects",
-
   "edit": "Edit project",
   "delete": "Delete project",
   "details": "Project details",
@@ -52,7 +51,7 @@
     "regenerate": "Regenerate link",
     "regenerateWarning": "The old link will be immediately invalidated.",
     "smsMessage": "Hello, track your project progress here: {url}",
-    "emailSubject": "Your project updates - OpenChantierkr",
+    "emailSubject": "Your project updates - Worky",
     "emailBody": "Hello,\n\nYou can track your project progress here:\n{url}\n\nKind regards"
   },
   "limit": {
@@ -117,6 +116,44 @@
     "uploadError": "Upload error",
     "photoAlt": "Site photo",
     "empty": "No photos yet. Upload images above."
+  },
+  "navigation": {
+    "openWith": "Get Directions",
+    "mobileNav": "Go"
+  },
+  "clientAction": {
+    "signatureTitle": "On-site Client Validation",
+    "signatureDesc": "Have your client sign directly on your screen to validate a step.",
+    "alreadySigned": "Already Signed",
+    "signatureImageAlt": "Client Signature"
+  },
+  "signatureDialog": {
+    "button": "Request Client Signature",
+    "title": "Signature of {clientName}",
+    "desc": "Please sign below with your finger or a stylus to validate.",
+    "clear": "Clear",
+    "submit": "Confirm Signature",
+    "success": "Signature saved successfully",
+    "errorGen": "Error saving signature",
+    "errorEmpty": "Please sign before validating",
+    "closeProjectLabel": "Finish project (Done)",
+    "closeProjectDesc": "Mark the project as complete once signed to free up your quotas.",
+    "successWithClose": "Signature saved and project completed!"
+  },
+  "nextSteps": {
+    "title": "Next Steps",
+    "placeholder": "E.g. Finish tiling...",
+    "saveSuccess": "List updated"
+  },
+  "publicView": {
+    "invalidLinkTitle": "Invalid or expired link",
+    "invalidLinkDesc": "This project is no longer shared. Please contact your artisan for a new link.",
+    "totalProgress": "Total progress",
+    "documentsTitle": "Documents & Billing",
+    "noPhotosTitle": "No photos shared",
+    "noPhotosDesc": "The artisan has not yet shared any progress photos.",
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "poweredBy": "Powered by Worky"
   }
 }
-

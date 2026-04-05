@@ -19,6 +19,13 @@ export const env = createEnv({
     DATABASE_URL: z.string().url(),
     DATABASE_URL_UNPOOLED: z.string().url().optional(),
 
+    CLOUDINARY_CLOUD_NAME: z.string().optional(),
+    CLOUDINARY_API_KEY: z.string().optional(),
+    CLOUDINARY_API_SECRET: z.string().optional(),
+
+    FACTURX_API_URL: z.string().url().optional(),
+    TIIME_WEBHOOK_SECRET: z.string().optional(),
+
     UPLOADTHING_SECRET: z.string().optional(),
     UPLOADTHING_APP_ID: z.string().optional(),
 
@@ -67,6 +74,9 @@ export const env = createEnv({
     CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+
+    FACTURX_API_URL: process.env.FACTURX_API_URL,
+    TIIME_WEBHOOK_SECRET: process.env.TIIME_WEBHOOK_SECRET,
 
     RESEND_API_KEY: process.env.RESEND_API_KEY,
 

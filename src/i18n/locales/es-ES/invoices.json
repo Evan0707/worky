@@ -22,6 +22,8 @@
     "FACTURAE": "Facturae (España)"
   },
   "fields": {
+    "type": "Tipo",
+    "status": "Estado",
     "number": "Número",
     "issuedAt": "Fecha de emisión",
     "dueAt": "Fecha de vencimiento",
@@ -49,8 +51,34 @@
     "description": "La generación de presupuestos y facturas está disponible con el plan PRO."
   },
   "toasts": {
+    "deleted": "Documento eliminado",
+    "created": "Documento creado con éxito",
     "generated": "Presupuesto/Factura generado",
     "sent": "Enviado por email",
     "markedPaid": "Marcado como pagado"
+  },
+  "newDocument": "Nuevo Documento",
+  "newSubtitle": "Cree un documento conforme para uno de sus proyectos.",
+  "empty": {
+    "title": "Ninguna factura",
+    "description": "Genere sus presupuestos y facturas en unos instantes."
+  },
+  "table": {
+    "search": "Buscar un número..."
+  },
+  "form": {
+    "project": "Proyecto asignado",
+    "selectProject": "Seleccione un proyecto",
+    "docType": "Tipo de documento",
+    "lines": "Líneas",
+    "addLine": "Añadir una línea",
+    "designation": "Designación",
+    "quantity": "Cant",
+    "priceHT": "Precio U. (Sin IVA)",
+    "vatRate": "IVA (%)",
+    "save": "Guardar el documento",
+    "cancel": "Cancelar",
+    "placeholderLabel": "Servicio...",
+    "confirmDelete": "¿Eliminar este documento?"
   }
 }

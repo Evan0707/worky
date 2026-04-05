@@ -22,6 +22,8 @@
     "FACTURAE": "Facturae (Spanien)"
   },
   "fields": {
+    "type": "Typ",
+    "status": "Status",
     "number": "Nummer",
     "issuedAt": "Ausstellungsdatum",
     "dueAt": "Fälligkeitsdatum",
@@ -49,8 +51,34 @@
     "description": "Die Erstellung von Angeboten und Rechnungen ist mit dem PRO-Plan verfügbar."
   },
   "toasts": {
+    "deleted": "Dokument gelöscht",
+    "created": "Dokument erfolgreich erstellt",
     "generated": "Angebot/Rechnung generiert",
     "sent": "Per E-Mail gesendet",
     "markedPaid": "Als bezahlt markiert"
+  },
+  "newDocument": "Neues Dokument",
+  "newSubtitle": "Erstellen Sie ein konformes Dokument für eines Ihrer Projekte.",
+  "empty": {
+    "title": "Keine Rechnung",
+    "description": "Generieren Sie Ihre Angebote und ZUGFeRD-konformen Rechnungen in wenigen Augenblicken."
+  },
+  "table": {
+    "search": "Nummer suchen..."
+  },
+  "form": {
+    "project": "Zugewiesenes Projekt",
+    "selectProject": "Wählen Sie ein Projekt",
+    "docType": "Dokumenttyp",
+    "lines": "Zeilen",
+    "addLine": "Zeile hinzufügen",
+    "designation": "Bezeichnung",
+    "quantity": "Menge",
+    "priceHT": "Einzelpreis (Netto)",
+    "vatRate": "MwSt. (%)",
+    "save": "Dokument speichern",
+    "cancel": "Abbrechen",
+    "placeholderLabel": "Leistung...",
+    "confirmDelete": "Dieses Dokument löschen?"
   }
 }

@@ -1,6 +1,5 @@
 {
   "title": "Baustellen",
-
   "edit": "Baustelle bearbeiten",
   "delete": "Baustelle löschen",
   "details": "Baustellendetails",
@@ -52,7 +51,7 @@
     "regenerate": "Link neu generieren",
     "regenerateWarning": "Der alte Link wird sofort ungültig.",
     "smsMessage": "Hallo, verfolgen Sie Ihren Baufortschritt hier: {url}",
-    "emailSubject": "Ihre Baustellen-Updates - OpenChantierkr",
+    "emailSubject": "Ihre Baustellen-Updates - Worky",
     "emailBody": "Hallo,\n\nSie können den Fortschritt Ihrer Baustelle hier verfolgen:\n{url}\n\nMit freundlichen Grüßen"
   },
   "limit": {
@@ -117,6 +116,44 @@
     "uploadError": "Upload-Fehler",
     "photoAlt": "Baustellenfoto",
     "empty": "Noch keine Fotos. Laden Sie Bilder oben hoch."
+  },
+  "navigation": {
+    "openWith": "Route planen",
+    "mobileNav": "Los"
+  },
+  "clientAction": {
+    "signatureTitle": "Kundenvalidierung vor Ort",
+    "signatureDesc": "Lassen Sie Ihren Kunden direkt auf Ihrem Bildschirm unterschreiben, um einen Schritt zu validieren.",
+    "alreadySigned": "Bereits unterschrieben",
+    "signatureImageAlt": "Kundenunterschrift"
+  },
+  "signatureDialog": {
+    "button": "Kunden unterschreiben lassen",
+    "title": "Unterschrift von {clientName}",
+    "desc": "Bitte unterschreiben Sie unten mit Ihrem Finger oder einem Stift, um zu bestätigen.",
+    "clear": "Löschen",
+    "submit": "Unterschrift bestätigen",
+    "success": "Unterschrift erfolgreich gespeichert",
+    "errorGen": "Fehler beim Speichern der Unterschrift",
+    "errorEmpty": "Bitte vor der Bestätigung unterschreiben",
+    "closeProjectLabel": "Projekt abschließen (Erledigt)",
+    "closeProjectDesc": "Markieren Sie das Projekt nach der Unterzeichnung als abgeschlossen, um Ihre Kontingente freizugeben.",
+    "successWithClose": "Unterschrift gespeichert und Projekt abgeschlossen!"
+  },
+  "nextSteps": {
+    "title": "Nächste Schritte",
+    "placeholder": "Z.B. Fliesen fertigstellen...",
+    "saveSuccess": "Liste aktualisiert"
+  },
+  "publicView": {
+    "invalidLinkTitle": "Ungültiger oder abgelaufener Link",
+    "invalidLinkDesc": "Dieses Projekt wird nicht mehr geteilt. Bitte kontaktieren Sie Ihren Handwerker für einen neuen Link.",
+    "totalProgress": "Gesamtfortschritt",
+    "documentsTitle": "Dokumente & Abrechnung",
+    "noPhotosTitle": "Keine Fotos geteilt",
+    "noPhotosDesc": "Der Handwerker hat noch keine Fortschrittsfotos hochgeladen.",
+    "paid": "Bezahlt",
+    "unpaid": "Unbezahlt",
+    "poweredBy": "Unterstützt von Worky"
   }
 }
-

@@ -1,6 +1,5 @@
 {
   "title": "Chantiers",
-
   "edit": "Modifier le chantier",
   "delete": "Supprimer le chantier",
   "details": "Détails du chantier",
@@ -52,7 +51,7 @@
     "regenerate": "Régénérer le lien",
     "regenerateWarning": "L'ancien lien sera immédiatement invalide.",
     "smsMessage": "Bonjour, suivez l'avancement de vos travaux ici : {url}",
-    "emailSubject": "Suivi de vos travaux - OpenChantierkr",
+    "emailSubject": "Suivi de vos travaux - Worky",
     "emailBody": "Bonjour,\n\nVous pouvez suivre l'avancement de vos travaux ici :\n{url}\n\nCordialement"
   },
   "limit": {
@@ -117,6 +116,44 @@
     "uploadError": "Erreur lors de l'upload",
     "photoAlt": "Photo du chantier",
     "empty": "Aucune photo pour le moment. Uploadez des images ci-dessus."
+  },
+  "navigation": {
+    "openWith": "Y aller",
+    "mobileNav": "Y aller"
+  },
+  "clientAction": {
+    "signatureTitle": "Validation client sur place",
+    "signatureDesc": "Faites signer votre client directement sur votre écran pour valider une étape.",
+    "alreadySigned": "Déjà signé",
+    "signatureImageAlt": "Signature du client"
+  },
+  "signatureDialog": {
+    "button": "Faire signer le client",
+    "title": "Signature de {clientName}",
+    "desc": "Veuillez signer ci-dessous avec votre doigt ou un stylet pour valider.",
+    "clear": "Effacer",
+    "submit": "Valider la signature",
+    "success": "Signature enregistrée avec succès",
+    "errorGen": "Erreur lors de l'enregistrement",
+    "errorEmpty": "Veuillez signer avant de valider",
+    "closeProjectLabel": "Clôturer le chantier (Terminé)",
+    "closeProjectDesc": "Marquer le chantier comme terminé une fois signé pour libérer vos quotas.",
+    "successWithClose": "Signature enregistrée et chantier terminé !"
+  },
+  "nextSteps": {
+    "title": "Prochaines étapes",
+    "placeholder": "Ex: Finir carrelage...",
+    "saveSuccess": "Liste mise à jour"
+  },
+  "publicView": {
+    "invalidLinkTitle": "Lien invalide ou expiré",
+    "invalidLinkDesc": "Ce chantier n'est plus partagé. Veuillez contacter votre artisan pour obtenir un nouveau lien.",
+    "totalProgress": "Avancement total",
+    "documentsTitle": "Documents & Facturation",
+    "noPhotosTitle": "Aucune photo partagée",
+    "noPhotosDesc": "L'artisan n'a pas encore partagé de photos de l'avancement du chantier.",
+    "paid": "Payé",
+    "unpaid": "À régler",
+    "poweredBy": "Propulsé par Worky"
   }
 }
-

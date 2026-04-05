@@ -24,21 +24,18 @@ export const projectRouter = createTRPCRouter({
   getDashboardStats: protectedProcedure.query(async ({ ctx }) => {
     const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
 
-    const [totalProjects, activeProjects, totalPhotos, totalTimeEntries] =
+    const [totalProjects, activeProjects, totalPhotos, timeAggregation] =
       await Promise.all([
         ctx.db.project.count({ where: { artisanId } }),
         ctx.db.project.count({ where: { artisanId, status: "ACTIVE" } }),
         ctx.db.photo.count({ where: { project: { artisanId } } }),
-        ctx.db.timeEntry.findMany({
+        ctx.db.timeEntry.aggregate({
           where: { project: { artisanId } },
-          select: { hours: true },
+          _sum: { hours: true },
         }),
       ]);
 
-    const totalHours = totalTimeEntries.reduce(
-      (sum, entry) => sum + Number(entry.hours),
-      0,
-    );
+    const totalHours = Number(timeAggregation._sum.hours || 0);
 
     return { totalProjects, activeProjects, totalPhotos, totalHours };
   }),
@@ -53,6 +50,7 @@ export const projectRouter = createTRPCRouter({
           photos: { orderBy: { takenAt: "desc" } },
           timeEntries: { orderBy: { date: "desc" } },
           materials: true,
+          clientActions: { orderBy: { createdAt: "desc" } }
         },
       });
 
@@ -107,6 +105,7 @@ export const projectRouter = createTRPCRouter({
         clientPhone: z.string().optional(),
         clientEmail: z.string().email().optional(),
         description: z.string().max(2000).optional(),
+        nextSteps: z.any().optional(),
         startDate: z.date().optional(),
         endDate: z.date().optional(),
         shareExpiresAt: z.date().nullable().optional(),
@@ -156,11 +155,17 @@ export const projectRouter = createTRPCRouter({
           address: true,
           startDate: true,
           endDate: true,
+          nextSteps: true,
           clientName: true,
           shareExpiresAt: true,
           photos: {
             select: { id: true, url: true, note: true, takenAt: true },
             orderBy: { takenAt: "desc" },
+          },
+          invoices: {
+            where: { status: { in: ["SENT", "PAID"] } },
+            select: { id: true, number: true, totalTTC: true, status: true, dueAt: true, createdAt: true },
+            orderBy: { createdAt: "desc" },
           },
           clientActions: {
             select: { id: true, type: true, payload: true, createdAt: true },
@@ -219,6 +224,43 @@ export const projectRouter = createTRPCRouter({
         where: { id: input.id },
         data: { shareToken: uuidv4(), shareExpiresAt: input.shareExpiresAt },
         select: { shareToken: true, shareExpiresAt: true },
+      });
+    }),
+
+  addClientSignature: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+        signatureBase64: z.string(),
+        shouldClose: z.boolean().default(false),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      
+      const project = await ctx.db.project.findFirst({
+        where: { id: input.projectId, artisanId },
+      });
+      if (!project) throw new TRPCError({ code: "NOT_FOUND" });
+
+      // Run as transaction if we need to update project status too
+      return ctx.db.$transaction(async (tx) => {
+        const action = await tx.clientAction.create({
+          data: {
+            projectId: input.projectId,
+            type: "SIGNATURE",
+            payload: { signature: input.signatureBase64 },
+          },
+        });
+
+        if (input.shouldClose) {
+          await tx.project.update({
+            where: { id: input.projectId },
+            data: { status: "DONE" },
+          });
+        }
+
+        return action;
       });
     }),
 });

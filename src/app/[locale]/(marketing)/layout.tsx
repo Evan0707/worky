@@ -27,7 +27,7 @@ export default async function MarketingLayout({
               <div className="flex items-center gap-2.5 mb-4">
                 <Logo className="h-5 w-5"  />
                 <span className="text-[15px] font-semibold tracking-tight text-white">
-                  OpenChantier
+                  Worky
                 </span>
               </div>
               <p className="text-[14px] text-neutral-500 max-w-sm leading-relaxed">
@@ -86,7 +86,7 @@ export default async function MarketingLayout({
 
           <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/[0.06] pt-8">
             <p className="text-[13px] text-neutral-600">
-              &copy; {new Date().getFullYear()} OpenChantier. {t("footer.rights")}
+              &copy; {new Date().getFullYear()} Worky. {t("footer.rights")}
             </p>
           </div>
         </div>

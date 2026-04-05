@@ -1,16 +1,20 @@
 {
     "title":  "Paramètres",
     "description":  "Gérez vos informations professionnelles et vos préférences.",
-    "profile":  {
-                    "title":  "Profil Artisan",
-                    "name":  "Nom complet",
-                    "companyName":  "Nom de l\u0027entreprise",
-                    "companyAddress":  "Adresse de l\u0027entreprise",
-                    "hourlyRate":  "Taux horaire (HT)",
-                    "currency":  "Devise par défaut",
-                    "locale":  "Langue par défaut",
-                    "save":  "Enregistrer les modifications"
-                },
+    "profile": {
+        "title": "Profil Artisan",
+        "name": "Nom complet",
+        "companyName": "Nom de l'entreprise",
+        "companyAddress": "Adresse de l'entreprise",
+        "hourlyRate": "Taux horaire (HT)",
+        "currency": "Devise par défaut",
+        "locale": "Langue par défaut",
+        "save": "Enregistrer les modifications",
+        "dangerZone": {
+            "title": "Zone de danger",
+            "description": "Vous allez être déconnecté de votre compte sur cet appareil."
+        }
+    },
     "billing":  {
                     "title":  "Facturation \u0026 Légal",
                     "siret":  "N° SIRET",
@@ -51,7 +55,7 @@
                },
     "upgrade":  {
                     "dialogTitle":  "Passer au plan PRO",
-                    "heading":  "Débloquez tout OpenChantierkr PRO",
+                    "heading":  "Débloquez tout Worky PRO",
                     "subheading":  "Remplacez le papier, Excel et WhatsApp par un seul outil.",
                     "trial":  "14 jours d\u0027essai gratuit",
                     "cancelAnytime":  "Annulable à tout moment",
@@ -67,7 +71,7 @@
                     "cancelScheduled":  "Annulation programmée",
                     "autoRenew":  "Renouvellement auto",
                     "nextBilling":  "Prochaine échéance",
-                    "successTitle":  "Bienvenue dans OpenChantierkr PRO !",
+                    "successTitle":  "Bienvenue dans Worky PRO !",
                     "successDesc":  "Votre essai de 14 jours a démarré. Profitez de toutes les fonctionnalités.",
                     "successCta":  "C\u0027est parti !",
                     "feat":  {

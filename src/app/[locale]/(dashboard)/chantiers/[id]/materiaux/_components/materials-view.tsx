@@ -4,8 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Trash2, PackagePlus, Package, Plus } from "lucide-react";
+import { Loader2, Trash2, Package, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Input } from "@/components/ui/input";
@@ -58,152 +57,135 @@ export function MaterialsView({ projectId, locale }: { projectId: string; locale
   };
 
   return (
-    <div className="grid gap-6 md:grid-cols-3">
-      {/* Left Column — Stat + Form */}
-      <div className="md:col-span-1 space-y-4">
-        {/* Total TTC Card */}
-        <Card className="border-0 bg-gradient-to-br from-orange-500/10 to-orange-500/5 shadow-none overflow-hidden">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-2 text-sm font-medium text-orange-700 dark:text-orange-400 mb-3">
-              <div className="h-7 w-7 rounded-lg icon-orange flex items-center justify-center">
-                <PackagePlus className="w-4 h-4" />
-              </div>
-              {t("materials.totalTTC")}
-            </div>
-            <div className="text-4xl font-bold tracking-tight text-orange-700 dark:text-orange-400 animate-count-up">
-              {isLoading ? (
-                <Skeleton className="h-10 w-28" />
-              ) : (
-                formatCurrency(data?.totalTTC ?? 0, "EUR", locale)
-              )}
-            </div>
-            {data && (
-              <div className="mt-2 text-xs text-orange-700/70 dark:text-orange-400/70 flex gap-2">
-                <span>{t("materials.ht")}: {formatCurrency(data.totalHT, "EUR", locale)}</span>
-                <span>·</span>
-                <span>{t("materials.vat")}: {data.vatRate}%</span>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Add Material Form */}
-        <Card className="shadow-none">
-          <CardHeader className="pb-3 pt-4 px-4">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <Plus className="h-4 w-4 text-primary" />
-              {t("materials.addMaterial")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4 pb-4">
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("materials.label")}</Label>
-                <Input
-                  required
-                  placeholder={t("materials.labelPlaceholder")}
-                  value={label}
-                  onChange={(e) => setLabel(e.target.value)}
-                  className="h-9 text-sm"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("materials.quantity")}</Label>
-                  <div className="flex gap-1.5">
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0.01"
-                      required
-                      value={quantity}
-                      onChange={(e) => setQuantity(e.target.value)}
-                      className="h-9 text-sm flex-1 min-w-0"
-                    />
-                    <Select value={unit} onValueChange={setUnit}>
-                      <SelectTrigger className="h-9 w-[62px] text-xs px-2 shrink-0">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {["u", "h", "m²", "m³", "ml", "m", "cm", "kg", "t", "pcs", "forfait"].map((u) => (
-                          <SelectItem key={u} value={u} className="text-xs">{u}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("materials.unitPriceHT")}</Label>
-                  <div className="relative">
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      required
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                      className="h-9 text-sm pr-7"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">€</span>
-                  </div>
-                </div>
-              </div>
-              <Button type="submit" className="w-full h-9" disabled={createMutation.isPending}>
-                {createMutation.isPending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Plus className="mr-2 h-4 w-4" />
+    <div className="grid gap-5 md:grid-cols-3">
+      {/* Left — Form */}
+      <div className="md:col-span-1">
+        <div className="rounded-xl border bg-card p-5 space-y-4">
+          {/* Total */}
+          <div className="pb-3 border-b border-border/50">
+            <p className="text-xs text-muted-foreground mb-1">{t("materials.totalTTC")}</p>
+            {isLoading ? (
+              <Skeleton className="h-8 w-28" />
+            ) : (
+              <>
+                <p className="text-3xl font-bold tracking-tight">
+                  {formatCurrency(data?.totalTTC ?? 0, "EUR", locale)}
+                </p>
+                {data && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {t("materials.ht")}: {formatCurrency(data.totalHT, "EUR", locale)}
+                    {" · "}
+                    {t("materials.vat")}: {data.vatRate}%
+                  </p>
                 )}
-                {tCommon("buttons.add")}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+              </>
+            )}
+          </div>
+
+          {/* Form */}
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            {t("materials.addMaterial")}
+          </p>
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs text-muted-foreground">{t("materials.label")}</Label>
+              <Input
+                required
+                placeholder={t("materials.labelPlaceholder")}
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                className="h-9 text-sm"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">{t("materials.quantity")}</Label>
+                <div className="flex gap-1.5">
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    required
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    className="h-9 text-sm flex-1 min-w-0"
+                  />
+                  <Select value={unit} onValueChange={setUnit}>
+                    <SelectTrigger className="h-9 w-[62px] text-xs px-2 shrink-0">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {["u", "h", "m²", "m³", "ml", "m", "cm", "kg", "t", "pcs", "forfait"].map((u) => (
+                        <SelectItem key={u} value={u} className="text-xs">{u}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">{t("materials.unitPriceHT")}</Label>
+                <div className="relative">
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    required
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    className="h-9 text-sm pr-7"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">€</span>
+                </div>
+              </div>
+            </div>
+            <Button type="submit" className="w-full h-9" disabled={createMutation.isPending}>
+              {createMutation.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Plus className="mr-2 h-4 w-4" />
+              )}
+              {tCommon("buttons.add")}
+            </Button>
+          </form>
+        </div>
       </div>
 
-      {/* Right Column — Materials List */}
+      {/* Right — List */}
       <div className="md:col-span-2">
-        <Card className="shadow-none">
-          <CardHeader className="pb-3 pt-4 px-5">
-            <CardTitle className="text-sm font-semibold">{t("materials.list")}</CardTitle>
-          </CardHeader>
-          <CardContent className="px-5 pb-5">
+        <div className="rounded-xl border bg-card">
+          <div className="px-5 py-4 border-b border-border/50">
+            <p className="text-sm font-semibold">{t("materials.list")}</p>
+          </div>
+
+          <div className="px-5 py-4">
             {isLoading ? (
               <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-muted/30">
-                    <Skeleton className="h-9 w-9 rounded-xl shrink-0" />
+                  <div key={i} className="flex items-center gap-3 py-2">
                     <div className="flex-1 space-y-1.5">
                       <Skeleton className="h-4 w-36" />
                       <Skeleton className="h-3 w-24" />
                     </div>
-                    <Skeleton className="h-5 w-14" />
+                    <Skeleton className="h-4 w-16" />
                   </div>
                 ))}
               </div>
             ) : data?.materials && data.materials.length > 0 ? (
-              <div className="space-y-2">
+              <div className="divide-y divide-border/50">
                 {data.materials.map((item) => (
                   <div
                     key={item.id}
-                    className="group flex items-center gap-3 p-3 rounded-xl bg-muted/20 hover:bg-muted/40 border border-transparent hover:border-border/50 transition-all duration-150"
+                    className="group flex items-center gap-3 py-3 first:pt-0 last:pb-0"
                   >
-                    {/* Icon */}
-                    <div className="h-9 w-9 rounded-xl icon-orange flex items-center justify-center shrink-0">
-                      <Package className="h-4 w-4" />
-                    </div>
-                    {/* Info */}
-                    <div className="flex-1 min-w-0 space-y-0.5">
-                      <div className="text-sm font-medium truncate">{item.label}</div>
-                      <div className="text-xs text-muted-foreground">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{item.label}</p>
+                      <p className="text-xs text-muted-foreground">
                         {Number(item.quantity)} {item.unit} × {formatCurrency(Number(item.unitPrice), "EUR", locale)}
-                      </div>
+                      </p>
                     </div>
-                    {/* Total */}
-                    <div className="text-sm font-semibold shrink-0">
+                    <p className="text-sm font-semibold tabular-nums shrink-0">
                       {formatCurrency(Number(item.quantity) * Number(item.unitPrice), "EUR", locale)}
-                    </div>
-                    {/* Delete */}
+                    </p>
                     <ConfirmDialog
                       title={t("deleteConfirm.title")}
                       description={t("deleteConfirm.description")}
@@ -225,16 +207,14 @@ export function MaterialsView({ projectId, locale }: { projectId: string; locale
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center gap-2 py-10 text-center">
-                <div className="h-10 w-10 rounded-xl icon-orange flex items-center justify-center mb-1">
-                  <Package className="h-5 w-5" />
-                </div>
+              <div className="flex flex-col items-center gap-2 py-12 text-center">
+                <Package className="h-8 w-8 text-muted-foreground/40" />
                 <p className="text-sm font-medium">{t("materials.empty")}</p>
                 <p className="text-xs text-muted-foreground">{tCommon("subpages.materialsHint")}</p>
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

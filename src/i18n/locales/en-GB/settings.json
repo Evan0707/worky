@@ -51,7 +51,7 @@
                },
     "upgrade":  {
                     "dialogTitle":  "Upgrade to PRO",
-                    "heading":  "Unlock all of OpenChantierkr PRO",
+                    "heading":  "Unlock all of Worky PRO",
                     "subheading":  "Replace paper, Excel and WhatsApp with one unified tool.",
                     "trial":  "14-day free trial",
                     "cancelAnytime":  "Cancel anytime",
@@ -67,7 +67,7 @@
                     "cancelScheduled":  "Cancellation scheduled",
                     "autoRenew":  "Auto-renewal",
                     "nextBilling":  "Next billing date",
-                    "successTitle":  "Welcome to OpenChantierkr PRO!",
+                    "successTitle":  "Welcome to Worky PRO!",
                     "successDesc":  "Your 14-day trial has started. Enjoy all the features.",
                     "successCta":  "Let\u0027s go!",
                     "feat":  {

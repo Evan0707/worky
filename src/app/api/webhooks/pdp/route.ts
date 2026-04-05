@@ -9,15 +9,17 @@ export async function POST(req: Request) {
     const rawBody = await req.text();
     const signature = req.headers.get("x-tiime-signature");
 
-    // Signature verification — required when TIIME_WEBHOOK_SECRET is set
-    if (process.env.TIIME_WEBHOOK_SECRET) {
-      const expectedSig = crypto
-        .createHmac("sha256", process.env.TIIME_WEBHOOK_SECRET)
-        .update(rawBody)
-        .digest("hex");
-      if (!signature || expectedSig !== signature) {
-        return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
-      }
+    // Signature verification — always required
+    if (!process.env.TIIME_WEBHOOK_SECRET) {
+      console.error("[Tiime Webhook] TIIME_WEBHOOK_SECRET is not configured.");
+      return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
+    }
+    const expectedSig = crypto
+      .createHmac("sha256", process.env.TIIME_WEBHOOK_SECRET)
+      .update(rawBody)
+      .digest("hex");
+    if (!signature || expectedSig !== signature) {
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
     const event = JSON.parse(rawBody);
@@ -30,7 +32,7 @@ export async function POST(req: Request) {
 
     const { externalId: invoiceId, status: tiimeStatus } = event.data;
 
-    // Convert Tiime PDP Status to OpenChantier Internal Status
+    // Convert Tiime PDP Status to Worky Internal Status
     // Tiime uses specific statuses for B2B/B2G flows
     let internalStatus: "SENT" | "ACCEPTED" | "REFUSED" | "PAID" | "OVERDUE" = "SENT";
 

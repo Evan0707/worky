@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import { api } from "@/trpc/server";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,8 +16,15 @@ export default async function ClientProjectView({
 }) {
   const { token } = await params;
   
+  const reqHeaders = await headers();
+  const acceptLanguage = reqHeaders.get("accept-language") || "";
+  const browserLocale = acceptLanguage.includes("en") ? "en-GB" : acceptLanguage.includes("de") ? "de-DE" : acceptLanguage.includes("es") ? "es-ES" : "fr-FR";
+
   let project;
+  let tError;
   try {
+    const errorTranslations = (await import(`@/i18n/locales/${browserLocale}/projects.json`)).default;
+    tError = errorTranslations.publicView;
     project = await api.project.getByToken({ token });
   } catch (error) {
     return (
@@ -25,23 +33,26 @@ export default async function ClientProjectView({
           <div className="mx-auto h-16 w-16 mb-4 rounded-2xl icon-orange flex items-center justify-center">
             <MapPin className="h-8 w-8 opacity-60" />
           </div>
-          <h1 className="text-xl font-semibold tracking-tight mb-2">Lien invalide ou expiré</h1>
+          <h1 className="text-xl font-semibold tracking-tight mb-2">
+            {tError?.invalidLinkTitle || "Lien invalide ou expiré"}
+          </h1>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            Ce chantier n&apos;est plus partagé. Veuillez contacter votre artisan pour obtenir un nouveau lien.
+            {tError?.invalidLinkDesc || "Ce chantier n'est plus partagé. Veuillez contacter votre artisan pour obtenir un nouveau lien."}
           </p>
         </Card>
       </div>
     );
   }
 
-  const locale = "fr-FR"; // Fallback public locale for MVP
+  const defaultLocale = browserLocale;
+  const translations = (await import(`@/i18n/locales/${defaultLocale}/projects.json`)).default;
+  const t = translations.publicView;
 
-  // Traduction simple du status pour la vue client
   const statusConfig = {
-    ACTIVE: { label: "En cours", classes: "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400 border-none animate-pulse" },
-    PAUSED: { label: "En pause", classes: "bg-amber-500/10 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400 border-none" },
-    DONE:   { label: "Terminé", classes: "bg-blue-500/10 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400 border-none" },
-    ARCHIVED: { label: "Archivé", classes: "bg-muted text-muted-foreground border-none" }
+    ACTIVE: { label: translations.statusBadge.ACTIVE, classes: "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400 border-none animate-pulse" },
+    PAUSED: { label: translations.statusBadge.PAUSED, classes: "bg-amber-500/10 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400 border-none" },
+    DONE:   { label: translations.statusBadge.DONE, classes: "bg-blue-500/10 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400 border-none" },
+    ARCHIVED: { label: translations.statusBadge.ARCHIVED, classes: "bg-muted text-muted-foreground border-none" }
   };
   
   const status = statusConfig[project.status as keyof typeof statusConfig] || statusConfig.ARCHIVED;
@@ -90,9 +101,9 @@ export default async function ClientProjectView({
                   <Calendar className="h-3.5 w-3.5" />
                 </div>
                 <span className="font-medium text-foreground/80">
-                  {project.startDate ? formatDate(project.startDate, locale) : "Non défini"}
+                  {project.startDate ? formatDate(project.startDate, defaultLocale) : translations.overview.undefined}
                   {" - "}
-                  {project.endDate ? formatDate(project.endDate, locale) : "Non défini"}
+                  {project.endDate ? formatDate(project.endDate, defaultLocale) : translations.overview.undefined}
                 </span>
               </div>
             )}
@@ -110,12 +121,12 @@ export default async function ClientProjectView({
             <div className="h-8 w-8 rounded-xl icon-violet flex items-center justify-center">
               <Camera className="h-4 w-4" />
             </div>
-            Galerie Photos ({project._count.photos})
+            {translations.tabs.photos} ({project._count.photos})
           </h2>
 
           {project.photos.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {project.photos.map((photo) => (
+              {project.photos.map((photo: any) => (
                 <div key={photo.id} className="relative aspect-square group overflow-hidden rounded-2xl bg-muted border border-border/50 shadow-sm animate-scale-in">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -126,7 +137,7 @@ export default async function ClientProjectView({
                   />
                   <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 translate-y-2 group-hover:translate-y-0 transition-transform opacity-0 group-hover:opacity-100">
                     <p className="text-white text-[11px] font-medium tracking-wide uppercase">
-                      {formatDate(photo.takenAt, locale)}
+                      {formatDate(photo.takenAt, defaultLocale)}
                     </p>
                     {photo.note && (
                       <p className="text-white/90 text-sm mt-0.5 truncate font-medium">{photo.note}</p>
@@ -141,9 +152,9 @@ export default async function ClientProjectView({
                 <div className="h-16 w-16 rounded-2xl icon-violet flex items-center justify-center mb-4 opacity-50">
                   <ImageIcon className="h-8 w-8" />
                 </div>
-                <p className="text-sm font-medium">Aucune photo partagée</p>
+                <p className="text-sm font-medium">{t.noPhotosTitle}</p>
                 <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-                  L&apos;artisan n&apos;a pas encore partagé de photos de l&apos;avancement du chantier.
+                  {t.noPhotosDesc}
                 </p>
               </CardContent>
             </Card>
@@ -152,7 +163,7 @@ export default async function ClientProjectView({
       </main>
       
       <footer className="text-center py-12 text-sm text-muted-foreground animate-slide-up animate-stagger-3">
-        Propulsé par <span className="font-semibold text-foreground/70">OpenChantier</span>
+        {t.poweredBy}
       </footer>
     </div>
   );

@@ -1,0 +1,495 @@
+═══════════════════════════════════════════════════════════════════════════════
+  WORKY — AUDIT COMPLET DE L'APPLICATION
+  Date : 2026-04-04
+═══════════════════════════════════════════════════════════════════════════════
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. STRUCTURE DU PROJET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Racine :
+  ├── src/                    Code applicatif
+  ├── prisma/schema.prisma    Schéma unique
+  ├── emails/                 Templates React Email (3 templates + layout)
+  ├── microservices/facturx/  Microservice Python (WeasyPrint/Factur-X)
+  ├── data/                   Documentation produit
+  └── *.cjs                   Scripts de migration one-off (à nettoyer)
+
+  Routes (src/app/) :
+  ┌─────────────────────────────────────┬──────────────────────────┐
+  │ Route                               │ Statut                   │
+  ├─────────────────────────────────────┼──────────────────────────┤
+  │ [locale]/(auth)/login               │ ✅ Complet               │
+  │ [locale]/(onboarding)/onboarding    │ ✅ Complet               │
+  │ [locale]/(dashboard)/dashboard      │ ✅ Complet               │
+  │ [locale]/(dashboard)/chantiers      │ ✅ Complet               │
+  │ [locale]/(dashboard)/chantiers/new  │ ✅ Complet               │
+  │ [locale]/(dashboard)/chantiers/[id] │ ✅ Complet (overview)    │
+  │   └── /photos                       │ ✅ Complet               │
+  │   └── /temps                        │ ✅ Complet               │
+  │   └── /materiaux                    │ ✅ Complet               │
+  │ [locale]/(dashboard)/factures       │ ✅ Complet               │
+  │ [locale]/(dashboard)/factures/new   │ ✅ Complet               │
+  │ [locale]/(dashboard)/settings       │ ✅ Complet               │
+  │ [locale]/(dashboard)/settings/billing│ ✅ Complet              │
+  │ [locale]/(dashboard)/settings/team  │ ✅ Complet               │
+  │ [locale]/(marketing)/*              │ ✅ Landing + legal       │
+  │ c/[token]                           │ ✅ Vue publique client   │
+  │ [locale]/analytics                  │ ❌ MANQUANT              │
+  │ [locale]/login/verify               │ ❌ MANQUANT              │
+  │ [locale]/login/error                │ ❌ MANQUANT              │
+  └─────────────────────────────────────┴──────────────────────────┘
+
+  ⚠ /analytics est référencé dans : middleware PROTECTED_PATHS, sidebar nav,
+    landing page, dialog d'upgrade → 404 pour l'utilisateur.
+  ⚠ /login/verify et /login/error sont référencés dans authConfig.pages
+    mais n'existent pas → erreur NextAuth silencieuse.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  2. PRISMA SCHEMA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Modèles : User, Account, Session, VerificationToken, Team, TeamMember,
+            TeamInvitation, Project, Photo, TimeEntry, Material, Invoice,
+            ClientAction
+
+  Enums : Plan, TeamRole, ProjectStatus, InvoiceType, InvoiceStatus,
+          InvoiceFormat, ClientActionType, VatScheme
+
+  ✅ Points positifs :
+     - onDelete: Cascade sur toutes les FK
+     - @@index sur artisanId, projectId, teamId, shareToken, token
+     - @@unique sur [provider, providerAccountId], [teamId, email]
+     - Invoice @@index([projectId, status])
+
+  ⚠ Problèmes :
+     [S-01] datasource db n'a pas de champ url= → prisma migrate/studio
+            ne fonctionnent pas sans prisma.config.ts (Neon adapter dans db.ts)
+     [S-02] Invoice.number @unique → la génération count+1 n'est pas atomique
+            → race condition sous requêtes concurrentes
+     [S-03] Project.progress (Int) — jamais mis à jour par aucune mutation,
+            potentiellement champ mort
+     [S-04] Project.budget — stocké mais jamais affiché dans l'UI
+     [S-05] Invoice.lines est Json sans validation Zod au niveau Prisma
+     [S-06] Invoice.dueAt / issuedAt — champs existants, non remplis par create
+     [S-07] Invoice.remindersSentAt — champ existant, aucune logique de rappel
+     [S-08] Project.clientLocale — champ existant, jamais utilisé
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  3. SÉCURITÉ
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ──── CRITIQUE ────
+
+  [SEC-01] IDOR dans invoice.create
+           Utilise ctx.session.user.id au lieu de getArtisanContext()
+           → Un membre d'équipe ne peut pas créer de factures du tout
+           → Incohérence avec toutes les autres mutations invoice qui
+             utilisent getArtisanContext()
+           Fichier : src/server/api/routers/invoice.ts ~ligne 70
+
+  [SEC-02] Pas de vérification PRO sur invoice.create et createFromProject
+           La landing page et le billing décrivent la facturation comme PRO,
+           requirePro() existe dans trpc.ts mais n'est jamais appelé dans
+           le router invoice. Un utilisateur FREE peut créer des factures
+           illimitées via l'API tRPC directement.
+
+  [SEC-03] /api/webhooks/pdp non authentifié sans TIIME_WEBHOOK_SECRET
+           Si la variable d'env n'est pas définie, n'importe qui peut POST
+           sur cet endpoint et changer le statut de n'importe quelle facture.
+           Fichier : src/app/api/webhooks/pdp/route.ts
+
+  [SEC-04] Race condition sur le numéro de facture
+           Deux requêtes concurrentes → même count+1 → même numéro →
+           crash @unique Prisma → erreur 500 opaque pour l'utilisateur.
+
+  ──── MOYEN ────
+
+  [SEC-05] Création d'équipe non verrouillée au plan PRO
+           team.create n'appelle pas requirePro() → un utilisateur FREE
+           peut créer une équipe via l'API.
+
+  [SEC-06] JWT plan staleness après upgrade Stripe
+           Le plan est écrit dans le JWT uniquement au sign-in.
+           Après un upgrade PRO via webhook Stripe, le JWT reste stale
+           jusqu'à déconnexion/reconnexion. L'utilisateur paie mais ne
+           voit pas les features PRO immédiatement.
+
+  [SEC-07] markClientViewed (publicProcedure) sans rate limiting
+           N'importe qui avec un shareToken peut spammer ce endpoint.
+
+  [SEC-08] Signature base64 stockée en JSON sans limite de taille
+           Le PNG complet de la signature est dans ClientAction.payload.
+           Peut bloater la DB et les réponses API.
+
+  ──── FAIBLE ────
+
+  [SEC-09] photo.updateOrder ne vérifie pas que tous les IDs photos
+           appartiennent au projectId donné (mais l'artisan est vérifié).
+  [SEC-10] invoice-template.ts injecte des champs utilisateur dans du HTML
+           via template literals sans échappement (risque limité car
+           traitement server-side uniquement par WeasyPrint).
+  [SEC-11] NEXT_PUBLIC_APP_URL default à http://localhost:3000
+           → tous les liens partagés pointent vers localhost si non défini.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  4. tRPC ROUTERS — ANALYSE DÉTAILLÉE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Routers (8) : project, photo, timeEntry, material, user, invoice, stripe, team
+
+  ── projectRouter ──
+  ✅ list, getById, create, update, delete → getArtisanContext ou artisanId check
+  ✅ getByToken → select whitelist explicite (pas de stripeCustomerId, email, etc.)
+  ✅ create → FREE limit 3 projets actifs/pausés (server-side)
+  ⚠  delete → soft delete (status=DONE), pas de vraie suppression possible
+  ⚠  update → nextSteps accepte z.any() → JSON complètement non typé
+  ⚠  markClientViewed → publicProcedure sans rate limit
+
+  ── invoiceRouter ──
+  ❌ create → utilise session.user.id au lieu de getArtisanContext() [SEC-01]
+  ❌ create → hardcode currency:"EUR" et locale:"fr-FR" [BUG-01]
+  ❌ create + createFromProject → pas de requirePro() [SEC-02]
+  ⚠  sendToPDP → mock uniquement (console.log + sleep 800ms)
+  ⚠  sendToPDP → cast session.user vers un type ad-hoc incluant siret/companyName
+     qui ne sont PAS dans la session → toujours undefined
+  ⚠  sendToPDP → code mort : buyer.siret = undefined dans les deux branches
+  ⚠  Pas de mutation markPaid (clés i18n existent, pas d'implémentation)
+
+  ── photoRouter ──
+  ✅ Toutes les procédures utilisent getArtisanContext correctement
+  ⚠  updateOrder ne vérifie pas l'appartenance des IDs au projet [SEC-09]
+
+  ── timeEntryRouter ──
+  ✅ getArtisanContext partout, prévention date future
+
+  ── materialRouter ──
+  ✅ getArtisanContext partout, résolution taux TVA depuis profil owner
+
+  ── userRouter ──
+  ✅ getProfile exclut stripeCustomerId et stripeSubscriptionId
+  ⚠  updateProfile accepte logoUrl comme z.string().url() sans whitelist
+
+  ── stripeRouter ──
+  ✅ activateSubscription vérifie que la subscription appartient au customer
+  ⚠  cancelSubscription et resumeSubscription ne vérifient pas le customer
+
+  ── teamRouter ──
+  ✅ Logique complète : owner-only, prévention escalade admin, email matching
+  ❌ team.create n'a pas de check PRO [SEC-05]
+  ⚠  Email d'invitation = HTML inline dans team.ts, pas React Email
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  5. i18n — INTERNATIONALISATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Locales : fr-FR, en-GB, de-DE, es-ES
+  Namespaces (10) : common, projects, photos, invoices, billing,
+                     auth, emails, legal, landing, seo
+
+  ──── CRITIQUE ────
+
+  [I18N-01] landing.json — Identique en français dans les 4 locales
+            de-DE, en-GB, es-ES sont des copies verbatim de fr-FR.
+            La landing page affiche du français pour tous les utilisateurs.
+
+  [I18N-02] legal.json — Identique en français dans les 4 locales
+            Les pages légales (CGU, Confidentialité, Mentions légales)
+            sont uniquement en français quelque soit la locale.
+
+  [I18N-03] de-DE/invoices.json et es-ES/invoices.json — Clés manquantes :
+            - newDocument, newSubtitle
+            - fields.type, fields.status
+            - toasts.deleted, toasts.created
+            - form.* (objet entier absent)
+            - empty.*
+            - table.*
+            → Les pages factures en allemand/espagnol affichent des clés brutes.
+
+  ──── STRINGS HARDCODÉES (français) ────
+
+  [I18N-04] src/app/c/[token]/page.tsx — Page publique client
+            ENTIÈREMENT en français hardcodé :
+            "Lien invalide ou expiré", "En cours", "En pause", "Terminé",
+            "Archivé", "Non défini", "Prochaines étapes", "Avancement total",
+            "Galerie Photos", "Documents & Facturation", "Aucune photo partagée",
+            "Payé", "À régler", "Propulsé par OpenChantier"
+            → const locale = "fr-FR" hardcodé
+
+  [I18N-05] src/lib/invoice-template.ts — Template HTML facture
+            Tout en français : "Date d'émission", "Chantier", "Désignation",
+            "Qté", "Prix Unitaire HT", "TVA", "Total HT", "Total TTC",
+            "Merci pour votre confiance.", "Règlement par virement bancaire"
+
+  [I18N-06] src/app/[locale]/(dashboard)/settings/page.tsx
+            "Zone de danger", "Vous allez être déconnecté de votre compte
+            sur cet appareil."
+
+  [I18N-07] src/app/[locale]/(dashboard)/factures/page.tsx
+            document${invoices.length > 1 ? "s" : ""} — pluralisation hardcodée
+
+  [I18N-08] src/app/[locale]/(dashboard)/factures/_components/invoice-form.tsx
+            Messages Zod en français : "Veuillez sélectionner un chantier",
+            "La désignation est requise", "Ajoutez au moins une ligne"
+
+  [I18N-09] src/app/[locale]/(onboarding)/onboarding/_components/onboarding-form.tsx
+            placeholder="John" et placeholder="Doe" hardcodés
+
+  [I18N-10] emails/client-share.tsx
+            <Text>Bonjour {clientName},</Text> — hardcodé en français
+            dans toutes les locales
+
+  ──── INCOHÉRENCE NOM DE MARQUE ────
+
+  [I18N-11] Le nom de l'app varie à travers le code :
+            • package.json          → "chantier-pro"
+            • common.json app.name  → "OpenChantierkr"
+            • emails/otp.tsx        → "Worky"
+            • auth.json onboarding  → "Qoworkr"
+            • dashboard layout      → "OpenChantier"
+            • team.ts invite email  → "OpenChantierkr"
+            • c/[token] footer      → "OpenChantier"
+            → Choisir UN seul nom et uniformiser partout.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  6. AUTH (NextAuth v5)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Config : auth.config.ts (edge/JWT) + auth.ts (full/PrismaAdapter)
+  Providers : Google OAuth + Resend (magic link)
+
+  ✅ JWT callback résout getArtisanContext → membres d'équipe héritent
+     du plan du owner
+  ✅ PrismaAdapter correctement configuré avec Neon adapter
+
+  ⚠ Problèmes :
+  [AUTH-01] pages.signIn: "/login" sans préfixe locale
+            → Peut causer des boucles de redirection avec next-intl
+  [AUTH-02] pages.verifyRequest: "/login/verify" — page inexistante
+  [AUTH-03] pages.error: "/login/error" — page inexistante
+  [AUTH-04] Le template OTPEmail (emails/otp.tsx) n'est JAMAIS câblé
+            dans sendVerificationRequest de Resend.
+            → Les emails de connexion utilisent le template par défaut
+            NextAuth (brut, sans branding).
+  [AUTH-05] Google provider dans auth.config.ts a clientId:"" et
+            clientSecret:"" (vides) — fonctionnel (runtime inject) mais
+            peut générer des warnings.
+  [AUTH-06] Plan JWT stale après upgrade [SEC-06]
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  7. ROUTES API
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ┌──────────────────────────┬──────────────┬────────────────────────────┐
+  │ Route                    │ Auth         │ Notes                      │
+  ├──────────────────────────┼──────────────┼────────────────────────────┤
+  │ POST /api/webhooks/stripe│ Stripe HMAC  │ ✅ Vérification signature  │
+  │ POST /api/webhooks/pdp   │ Optionnel    │ ❌ Non auth si env absent  │
+  │ GET /api/team/accept/[t] │ Session      │ ✅ Guards + transaction    │
+  │ POST /api/invoice/facturx│ Session+PRO  │ ⚠ localhost:8000 fallback │
+  │ POST /api/photos/upload  │ Session      │ ⚠ Cloudinary legacy       │
+  │ POST /api/uploadthing    │ Session      │ ✅ UploadThing             │
+  │ POST /api/trpc/[trpc]    │ Per-procedure│ ✅ Standard                │
+  └──────────────────────────┴──────────────┴────────────────────────────┘
+
+  [API-01] Double système upload : Cloudinary + UploadThing coexistent.
+           Un seul est utilisé en pratique → l'autre est du code mort.
+  [API-02] /api/invoice/facturx → fallback http://localhost:8000
+           Si FACTURX_API_URL non défini en prod → requêtes échouent.
+  [API-03] FACTURX_API_URL, TIIME_WEBHOOK_SECRET absents du schéma env.js
+  [API-04] Cloudinary env vars (CLOUDINARY_CLOUD_NAME, _API_KEY, _API_SECRET)
+           présentes dans runtimeEnv mais ABSENTES du schéma Zod server →
+           passent sans validation.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  8. EMAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Templates :
+  ├── layout.tsx                 ✅ Base layout redesigné
+  ├── otp.tsx                    ✅ Redesigné — mais jamais câblé [AUTH-04]
+  ├── client-share.tsx           ✅ Créé — jamais envoyé (pas de mutation)
+  └── invoice-notification.tsx   ✅ Créé — jamais envoyé (pas de mutation)
+
+  [EMAIL-01] Aucun template n'est réellement envoyé par l'application.
+             Le seul email qui part (magic link) utilise le template
+             par défaut de NextAuth/Resend.
+  [EMAIL-02] L'email d'invitation équipe est du HTML inline dans team.ts,
+             pas dans le système React Email.
+  [EMAIL-03] client-share.tsx a "Bonjour" hardcodé [I18N-10]
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  9. MIDDLEWARE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Ordre : next-intl → NextAuth (correct selon CLAUDE.md)
+
+  ⚠ Problèmes :
+  [MW-01] intlResponse.status !== 200 check est fragile — pourrait ne pas
+          gérer correctement tous les cas de next-intl (redirections, rewrites).
+  [MW-02] /onboarding n'est PAS dans PROTECTED_PATHS → un utilisateur non
+          authentifié peut atteindre la page (le layout attrape au server-side
+          mais c'est pas idéal).
+  [MW-03] /factures n'est PAS dans PROTECTED_PATHS → idem.
+  [MW-04] /analytics est dans PROTECTED_PATHS mais la route n'existe pas.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  10. PERFORMANCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  [PERF-01] getDashboardStats → timeEntry.findMany récupère TOUTES les entrées
+            pour calculer la somme des heures. Devrait utiliser
+            db.timeEntry.aggregate({ _sum: { hours: true } }).
+
+  [PERF-02] project.list → retourne TOUS les projets sans pagination côté DB.
+            Pour un artisan avec 100+ projets, payload volumineux.
+
+  [PERF-03] photo.listByProject → retourne TOUTES les photos d'un projet.
+            200 photos = gros payload (URLs + notes + metadata).
+
+  [PERF-04] project.getById → include ALL photos, timeEntries, materials,
+            clientActions dans une seule requête. Les onglets font ensuite
+            leurs propres requêtes séparées → données chargées en double.
+
+  [PERF-05] dashboard/layout.tsx → export const dynamic = "force-dynamic"
+            Correct pour le contenu auth-gated mais ajoute de la latence.
+
+  [PERF-06] recharts (~200kb) installé mais potentiellement jamais utilisé
+            dans un composant visible → poids bundle mort.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  11. FEATURES MANQUANTES / STUBS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ┌────────────────────────────────────┬───────────────────────────────────┐
+  │ Feature                            │ Statut                            │
+  ├────────────────────────────────────┼───────────────────────────────────┤
+  │ Page /analytics                    │ ❌ Référencée partout, inexistante│
+  │ Recharts analytics dashboard       │ ❌ Dépendance installée, pas page │
+  │ Intégration Tiime/PDP réelle       │ ❌ Mock (console.log + sleep)     │
+  │ Câblage OTPEmail dans NextAuth     │ ❌ Template existe, pas câblé     │
+  │ Envoi ClientShareEmail             │ ❌ Template existe, pas de mutation│
+  │ Envoi InvoiceNotificationEmail     │ ❌ Template existe, pas de mutation│
+  │ Mutation invoice.markPaid          │ ❌ Clés i18n existent, pas d'implémentation│
+  │ Pusher real-time                   │ ❌ Libs installées, pas de publish/subscribe│
+  │ Téléchargement PDF facture (UI)    │ ❌ API facturx existe, pas de handler client│
+  │ Mise à jour Project.progress (UI)  │ ❌ Champ + mutation, pas d'UI     │
+  │ Affichage Project.budget           │ ❌ Champ stocké, pas affiché      │
+  │ Invoice.dueAt / issuedAt           │ ❌ Champs, pas remplis par create │
+  │ Rappels facture (remindersSentAt)  │ ❌ Champ, aucune logique          │
+  │ Client locale (Project.clientLocale)│ ❌ Champ, jamais utilisé         │
+  │ Pages /login/verify et /login/error│ ❌ Référencées, inexistantes      │
+  │ Suppression de compte (RGPD)       │ ❌ Aucune procédure ni page       │
+  │ Portail client Stripe              │ ❌ Clé i18n "portal" existe       │
+  └────────────────────────────────────┴───────────────────────────────────┘
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  12. DÉPENDANCES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ⚠ Dépendances à vérifier :
+  [DEP-01] recharts ^3.8.1 — probablement inutilisée (analytics inexistant)
+  [DEP-02] cloudinary ^2.9.0 — potentiellement morte si UploadThing est actif
+  [DEP-03] react-signature-canvas ^1.1.0-alpha.2 — version ALPHA en prod
+  [DEP-04] pusher ^5.2.0 + pusher-js ^8.4.0 — installées, aucun usage réel
+  [DEP-05] uuid ^13.0.0 — redondant avec crypto.randomUUID() utilisé
+           dans team.ts (uuid importé dans project.ts)
+  [DEP-06] next-auth ^5.0.0-beta.25 — version beta, risque de breaking changes
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  13. ENVIRONNEMENT / CONFIG
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  [ENV-01] CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
+           → dans runtimeEnv mais PAS dans le schéma Zod server → non validées
+  [ENV-02] FACTURX_API_URL → process.env direct, pas dans env.js
+  [ENV-03] TIIME_WEBHOOK_SECRET → process.env direct, pas dans env.js
+  [ENV-04] Pas de headers de sécurité dans next.config.js
+           (Content-Security-Policy, X-Frame-Options, etc.)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  14. QUALITÉ DE CODE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  [QC-01] Nom de marque incohérent (5 noms différents) [I18N-11]
+  [QC-02] Scripts one-off à la racine :
+          add-i18n-features.cjs, add-onboarding-locales.cjs,
+          update-i18n-signature-close.cjs, update-seo.cjs
+          → À supprimer ou déplacer dans scripts/
+  [QC-03] Fichiers artefacts à la racine :
+          cdc_extracted.txt, cdc_utf8.txt, read_docx.ps1, read_docx.py
+          → Ne devraient pas être committés
+  [QC-04] data/temp_docx/ — fichiers DOCX temporaires → gitignore
+  [QC-05] invoice.ts sendToPDP cast session.user vers un type avec
+          siret/companyName qui ne sont PAS dans la session → undefined
+  [QC-06] invoice.ts sendToPDP code mort :
+          buyer.siret = undefined dans les deux branches
+  [QC-07] invoice-template.ts utilise `any` pour les types paramètres
+  [QC-08] project.delete est un soft delete (status=DONE) — nom trompeur
+  [QC-09] project.update accepte z.any() pour nextSteps
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  15. RÉSUMÉ DES PRIORITÉS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ┌──────────┬────────────────────────────────────────────────────────────┐
+  │ Priorité │ Actions                                                    │
+  ├──────────┼────────────────────────────────────────────────────────────┤
+  │          │ • Fix IDOR invoice.create [SEC-01]                        │
+  │          │ • Ajouter requirePro() sur invoice.create/createFromProject│
+  │ CRITIQUE │ • Sécuriser /api/webhooks/pdp [SEC-03]                    │
+  │ (avant   │ • Câbler OTPEmail dans NextAuth [AUTH-04]                 │
+  │ launch)  │ • Fixer race condition numéro facture [SEC-04]            │
+  │          │ • Traduire landing.json et legal.json [I18N-01/02]        │
+  │          │ • Compléter de-DE et es-ES invoices.json [I18N-03]        │
+  │          │ • Choisir et unifier le nom de marque [I18N-11]           │
+  │          │ • Internationaliser c/[token]/page.tsx [I18N-04]          │
+  ├──────────┼────────────────────────────────────────────────────────────┤
+  │          │ • Résoudre JWT staleness post-upgrade [SEC-06]            │
+  │          │ • Ajouter requirePro() sur team.create [SEC-05]           │
+  │          │ • Créer page /analytics ou retirer les références         │
+  │ HAUTE    │ • Créer pages /login/verify et /login/error [AUTH-02/03]  │
+  │          │ • Internationaliser invoice-template.ts [I18N-05]         │
+  │          │ • Internationaliser settings/page.tsx [I18N-06]           │
+  │          │ • Internationaliser invoice-form.tsx Zod [I18N-08]        │
+  │          │ • Ajouter env vars manquantes dans env.js [ENV-01/02/03]  │
+  │          │ • Optimiser getDashboardStats aggregate [PERF-01]         │
+  ├──────────┼────────────────────────────────────────────────────────────┤
+  │          │ • Choisir un seul système upload (UploadThing vs Cloudinary)│
+  │          │ • Supprimer dépendances mortes (recharts, pusher, uuid)    │
+  │ MOYENNE  │ • Nettoyer scripts one-off et artefacts à la racine       │
+  │          │ • Migrer email invitation équipe vers React Email          │
+  │          │ • Ajouter headers de sécurité dans next.config.js          │
+  │          │ • Câbler envoi des emails (share, invoice notification)    │
+  │          │ • Implémenter invoice.markPaid                             │
+  │          │ • Typer nextSteps avec un schéma Zod                       │
+  ├──────────┼────────────────────────────────────────────────────────────┤
+  │          │ • Pagination DB sur project.list et photo.listByProject    │
+  │          │ • Supprimer double-fetch project.getById vs onglets        │
+  │ BASSE    │ • Implémenter features stubs (progress UI, budget display)│
+  │          │ • Page suppression de compte (RGPD)                        │
+  │          │ • Portail client Stripe                                    │
+  │          │ • Upgrade react-signature-canvas hors alpha                │
+  └──────────┴────────────────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════
+  Fin de l'audit — 65 points identifiés
+  SEC: 11 · I18N: 11 · AUTH: 6 · PERF: 6 · API: 4 · ENV: 4
+  DEP: 6 · QC: 9 · MW: 4 · EMAIL: 3 · SCHEMA: 8
+═══════════════════════════════════════════════════════════════════════════════

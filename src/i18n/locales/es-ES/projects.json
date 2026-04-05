@@ -1,6 +1,5 @@
 {
   "title": "Obras",
-
   "edit": "Editar obra",
   "delete": "Eliminar obra",
   "details": "Detalles de la obra",
@@ -52,7 +51,7 @@
     "regenerate": "Regenerar enlace",
     "regenerateWarning": "El enlace anterior quedará inmediatamente invalidado.",
     "smsMessage": "Hola, siga el progreso de su obra aquí: {url}",
-    "emailSubject": "Actualizaciones de su obra - OpenChantierkr",
+    "emailSubject": "Actualizaciones de su obra - Worky",
     "emailBody": "Hola,\n\nPuede seguir el progreso de su obra aquí:\n{url}\n\nAtentamente"
   },
   "limit": {
@@ -117,6 +116,44 @@
     "uploadError": "Error al subir",
     "photoAlt": "Foto de la obra",
     "empty": "Sin fotos por el momento. Suba imágenes arriba."
+  },
+  "navigation": {
+    "openWith": "Cómo llegar",
+    "mobileNav": "Ir"
+  },
+  "clientAction": {
+    "signatureTitle": "Validación del cliente en el lugar",
+    "signatureDesc": "Haga que su cliente firme directamente en su pantalla para validar un paso.",
+    "alreadySigned": "Ya firmado",
+    "signatureImageAlt": "Firma del cliente"
+  },
+  "signatureDialog": {
+    "button": "Solicitar firma del cliente",
+    "title": "Firma de {clientName}",
+    "desc": "Firme a continuación con su dedo o un lápiz óptico para validar.",
+    "clear": "Borrar",
+    "submit": "Confirmar firma",
+    "success": "Firma registrada con éxito",
+    "errorGen": "Error al guardar la firma",
+    "errorEmpty": "Por favor firme antes de validar",
+    "closeProjectLabel": "Finalizar obra (Terminado)",
+    "closeProjectDesc": "Marcar la obra como terminada una vez firmada para liberar sus cuotas.",
+    "successWithClose": "¡Firma registrada y obra finalizada!"
+  },
+  "nextSteps": {
+    "title": "Próximos pasos",
+    "placeholder": "Ej: Terminar baldosas...",
+    "saveSuccess": "Lista actualizada"
+  },
+  "publicView": {
+    "invalidLinkTitle": "Enlace inválido o caducado",
+    "invalidLinkDesc": "Este proyecto ya no está compartido. Póngase en contacto con su artesano para obtener un nuevo enlace.",
+    "totalProgress": "Progreso total",
+    "documentsTitle": "Documentos y Facturación",
+    "noPhotosTitle": "No hay fotos compartidas",
+    "noPhotosDesc": "El artesano aún no ha compartido fotos de progreso.",
+    "paid": "Pagado",
+    "unpaid": "Pendiente",
+    "poweredBy": "Desarrollado por Worky"
   }
 }
-

@@ -10,7 +10,7 @@ export function Logo({
     <div className={cn("h-8 w-8 relative overflow-hidden", className)}>
       <Image
         src="/logo.svg"
-        alt="OpenChantier Logo"
+        alt="Worky Logo"
         fill
         className="object-contain dark:invert"
         priority

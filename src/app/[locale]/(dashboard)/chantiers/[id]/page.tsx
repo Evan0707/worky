@@ -1,10 +1,20 @@
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { api } from "@/trpc/server";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/i18n-helpers";
-import { Mail, Phone, MapPin, Calendar, Link as LinkIcon, User } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Link as LinkIcon,
+  PenTool,
+  CheckCircle2,
+} from "lucide-react";
 import { ShareProjectButton } from "./_components/share-project-button";
+import { AddressNavigationButton } from "./_components/address-navigation-button";
+import { ClientSignatureDialog } from "./_components/client-signature-dialog";
+import { NextStepsEditor } from "./_components/next-steps-editor";
 
 export default async function ProjectOverviewPage({
   params,
@@ -23,7 +33,6 @@ export default async function ProjectOverviewPage({
 
   const publicUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/c/${project.shareToken}`;
 
-  // Generate initials for client avatar
   const initials = project.clientName
     .split(" ")
     .map((n) => n[0])
@@ -31,119 +40,144 @@ export default async function ProjectOverviewPage({
     .toUpperCase()
     .slice(0, 2);
 
+  const signature = project.clientActions.find((a) => a.type === "SIGNATURE");
+
   return (
-    <div className="grid gap-5 md:grid-cols-2">
-      <div className="space-y-5">
-        {/* General Info */}
-        <Card className="shadow-none">
-          <CardHeader className="pb-3 pt-4 px-5">
-            <CardTitle className="text-sm font-semibold">{tProjects("overview.generalInfo")}</CardTitle>
-          </CardHeader>
-          <CardContent className="px-5 pb-5 space-y-4">
-            {project.description && (
-              <div className="text-sm text-foreground/80 bg-muted/40 p-4 rounded-xl leading-relaxed border border-border/50">
-                {project.description}
-              </div>
-            )}
+    <div className="space-y-4">
 
-            <div className="space-y-2.5">
-              <div className="flex items-start gap-3 text-sm">
-                <div className="h-7 w-7 rounded-lg icon-blue flex items-center justify-center shrink-0 mt-0.5">
-                  <MapPin className="h-3.5 w-3.5" />
-                </div>
-                <span className="text-foreground/90 pt-0.5">{project.address}</span>
-              </div>
+      {/* ── Top strip — adresse + dates ─────────────────────────── */}
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 px-1">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <MapPin className="h-3.5 w-3.5 shrink-0" />
+          <span className="text-foreground/80">{project.address}</span>
+        </div>
+        {(project.startDate || project.endDate) && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Calendar className="h-3.5 w-3.5 shrink-0" />
+            <span>
+              {project.startDate ? formatDate(project.startDate, locale) : "—"}
+              {" → "}
+              {project.endDate ? formatDate(project.endDate, locale) : "—"}
+            </span>
+          </div>
+        )}
+        <AddressNavigationButton address={project.address} />
+      </div>
 
-              {(project.startDate || project.endDate) && (
-                <div className="flex items-start gap-3 text-sm">
-                  <div className="h-7 w-7 rounded-lg icon-green flex items-center justify-center shrink-0 mt-0.5">
-                    <Calendar className="h-3.5 w-3.5" />
-                  </div>
-                  <span className="text-foreground/90 pt-0.5">
-                    {project.startDate ? formatDate(project.startDate, locale) : tProjects("overview.undefined")}
-                    {" → "}
-                    {project.endDate ? formatDate(project.endDate, locale) : tProjects("overview.undefined")}
-                  </span>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+      {/* ── Description (optional) ───────────────────────────────── */}
+      {project.description && (
+        <p className="px-1 text-sm text-foreground/70 leading-relaxed max-w-2xl">
+          {project.description}
+        </p>
+      )}
 
-        {/* Client Card */}
-        <Card className="shadow-none">
-          <CardHeader className="pb-3 pt-4 px-5">
-            <CardTitle className="text-sm font-semibold">{tProjects("overview.client")}</CardTitle>
-          </CardHeader>
-          <CardContent className="px-5 pb-5">
-            <div className="flex items-center gap-3 mb-4">
-              {/* Avatar with initials */}
-              <div className="h-11 w-11 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/15">
-                <span className="text-sm font-bold text-primary">{initials}</span>
+      {/* ── Main grid ────────────────────────────────────────────── */}
+      <div className="grid gap-5 lg:grid-cols-3">
+
+        {/* Left — Next Steps (2/3) */}
+        <div className="lg:col-span-2">
+          <NextStepsEditor
+            projectId={project.id}
+            initialSteps={project.nextSteps as any}
+            translations={{
+              title: tProjects("nextSteps.title"),
+              placeholder: tProjects("nextSteps.placeholder"),
+              saveSuccess: tProjects("nextSteps.saveSuccess"),
+            }}
+          />
+        </div>
+
+        {/* Right sidebar (1/3) */}
+        <div className="space-y-4">
+
+          {/* Client */}
+          <div className="rounded-xl border bg-card p-4">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+              {tProjects("overview.client")}
+            </p>
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="h-9 w-9 rounded-full bg-muted flex items-center justify-center shrink-0 border border-border text-xs font-bold">
+                {initials}
               </div>
-              <div>
-                <p className="font-semibold text-sm">{project.clientName}</p>
+              <div className="min-w-0">
+                <p className="font-semibold text-sm truncate">{project.clientName}</p>
                 {project.clientEmail && (
-                  <p className="text-xs text-muted-foreground">{project.clientEmail}</p>
+                  <p className="text-xs text-muted-foreground truncate">{project.clientEmail}</p>
                 )}
               </div>
             </div>
-
             {(project.clientEmail || project.clientPhone) && (
-              <div className="space-y-2 pt-2 border-t border-border/50">
+              <div className="flex flex-col gap-1.5 pt-2.5 border-t border-border/50">
                 {project.clientEmail && (
                   <a
                     href={`mailto:${project.clientEmail}`}
-                    className="flex items-center gap-3 text-sm rounded-lg p-2 hover:bg-muted/50 transition-colors group"
+                    className="inline-flex items-center gap-2 text-sm py-1 text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <div className="h-7 w-7 rounded-lg icon-blue flex items-center justify-center shrink-0">
-                      <Mail className="h-3.5 w-3.5" />
-                    </div>
-                    <span className="text-foreground/80 group-hover:text-foreground transition-colors">{project.clientEmail}</span>
+                    <Mail className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{project.clientEmail}</span>
                   </a>
                 )}
                 {project.clientPhone && (
                   <a
                     href={`tel:${project.clientPhone}`}
-                    className="flex items-center gap-3 text-sm rounded-lg p-2 hover:bg-muted/50 transition-colors group"
+                    className="inline-flex items-center gap-2 text-sm py-1 text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <div className="h-7 w-7 rounded-lg icon-green flex items-center justify-center shrink-0">
-                      <Phone className="h-3.5 w-3.5" />
-                    </div>
-                    <span className="text-foreground/80 group-hover:text-foreground transition-colors">{project.clientPhone}</span>
+                    <Phone className="h-3.5 w-3.5 shrink-0" />
+                    <span>{project.clientPhone}</span>
                   </a>
                 )}
               </div>
             )}
-          </CardContent>
-        </Card>
-      </div>
+          </div>
 
-      {/* Share Card */}
-      <div>
-        <Card className="shadow-none border-primary/15 bg-gradient-to-br from-primary/5 to-transparent">
-          <CardHeader className="pb-3 pt-4 px-5">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <div className="h-7 w-7 rounded-lg icon-primary flex items-center justify-center">
-                <LinkIcon className="h-3.5 w-3.5" />
-              </div>
-              {tProjects("share.title")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-5 pb-5 space-y-4">
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {tProjects("share.description")}
-            </p>
-
-            <div className="bg-muted/60 rounded-xl p-3 flex items-center justify-between gap-3 border border-border/50 group cursor-text select-all">
-              <code className="text-xs text-muted-foreground truncate flex-1 font-mono">
+          {/* Share */}
+          <div className="rounded-xl border bg-card p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <LinkIcon className="h-3.5 w-3.5 text-muted-foreground" />
+              <p className="text-sm font-semibold">{tProjects("share.title")}</p>
+            </div>
+            <div className="bg-muted/60 rounded-lg px-3 py-2 border border-border/50">
+              <code className="text-xs text-muted-foreground truncate block font-mono">
                 {publicUrl}
               </code>
             </div>
-
             <ShareProjectButton url={publicUrl} projectId={project.id} />
-          </CardContent>
-        </Card>
+          </div>
+
+          {/* Signature */}
+          <div className="rounded-xl border bg-card p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <PenTool className="h-3.5 w-3.5 text-muted-foreground" />
+              <p className="text-sm font-semibold">{tProjects("clientAction.signatureTitle")}</p>
+            </div>
+            {signature ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  {tProjects("clientAction.alreadySigned")}
+                </div>
+                <div className="border rounded-lg overflow-hidden bg-white dark:bg-neutral-900">
+                  <img
+                    src={(signature.payload as any)?.signature}
+                    alt={tProjects("clientAction.signatureImageAlt")}
+                    className="w-full h-auto"
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  {tProjects("clientAction.signatureDesc")}
+                </p>
+                <ClientSignatureDialog
+                  projectId={project.id}
+                  clientName={project.clientName}
+                />
+              </div>
+            )}
+          </div>
+
+        </div>
       </div>
     </div>
   );

@@ -34,7 +34,7 @@ export function MobileSidebar({ sections, user }: MobileSidebarProps) {
           <SheetTitle className="flex items-center gap-2 font-semibold">
             <Image 
               src="/logo.svg" 
-              alt="OpenChantier" 
+              alt="Worky" 
               width={100} 
               height={32} 
               className="h-8 w-auto object-contain"

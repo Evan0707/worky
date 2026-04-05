@@ -91,12 +91,12 @@ export default async function DashboardLayout({
           <Link href={`/${locale}/dashboard`} className="flex items-center gap-2 font-semibold">
             <Image 
               src="/logo.svg" 
-              alt="OpenChantier" 
+              alt="Worky" 
               width={100} 
               height={32} 
               className="h-8 w-auto object-contain"
             />
-            <p className="font-heading ml-1">OpenChantier</p>
+            <p className="font-heading ml-1">Worky</p>
           </Link>
         </div>
 
@@ -129,17 +129,17 @@ export default async function DashboardLayout({
       <MobileSidebar sections={navSections} user={userData} />
 
       {/* Main content */}
-      <main className="flex-1 lg:ml-[260px] h-screen flex flex-col overflow-hidden">
+      <main className="flex-1 lg:ml-[260px] min-h-screen flex flex-col">
         {/* Top bar */}
-        <div className="hidden lg:flex h-12 items-center justify-between border-b bg-background/80 backdrop-blur-sm px-6 shrink-0">
+        <div className="hidden lg:flex h-12 items-center justify-between border-b bg-background/80 backdrop-blur-sm px-6 shrink-0 sticky top-0 z-20">
           <div className="flex items-center gap-4">
             <CommandMenu />
             <LocaleSwitcher />
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col px-4 py-6 sm:px-6 sm:py-8 pt-16 lg:pt-6 overflow-hidden">
-          <div className="mx-auto w-full max-w-8xl flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col px-4 py-6 sm:px-6 sm:py-8 pt-16 lg:pt-6">
+          <div className="mx-auto w-full max-w-8xl flex-1 flex flex-col">
             {children}
           </div>
         </div>

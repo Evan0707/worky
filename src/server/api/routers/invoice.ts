@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, requirePro } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { getArtisanContext } from "@/server/lib/team-context";
 
@@ -62,22 +62,23 @@ export const invoiceRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // 1. Verify project
+      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      requirePro(ctx as { session: { user: { plan: string } } });
+
+      // 1. Verify project belongs to this artisan
       const project = await ctx.db.project.findUnique({
         where: { id: input.projectId },
       });
 
-      if (!project || project.artisanId !== ctx.session.user.id) {
+      if (!project || project.artisanId !== artisanId) {
         throw new TRPCError({ code: "FORBIDDEN" });
       }
 
-      // 2. Generate Number
-      const prefix = input.type === "INVOICE" ? "FA" : "DE";
-      const count = await ctx.db.invoice.count({
-        where: { type: input.type, project: { artisanId: ctx.session.user.id } },
+      // 2. Fetch artisan's currency/locale
+      const artisan = await ctx.db.user.findUnique({
+        where: { id: artisanId },
+        select: { currency: true, locale: true },
       });
-      const year = new Date().getFullYear().toString().slice(-2);
-      const number = `${prefix}${year}-${String(count + 1).padStart(4, "0")}`;
 
       // 3. Compute Totals
       let totalHT = 0;
@@ -92,21 +93,36 @@ export const invoiceRouter = createTRPCRouter({
 
       const totalTTC = totalHT + totalTVA;
 
-      // 4. Create Invoice
-      const invoice = await ctx.db.invoice.create({
-        data: {
-          projectId: input.projectId,
-          number,
-          type: input.type,
-          lines: input.lines,
-          totalHT,
-          totalTVA,
-          totalTTC,
-          // user locale/currency (could be fetched from artisan profile)
-          currency: "EUR",
-          locale: "fr-FR",
-        },
-      });
+      // 4. Generate number with retry on unique collision
+      const prefix = input.type === "INVOICE" ? "FA" : "DE";
+      const year = new Date().getFullYear().toString().slice(-2);
+      const artisanSlug = artisanId.split("-")[0].toUpperCase().slice(0, 4);
+      let invoice;
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const count = await ctx.db.invoice.count({
+          where: { type: input.type, project: { artisanId } },
+        });
+        const number = `${prefix}${year}-${artisanSlug}-${String(count + 1).padStart(4, "0")}`;
+        try {
+          invoice = await ctx.db.invoice.create({
+            data: {
+              projectId: input.projectId,
+              number,
+              type: input.type,
+              lines: input.lines,
+              totalHT,
+              totalTVA,
+              totalTTC,
+              currency: artisan?.currency ?? "EUR",
+              locale: artisan?.locale ?? "fr-FR",
+            },
+          });
+          break;
+        } catch (e: any) {
+          if (e?.code === "P2002" && attempt < 4) continue;
+          throw e;
+        }
+      }
 
       return invoice;
     }),
@@ -164,6 +180,7 @@ export const invoiceRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      requirePro(ctx as { session: { user: { plan: string } } });
 
       const project = await ctx.db.project.findUnique({
         where: { id: input.projectId },
@@ -219,27 +236,37 @@ export const invoiceRouter = createTRPCRouter({
         totalTVA += Math.round(lineHT * (line.vatRate / 100));
       }
 
-      // Generate invoice number
+      // Generate invoice number with retry on unique collision
       const prefix = input.type === "INVOICE" ? "FA" : "DE";
-      const count = await ctx.db.invoice.count({
-        where: { type: input.type, project: { artisanId } },
-      });
       const year = new Date().getFullYear().toString().slice(-2);
-      const number = `${prefix}${year}-${String(count + 1).padStart(4, "0")}`;
-
-      return ctx.db.invoice.create({
-        data: {
-          projectId: input.projectId,
-          number,
-          type: input.type,
-          lines,
-          totalHT,
-          totalTVA,
-          totalTTC: totalHT + totalTVA,
-          currency: artisan?.currency ?? "EUR",
-          locale: artisan?.locale ?? "fr-FR",
-        },
-      });
+      const artisanSlug = artisanId.split("-")[0].toUpperCase().slice(0, 4);
+      let result;
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const count = await ctx.db.invoice.count({
+          where: { type: input.type, project: { artisanId } },
+        });
+        const number = `${prefix}${year}-${artisanSlug}-${String(count + 1).padStart(4, "0")}`;
+        try {
+          result = await ctx.db.invoice.create({
+            data: {
+              projectId: input.projectId,
+              number,
+              type: input.type,
+              lines,
+              totalHT,
+              totalTVA,
+              totalTTC: totalHT + totalTVA,
+              currency: artisan?.currency ?? "EUR",
+              locale: artisan?.locale ?? "fr-FR",
+            },
+          });
+          break;
+        } catch (e: any) {
+          if (e?.code === "P2002" && attempt < 4) continue;
+          throw e;
+        }
+      }
+      return result;
     }),
 
   delete: protectedProcedure
