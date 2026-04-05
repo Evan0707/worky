@@ -26,9 +26,6 @@ export const env = createEnv({
     FACTURX_API_URL: z.string().url().optional(),
     TIIME_WEBHOOK_SECRET: z.string().optional(),
 
-    UPLOADTHING_SECRET: z.string().optional(),
-    UPLOADTHING_APP_ID: z.string().optional(),
-
     RESEND_API_KEY: z.string().optional(),
 
     STRIPE_SECRET_KEY: z.string().optional(),
