@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header
 from pydantic import BaseModel
 from typing import Dict, Any, Optional
 import tempfile
@@ -64,8 +64,12 @@ XML_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
 </rsm:CrossIndustryInvoice>
 """
 
+API_SECRET = os.environ.get("API_SECRET", "")
+
 @app.post("/generate")
-def generate_facturx(request: GenerateRequest):
+def generate_facturx(request: GenerateRequest, x_api_secret: str=Header(default="")):
+    if API_SECRET and x_api_secret != API_SECRET:
+      raise HTTPException(status_code=401, detail="Unauthorized")
     try:
         with tempfile.TemporaryDirectory() as temp_dir:
             # 1. Generate PDF
