@@ -66,5 +66,25 @@
     "already_member": "Ya es miembro de un equipo.",
     "is_owner": "Es propietario de un equipo. Elimínelo antes de unirse a otro."
   },
-  "inviteSuccess": "¡Bienvenido al equipo {team}!"
+  "inviteSuccess": "¡Bienvenido al equipo {team}!",
+  "activity": {
+    "title": "Actividad reciente",
+    "empty": "Ninguna actividad por el momento.",
+    "unknownMember": "Miembro",
+    "justNow": "Justo ahora",
+    "minutesAgo": "Hace {n} min",
+    "hoursAgo": "Hace {n}h",
+    "daysAgo": "Hace {n}d",
+    "events": {
+      "photo": "{member} añadió una foto en {project}",
+      "time": "{member} registró {hours}h en {project}",
+      "material": "{member} añadió {label} en {project}",
+      "invoice": "{member} creó {number} en {project}"
+    },
+    "toasts": {
+      "photo": "{member} añadió {count} foto(s) en {project}",
+      "time": "{member} registró {hours}h en {project}",
+      "material": "{member} añadió {label} en {project}"
+    }
+  }
 }

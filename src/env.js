@@ -31,6 +31,8 @@ export const env = createEnv({
     STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_WEBHOOK_SECRET: z.string().optional(),
     STRIPE_PRICE_ID_PRO: z.string().optional(),
+    STRIPE_PRICE_ID_PRO_TEAM: z.string().optional(),
+    STRIPE_PRICE_ID_PRO_PLUS: z.string().optional(),
 
     PUSHER_APP_ID: z.string().optional(),
     PUSHER_SECRET: z.string().optional(),
@@ -80,6 +82,8 @@ export const env = createEnv({
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
     STRIPE_PRICE_ID_PRO: process.env.STRIPE_PRICE_ID_PRO,
+    STRIPE_PRICE_ID_PRO_TEAM: process.env.STRIPE_PRICE_ID_PRO_TEAM,
+    STRIPE_PRICE_ID_PRO_PLUS: process.env.STRIPE_PRICE_ID_PRO_PLUS,
 
     PUSHER_APP_ID: process.env.PUSHER_APP_ID,
     PUSHER_SECRET: process.env.PUSHER_SECRET,

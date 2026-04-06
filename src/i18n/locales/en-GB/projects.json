@@ -38,7 +38,19 @@
     "photos": "Photos",
     "time": "Time",
     "materials": "Materials",
-    "invoice": "Quote / Invoice"
+    "invoice": "Quote / Invoice",
+    "team": "Team"
+  },
+  "team": {
+    "title": "Project Access",
+    "description": "Choose which team members can access this project.",
+    "noTeam": "You have not created a team yet.",
+    "noMembers": "No members in your team.",
+    "assigned": "Assigned",
+    "notAssigned": "Not assigned",
+    "assignSuccess": "Member assigned to project",
+    "unassignSuccess": "Member removed from project",
+    "error": "Failed to update assignment"
   },
   "share": {
     "title": "Share with client",
@@ -97,7 +109,8 @@
     "descriptionOptional": "Description (optional)",
     "descriptionPlaceholder": "Electrical installation...",
     "history": "Time history",
-    "empty": "No entries yet. Add your working hours in the form."
+    "empty": "No entries yet. Add your working hours in the form.",
+    "addedBy": "by {name}"
   },
   "materials": {
     "totalTTC": "Total materials (incl. VAT)",
@@ -109,13 +122,15 @@
     "list": "Materials list",
     "empty": "No materials added yet. Use the form to track your purchases.",
     "ht": "excl. VAT",
-    "vat": "VAT"
+    "vat": "VAT",
+    "addedBy": "by {name}"
   },
   "photos": {
     "uploadSuccess": "{count} photo(s) added",
     "uploadError": "Upload error",
     "photoAlt": "Site photo",
-    "empty": "No photos yet. Upload images above."
+    "empty": "No photos yet. Upload images above.",
+    "addedBy": "by {name}"
   },
   "navigation": {
     "openWith": "Get Directions",

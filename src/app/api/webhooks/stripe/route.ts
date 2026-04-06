@@ -3,6 +3,7 @@ import Stripe from "stripe";
 
 import { env } from "@/env";
 import { db } from "@/server/db";
+import { maxTeamMembersForPriceId } from "@/server/lib/stripe-utils";
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY ?? "", {
   apiVersion: "2025-02-24.acacia",
@@ -51,6 +52,13 @@ export async function POST(req: NextRequest) {
 
         console.log(`🚀 Mise à jour de l'utilisateur ${userId} vers le plan PRO...`);
 
+        // Retrieve the subscription to get the price ID
+        let priceId: string | null = null;
+        if (subscriptionId) {
+          const sub = await stripe.subscriptions.retrieve(subscriptionId);
+          priceId = sub.items.data[0]?.price.id ?? null;
+        }
+
         try {
           await db.user.update({
             where: { id: userId },
@@ -58,6 +66,7 @@ export async function POST(req: NextRequest) {
               plan: "PRO",
               stripeCustomerId: customerId,
               stripeSubscriptionId: subscriptionId,
+              maxTeamMembers: maxTeamMembersForPriceId(priceId),
             },
           });
           console.log("✅ Plan mis à jour en base de données !");
@@ -73,12 +82,14 @@ export async function POST(req: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
         const isActive = ["active", "trialing"].includes(subscription.status);
+        const priceId = subscription.items.data[0]?.price.id ?? null;
 
         await db.user.update({
           where: { stripeCustomerId: customerId },
           data: {
             plan: isActive ? "PRO" : "FREE",
             stripeSubscriptionId: isActive ? subscription.id : null,
+            maxTeamMembers: isActive ? maxTeamMembersForPriceId(priceId) : 0,
           },
         });
         break;
@@ -93,6 +104,7 @@ export async function POST(req: NextRequest) {
           data: {
             plan: "FREE",
             stripeSubscriptionId: null,
+            maxTeamMembers: 0,
           },
         });
         break;

@@ -4,14 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Camera, Clock, Package } from "lucide-react";
+import { LayoutDashboard, Camera, Clock, Package, Users } from "lucide-react";
 
 interface ProjectTabsProps {
   locale: string;
   projectId: string;
+  showTeamTab?: boolean;
 }
 
-export function ProjectTabs({ locale, projectId }: ProjectTabsProps) {
+export function ProjectTabs({ locale, projectId, showTeamTab = false }: ProjectTabsProps) {
   const t = useTranslations("projects.tabs");
   const pathname = usePathname();
 
@@ -22,6 +23,7 @@ export function ProjectTabs({ locale, projectId }: ProjectTabsProps) {
     { name: t("photos"), href: `${baseUrl}/photos`, exactMatch: false, icon: Camera },
     { name: t("time"), href: `${baseUrl}/temps`, exactMatch: false, icon: Clock },
     { name: t("materials"), href: `${baseUrl}/materiaux`, exactMatch: false, icon: Package },
+    ...(showTeamTab ? [{ name: t("team"), href: `${baseUrl}/equipe`, exactMatch: false, icon: Users }] : []),
   ];
 
   return (

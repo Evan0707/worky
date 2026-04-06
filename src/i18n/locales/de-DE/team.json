@@ -66,5 +66,25 @@
     "already_member": "Sie sind bereits Mitglied eines Teams.",
     "is_owner": "Sie besitzen ein Team. Löschen Sie es, bevor Sie einem anderen beitreten."
   },
-  "inviteSuccess": "Willkommen im Team {team}!"
+  "inviteSuccess": "Willkommen im Team {team}!",
+  "activity": {
+    "title": "Letzte Aktivitäten",
+    "empty": "Noch keine Aktivitäten für den Moment.",
+    "unknownMember": "Mitglied",
+    "justNow": "Gerade eben",
+    "minutesAgo": "Vor {n} Min",
+    "hoursAgo": "Vor {n} Std",
+    "daysAgo": "Vor {n} Tg",
+    "events": {
+      "photo": "{member} hat ein Foto zu {project} hinzugefügt",
+      "time": "{member} hat {hours} Std. bei {project} erfasst",
+      "material": "{member} hat {label} zu {project} hinzugefügt",
+      "invoice": "{member} hat {number} für {project} erstellt"
+    },
+    "toasts": {
+      "photo": "{member} hat {count} Foto(s) zu {project} hinzugefügt",
+      "time": "{member} hat {hours} Std. bei {project} erfasst",
+      "material": "{member} hat {label} zu {project} hinzugefügt"
+    }
+  }
 }

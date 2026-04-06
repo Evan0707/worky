@@ -179,6 +179,33 @@ export const teamRouter = createTRPCRouter({
         teamId = membership.teamId;
       }
 
+      // Guard: team member limit (based on owner's maxTeamMembers)
+      const ownerUserId = ownedTeam?.ownerId ?? (await ctx.db.teamMember.findUnique({
+        where: { userId },
+        select: { team: { select: { ownerId: true } } },
+      }))?.team.ownerId ?? userId;
+
+      const owner = await ctx.db.user.findUnique({
+        where: { id: ownerUserId },
+        select: { maxTeamMembers: true },
+      });
+      const limit = owner?.maxTeamMembers ?? 0;
+
+      if (limit === 0) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Your current plan does not include team members. Upgrade to PRO Équipe.",
+        });
+      }
+
+      const currentMemberCount = await ctx.db.teamMember.count({ where: { teamId } });
+      if (currentMemberCount >= limit) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: `Team member limit reached (${limit}). Upgrade to PRO+ for unlimited members.`,
+        });
+      }
+
       // Guard: email already a member
       const alreadyMember = await ctx.db.user.findFirst({
         where: {
@@ -434,6 +461,129 @@ export const teamRouter = createTRPCRouter({
     if (!team) throw new TRPCError({ code: "FORBIDDEN" });
 
     return ctx.db.team.delete({ where: { id: team.id } });
+  }),
+
+  /**
+   * Get the 50 most recent activity events across the team
+   * (photos, time entries, materials, invoices).
+   * Available to all team members (owner + members).
+   */
+  activity: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user.id!;
+
+    // Resolve team
+    const ownedTeam = await ctx.db.team.findUnique({ where: { ownerId: userId } });
+    let artisanId: string;
+    let teamId: string | null = null;
+
+    if (ownedTeam) {
+      artisanId = userId;
+      teamId = ownedTeam.id;
+    } else {
+      const membership = await ctx.db.teamMember.findUnique({
+        where: { userId },
+        select: { teamId: true, team: { select: { ownerId: true } } },
+      });
+      if (!membership) throw new TRPCError({ code: "FORBIDDEN", message: "Not in a team" });
+      artisanId = membership.team.ownerId;
+      teamId = membership.teamId;
+    }
+
+    const creatorSelect = { select: { id: true, name: true, image: true } } as const;
+
+    const [photos, timeEntries, materials, invoices] = await Promise.all([
+      ctx.db.photo.findMany({
+        where: { project: { artisanId }, createdById: { not: null } },
+        orderBy: { takenAt: "desc" },
+        take: 50,
+        select: {
+          id: true,
+          takenAt: true,
+          note: true,
+          url: true,
+          createdBy: creatorSelect,
+          project: { select: { id: true, name: true } },
+        },
+      }),
+      ctx.db.timeEntry.findMany({
+        where: { project: { artisanId }, createdById: { not: null } },
+        orderBy: { date: "desc" },
+        take: 50,
+        select: {
+          id: true,
+          date: true,
+          hours: true,
+          description: true,
+          createdBy: creatorSelect,
+          project: { select: { id: true, name: true } },
+        },
+      }),
+      ctx.db.material.findMany({
+        where: { project: { artisanId }, createdById: { not: null } },
+        orderBy: { id: "desc" },
+        take: 50,
+        select: {
+          id: true,
+          label: true,
+          quantity: true,
+          unit: true,
+          createdBy: creatorSelect,
+          project: { select: { id: true, name: true } },
+        },
+      }),
+      ctx.db.invoice.findMany({
+        where: { project: { artisanId }, createdById: { not: null } },
+        orderBy: { createdAt: "desc" },
+        take: 50,
+        select: {
+          id: true,
+          number: true,
+          type: true,
+          createdAt: true,
+          createdBy: creatorSelect,
+          project: { select: { id: true, name: true } },
+        },
+      }),
+    ]);
+
+    const events = [
+      ...photos.map((p) => ({
+        id: `photo-${p.id}`,
+        type: "photo" as const,
+        createdAt: p.takenAt,
+        createdBy: p.createdBy,
+        project: p.project,
+        meta: { note: p.note, url: p.url },
+      })),
+      ...timeEntries.map((e) => ({
+        id: `time-${e.id}`,
+        type: "time" as const,
+        createdAt: new Date(e.date),
+        createdBy: e.createdBy,
+        project: e.project,
+        meta: { hours: Number(e.hours), description: e.description },
+      })),
+      ...materials.map((m) => ({
+        id: `material-${m.id}`,
+        type: "material" as const,
+        createdAt: new Date(),
+        createdBy: m.createdBy,
+        project: m.project,
+        meta: { label: m.label, quantity: Number(m.quantity), unit: m.unit },
+      })),
+      ...invoices.map((i) => ({
+        id: `invoice-${i.id}`,
+        type: "invoice" as const,
+        createdAt: i.createdAt,
+        createdBy: i.createdBy,
+        project: i.project,
+        meta: { number: i.number, invoiceType: i.type },
+      })),
+    ]
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+      .slice(0, 50);
+
+    return { events, teamId };
   }),
 });
 

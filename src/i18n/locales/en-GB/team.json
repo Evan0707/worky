@@ -66,5 +66,25 @@
     "already_member": "You are already a member of a team.",
     "is_owner": "You own a team. Delete it before joining another."
   },
-  "inviteSuccess": "Welcome to the {team} team!"
+  "inviteSuccess": "Welcome to the {team} team!",
+  "activity": {
+    "title": "Recent activity",
+    "empty": "No activity yet.",
+    "unknownMember": "Member",
+    "justNow": "Just now",
+    "minutesAgo": "{n} mins ago",
+    "hoursAgo": "{n}h ago",
+    "daysAgo": "{n}d ago",
+    "events": {
+      "photo": "{member} added a photo on {project}",
+      "time": "{member} logged {hours}h on {project}",
+      "material": "{member} added {label} on {project}",
+      "invoice": "{member} created {number} on {project}"
+    },
+    "toasts": {
+      "photo": "{member} added {count} photo(s) on {project}",
+      "time": "{member} logged {hours}h on {project}",
+      "material": "{member} added {label} on {project}"
+    }
+  }
 }

@@ -34,6 +34,8 @@ import {
 import { cn } from "@/lib/utils";
 import { type TeamRole } from "@prisma/client";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useParams } from "next/navigation";
+import { TeamActivityFeed } from "./team-activity";
 
 // ─── Role badge ────────────────────────────────────────────────────────────────
 
@@ -190,12 +192,14 @@ function MembersCard({
   owner,
   isOwner,
   currentUserId,
+  locale,
   onRefresh,
 }: {
   members: Member[];
   owner: { id: string; name: string | null; email: string | null; image: string | null };
   isOwner: boolean;
   currentUserId: string;
+  locale: string;
   onRefresh: () => void;
 }) {
   const t = useTranslations("team");
@@ -219,7 +223,7 @@ function MembersCard({
   });
 
   const formatDate = (d: Date) =>
-    new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", year: "numeric" }).format(
+    new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(
       new Date(d),
     );
 
@@ -308,7 +312,7 @@ function MembersCard({
 
 type Invitation = { id: string; email: string; role: TeamRole; expiresAt: Date };
 
-function PendingInvitations({ invitations }: { invitations: Invitation[] }) {
+function PendingInvitations({ invitations, locale }: { invitations: Invitation[]; locale: string }) {
   const t = useTranslations("team");
   const utils = api.useUtils();
 
@@ -323,7 +327,7 @@ function PendingInvitations({ invitations }: { invitations: Invitation[] }) {
   if (invitations.length === 0) return null;
 
   const formatDate = (d: Date) =>
-    new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short" }).format(new Date(d));
+    new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }).format(new Date(d));
 
   return (
     <Card className="shadow-none border-dashed border-muted-foreground/30">
@@ -368,6 +372,8 @@ export function TeamView({ currentUserId }: { currentUserId: string }) {
   const t = useTranslations("team");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "fr-FR";
   const utils = api.useUtils();
 
   const { data, isLoading, refetch } = api.team.get.useQuery();
@@ -470,8 +476,12 @@ export function TeamView({ currentUserId }: { currentUserId: string }) {
           owner={ownerUser}
           isOwner={false}
           currentUserId={currentUserId}
+          locale={locale}
           onRefresh={() => void refetch()}
         />
+
+        {/* Activity feed */}
+        <TeamActivityFeed />
 
         {/* Leave */}
         <div className="pt-2 border-t border-border/50">
@@ -530,11 +540,15 @@ export function TeamView({ currentUserId }: { currentUserId: string }) {
         owner={ownerUser}
         isOwner
         currentUserId={currentUserId}
+        locale={locale}
         onRefresh={() => void refetch()}
       />
 
+      {/* Activity feed */}
+      <TeamActivityFeed />
+
       {/* Pending invitations */}
-      <PendingInvitations invitations={team.invitations as Invitation[]} />
+      <PendingInvitations invitations={team.invitations as Invitation[]} locale={locale} />
 
       {/* Invite form */}
       <InviteForm isOwner />

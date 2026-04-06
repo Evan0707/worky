@@ -81,7 +81,32 @@
                                  "reminders":  "Relances automatiques",
                                  "clientActions":  "Validation / commentaire / signature client",
                                  "support":  "Support prioritaire"
-                             }
+                             },
+                    "back": "Retour",
+                    "tiers": {
+                        "title": "Choisissez votre formule",
+                        "subtitle": "Un tarif adapté à la taille de votre entreprise.",
+                        "popular": "Populaire",
+                        "select": "Choisir cette formule",
+                        "allFeatures": "Toutes les fonctionnalités PRO",
+                        "members": {
+                            "none": "Idéal pour un artisan seul",
+                            "count": "Jusqu'à {count} collaborateurs",
+                            "unlimited": "Collaborateurs illimités"
+                        },
+                        "PRO": {
+                            "name": "PRO Solo",
+                            "desc": "Gérez seul tous vos chantiers."
+                        },
+                        "PRO_TEAM": {
+                            "name": "PRO Équipe",
+                            "desc": "Connectez vos équipes terrain."
+                        },
+                        "PRO_PLUS": {
+                            "name": "PRO+",
+                            "desc": "Pour toute l'entreprise."
+                        }
+                    }
                 }
 }
 

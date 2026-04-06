@@ -38,7 +38,19 @@
     "photos": "Photos",
     "time": "Heures",
     "materials": "Matériaux",
-    "invoice": "Devis / Facture"
+    "invoice": "Devis / Facture",
+    "team": "Équipe"
+  },
+  "team": {
+    "title": "Accès au chantier",
+    "description": "Choisissez les membres de votre équipe qui peuvent accéder à ce chantier.",
+    "noTeam": "Vous n'avez pas encore créé d'équipe.",
+    "noMembers": "Aucun membre dans votre équipe.",
+    "assigned": "Assigné",
+    "notAssigned": "Non assigné",
+    "assignSuccess": "Membre assigné au chantier",
+    "unassignSuccess": "Membre retiré du chantier",
+    "error": "Erreur lors de la mise à jour"
   },
   "share": {
     "title": "Partager avec le client",
@@ -97,7 +109,8 @@
     "descriptionOptional": "Description (optionnel)",
     "descriptionPlaceholder": "Installation électrique...",
     "history": "Historique des temps",
-    "empty": "Aucun pointage. Ajoutez vos heures de travail dans le formulaire."
+    "empty": "Aucun pointage. Ajoutez vos heures de travail dans le formulaire.",
+    "addedBy": "par {name}"
   },
   "materials": {
     "totalTTC": "Total matériaux (TTC)",
@@ -109,13 +122,15 @@
     "list": "Liste des matériaux",
     "empty": "Aucun matériel ajouté. Utilisez le formulaire pour suivre vos achats.",
     "ht": "HT",
-    "vat": "TVA"
+    "vat": "TVA",
+    "addedBy": "par {name}"
   },
   "photos": {
     "uploadSuccess": "{count} photo(s) ajoutée(s)",
     "uploadError": "Erreur lors de l'upload",
     "photoAlt": "Photo du chantier",
-    "empty": "Aucune photo pour le moment. Uploadez des images ci-dessus."
+    "empty": "Aucune photo pour le moment. Uploadez des images ci-dessus.",
+    "addedBy": "par {name}"
   },
   "navigation": {
     "openWith": "Y aller",

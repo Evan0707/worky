@@ -88,7 +88,7 @@ export default function LoginForm() {
         )}
 
         {/* Google Sign In — first for better UX */}
-        <Button
+        {/* <Button
           variant="outline"
           className="w-full h-11 bg-white hover:bg-neutral-50 dark:bg-black/50 dark:hover:bg-white/5 border-black/10 dark:border-white/10"
           onClick={handleGoogleSignIn}
@@ -117,7 +117,7 @@ export default function LoginForm() {
             </svg>
           )}
           {t("login.googleButton")}
-        </Button>
+        </Button> */}
 
         {/* Divider */}
         <div className="relative">

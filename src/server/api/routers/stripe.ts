@@ -3,6 +3,8 @@ import { TRPCError } from "@trpc/server";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { env } from "@/env";
+import { z } from "zod";
+import { getPriceIdForTier, maxTeamMembersForPriceId, type PlanTier } from "@/server/lib/stripe-utils";
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY ?? "", {
   apiVersion: "2025-02-24.acacia",
@@ -18,10 +20,13 @@ export const stripeRouter = createTRPCRouter({
    *  - proTrialUsed = true → resubscribe without trial
    *  - Stripe idempotency key on subscription create → safe against concurrent calls
    */
-  createSubscriptionIntent: protectedProcedure.mutation(async ({ ctx }) => {
-    if (!env.STRIPE_PRICE_ID_PRO) {
-      throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Stripe price not configured" });
-    }
+  createSubscriptionIntent: protectedProcedure
+    .input(z.object({ tier: z.enum(["PRO", "PRO_TEAM", "PRO_PLUS"]) }))
+    .mutation(async ({ ctx, input }) => {
+      const priceId = getPriceIdForTier(input.tier as PlanTier);
+      if (!priceId) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: `Stripe price not configured for tier ${input.tier}` });
+      }
 
     const user = await ctx.db.user.findUnique({
       where: { id: ctx.session.user.id },
@@ -110,10 +115,10 @@ export const stripeRouter = createTRPCRouter({
     // if the client fires this mutation twice concurrently.
     const withTrial = !user.proTrialUsed;
 
-    const subscription = await stripe.subscriptions.create(
-      {
-        customer: customerId,
-        items: [{ price: env.STRIPE_PRICE_ID_PRO }],
+      const subscription = await stripe.subscriptions.create(
+        {
+          customer: customerId,
+          items: [{ price: priceId }],
         ...(withTrial ? { trial_period_days: 14 } : {}),
         payment_behavior: "default_incomplete",
         payment_settings: { save_default_payment_method: "on_subscription" },
@@ -190,10 +195,13 @@ export const stripeRouter = createTRPCRouter({
       });
     }
 
+    const priceId = subscription.items.data[0]?.price.id;
+
     await ctx.db.user.update({
       where: { id: ctx.session.user.id },
       data: {
-        plan: "PRO",
+        plan: "PRO", // All paid tiers map to PRO in the system internally, features differ by maxTeamMembers
+        maxTeamMembers: maxTeamMembersForPriceId(priceId),
         proTrialUsed: true, // prevent future free trials
       },
     });

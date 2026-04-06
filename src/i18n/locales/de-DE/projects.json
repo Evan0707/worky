@@ -38,7 +38,19 @@
     "photos": "Fotos",
     "time": "Zeit",
     "materials": "Materialien",
-    "invoice": "Angebot / Rechnung"
+    "invoice": "Angebot / Rechnung",
+    "team": "Team"
+  },
+  "team": {
+    "title": "Projektzugang",
+    "description": "Wahlen Sie, welche Teammitglieder auf dieses Projekt zugreifen konnen.",
+    "noTeam": "Sie haben noch kein Team erstellt.",
+    "noMembers": "Keine Mitglieder in Ihrem Team.",
+    "assigned": "Zugewiesen",
+    "notAssigned": "Nicht zugewiesen",
+    "assignSuccess": "Mitglied dem Projekt zugewiesen",
+    "unassignSuccess": "Mitglied aus dem Projekt entfernt",
+    "error": "Fehler beim Aktualisieren"
   },
   "share": {
     "title": "Mit Kunden teilen",
@@ -97,7 +109,8 @@
     "descriptionOptional": "Beschreibung (optional)",
     "descriptionPlaceholder": "Elektroinstallation...",
     "history": "Zeitverlauf",
-    "empty": "Keine Einträge. Fügen Sie Ihre Arbeitsstunden im Formular hinzu."
+    "empty": "Keine Einträge. Fügen Sie Ihre Arbeitsstunden im Formular hinzu.",
+    "addedBy": "von {name}"
   },
   "materials": {
     "totalTTC": "Materialien gesamt (inkl. MwSt.)",
@@ -109,13 +122,15 @@
     "list": "Materialliste",
     "empty": "Noch keine Materialien. Verwenden Sie das Formular, um Einkäufe zu verfolgen.",
     "ht": "netto",
-    "vat": "MwSt."
+    "vat": "MwSt.",
+    "addedBy": "von {name}"
   },
   "photos": {
     "uploadSuccess": "{count} Foto(s) hinzugefügt",
     "uploadError": "Upload-Fehler",
     "photoAlt": "Baustellenfoto",
-    "empty": "Noch keine Fotos. Laden Sie Bilder oben hoch."
+    "empty": "Noch keine Fotos. Laden Sie Bilder oben hoch.",
+    "addedBy": "von {name}"
   },
   "navigation": {
     "openWith": "Route planen",

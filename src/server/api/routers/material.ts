@@ -2,8 +2,9 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { type VatScheme } from "@prisma/client";
 
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, requireRole } from "@/server/api/trpc";
 import { getArtisanContext } from "@/server/lib/team-context";
+import { pusher } from "@/lib/pusher";
 
 function vatRateForScheme(scheme: VatScheme): number {
   switch (scheme) {
@@ -34,6 +35,7 @@ export const materialRouter = createTRPCRouter({
 
       const materials = await ctx.db.material.findMany({
         where: { projectId: input.projectId },
+        include: { createdBy: { select: { name: true } } },
       });
 
       // Resolve VAT from the artisan owner (artisanId), not necessarily the current user
@@ -65,7 +67,8 @@ export const materialRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, teamId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      // All roles can add materials
 
       const project = await ctx.db.project.findFirst({
         where: { id: input.projectId, artisanId },
@@ -73,15 +76,28 @@ export const materialRouter = createTRPCRouter({
 
       if (!project) throw new TRPCError({ code: "NOT_FOUND" });
 
-      return ctx.db.material.create({
+      const material = await ctx.db.material.create({
         data: {
           projectId: input.projectId,
           label: input.label,
           quantity: input.quantity,
           unit: input.unit,
           unitPrice: input.unitPrice,
+          createdById: ctx.session.user.id,
         },
       });
+
+      // Pusher: notify team channel
+      if (teamId) {
+        const memberName = ctx.session.user.name ?? ctx.session.user.email ?? "Quelqu'un";
+        void pusher.trigger(`private-team-${teamId}`, "material:added", {
+          memberName,
+          projectName: project.name,
+          label: input.label,
+        });
+      }
+
+      return material;
     }),
 
   update: protectedProcedure
@@ -95,7 +111,8 @@ export const materialRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
 
       const material = await ctx.db.material.findFirst({
         where: { id: input.id, project: { artisanId } },
@@ -118,7 +135,8 @@ export const materialRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
 
       const material = await ctx.db.material.findFirst({
         where: { id: input.id, project: { artisanId } },

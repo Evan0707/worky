@@ -1,0 +1,253 @@
+================================================================================
+  PROD TODO — OpenChantier
+  Mis à jour : 2026-04-06
+  Légende : [BLOQUANT] = ne pas mettre en prod sans ça
+            [IMPORTANT] = à faire avant ou juste après le lancement
+            [POLISH]    = peut attendre la v1.1
+================================================================================
+
+
+I. BASE DE DONNÉES
+================================================================================
+
+[BLOQUANT] 1. Appliquer le schéma Prisma en production
+   → pnpm db:push   (ou pnpm db:migrate si on veut des migrations versionnées)
+   Colonnes manquantes en prod :
+     - ProjectAssignment          (Phase 2 — filtrage membres)
+     - Photo.createdById          (Phase 3 — traçabilité)
+     - TimeEntry.createdById      (Phase 3)
+     - Material.createdById       (Phase 3)
+     - Invoice.createdById        (Phase 3)
+     - User.maxTeamMembers        (Phase 1 — limite équipe Stripe)
+   Sans ce push → team.activity crash au runtime (erreur déjà vue en dev)
+
+
+II. STRIPE
+================================================================================
+
+[BLOQUANT] 2. Créer les 3 produits Stripe en mode LIVE
+   Produits à créer sur https://dashboard.stripe.com/products :
+     a) PRO Solo   — 15 €/mois (plan existant, vérifier que l'ID est en prod)
+     b) PRO Équipe — 29 €/mois (NOUVEAU)
+     c) PRO+       — 49 €/mois (NOUVEAU)
+   Puis ajouter dans les variables d'env Vercel :
+     STRIPE_PRICE_ID_PRO_TEAM=price_live_xxxx   (PRO Équipe 29€)
+     STRIPE_PRICE_ID_PRO_PLUS=price_live_xxxx   (PRO+ 49€)
+
+[BLOQUANT] 3. Configurer le webhook Stripe en mode LIVE
+   URL : https://openchantier.fr/api/webhooks/stripe
+   Événements à activer :
+     - checkout.session.completed
+     - customer.subscription.created
+     - customer.subscription.updated
+     - customer.subscription.deleted
+   Copier le "Signing secret" dans STRIPE_WEBHOOK_SECRET (env Vercel)
+
+[IMPORTANT] 4. Passer les clés Stripe de TEST → LIVE dans Vercel
+   STRIPE_SECRET_KEY=sk_live_...
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
+   (En dev, garder sk_test_ / pk_test_)
+
+
+III. VARIABLES D'ENVIRONNEMENT MANQUANTES
+================================================================================
+
+[BLOQUANT] 5. Ajouter dans Vercel → Settings → Environment Variables :
+   STRIPE_PRICE_ID_PRO_TEAM=price_live_xxxx
+   STRIPE_PRICE_ID_PRO_PLUS=price_live_xxxx
+   CRON_SECRET=<secret aléatoire pour protéger /api/cron/invoice-reminders>
+     → générer avec : openssl rand -base64 32
+   NEXT_PUBLIC_APP_URL=https://openchantier.fr   (pas localhost !)
+
+[IMPORTANT] 6. Vérifier que ces vars sont bien settées en prod :
+   AUTH_RESEND_KEY         (emails OTP de connexion)
+   RESEND_API_KEY          (emails transactionnels)
+   AUTH_EMAIL_FROM         (noreply@openchantier.fr — pas chantierpro.fr)
+   AUTH_SECRET             (NextAuth — doit être stable, ne pas régénérer)
+   PUSHER_APP_ID / PUSHER_SECRET / NEXT_PUBLIC_PUSHER_KEY
+   UPLOADTHING_SECRET / UPLOADTHING_APP_ID
+
+
+IV. NOM DE MARQUE — RESTE "WORKY" À CORRIGER
+================================================================================
+
+[IMPORTANT] 7. src/app/layout.tsx (root metadata)
+   Ligne ~5 : title.default = "Worky — Gestion de chantier pour artisans"
+   Ligne ~8 : title.template = "%s | Worky"
+   Ligne ~10: keywords = [..., "Worky"]
+   → Remplacer par "OpenChantier"
+
+[IMPORTANT] 8. src/app/[locale]/layout.tsx (idem pour les locales)
+   Mêmes champs title/keywords que ci-dessus
+
+[IMPORTANT] 9. src/app/[locale]/(dashboard)/layout.tsx ligne ~96
+   alt="Worky"  →  alt="OpenChantier"
+
+[IMPORTANT] 10. src/i18n/locales/*/projects.json — clé "publicView.poweredBy"
+   fr-FR : "Propulsé par Worky"       → "Propulsé par OpenChantier"
+   en-GB : "Powered by Worky"         → "Powered by OpenChantier"
+   de-DE : "Unterstützt von Worky"    → "Unterstützt von OpenChantier"
+   es-ES : "Desarrollado por Worky"   → "Desarrollado por OpenChantier"
+
+[POLISH] 11. src/app/api/photos/upload/route.ts
+   folder: `Worky/${session.user.id}`  →  `OpenChantier/${session.user.id}`
+   (Cloudinary — n'impacte pas les users existants, seulement les nouvelles photos)
+
+[POLISH] 12. src/env.js
+   AUTH_EMAIL_FROM default = "noreply@chantierpro.fr"
+   → Changer en "noreply@openchantier.fr" (ou laisser l'env var écraser)
+
+[POLISH] 13. src/app/[locale]/(marketing)/_components/logo.tsx
+   alt="Worky Logo"  →  alt="OpenChantier"
+
+
+V. AUTHENTIFICATION
+================================================================================
+
+[IMPORTANT] 14. login-form.tsx — callbackUrl hardcodé "/dashboard" (sans locale)
+   Ligne 33 : callbackUrl: "/dashboard"
+   Ligne 50 : callbackUrl: "/dashboard"
+   → L'utilisateur atterrit sur /dashboard sans locale, la redirection
+     middleware devrait rattraper mais c'est fragile.
+   Fix : lire le locale depuis useParams() et passer `/${locale}/dashboard`
+
+[IMPORTANT] 15. Google Sign-In commenté dans login-form.tsx (lignes 91-120)
+   Si vous voulez activer Google OAuth en prod :
+     a) Décommenter le bouton dans login-form.tsx
+     b) Configurer AUTH_GOOGLE_ID et AUTH_GOOGLE_SECRET dans Vercel
+     c) Ajouter https://openchantier.fr/api/auth/callback/google
+        dans Google Cloud Console → Authorized redirect URIs
+
+[POLISH] 16. Email de connexion OTP — sujet hardcodé en français (auth.ts ligne 34)
+   subject: `Connexion à OpenChantier`
+   → Devrait être traduit selon la locale de l'utilisateur
+   (actuellement tous les users reçoivent le sujet en fr-FR)
+
+
+VI. PHASE 3 — TRAÇABILITÉ (createdById non peuplé)
+================================================================================
+
+[IMPORTANT] 17. Les champs createdById existent dans le schéma mais ne sont
+   JAMAIS peuplés dans les routers. L'activité feed ne montrera rien.
+   Fichiers à modifier :
+
+   a) src/server/api/routers/photo.ts — mutation save / après upload UploadThing
+      Ajouter : createdById: ctx.session.user.id
+
+   b) src/server/api/routers/time-entry.ts — mutation create
+      Ajouter : createdById: ctx.session.user.id
+
+   c) src/server/api/routers/material.ts — mutation create
+      Ajouter : createdById: ctx.session.user.id
+
+   d) src/server/api/routers/invoice.ts — mutations create & createFromProject
+      Ajouter : createdById: ctx.session.user.id
+
+
+VII. PHASE 4 — PUSHER TEMPS RÉEL (triggers non implémentés)
+================================================================================
+
+[POLISH] 18. L'UI TeamActivityFeed écoute Pusher (private-team-{teamId})
+   mais aucun router ne trigger les événements côté serveur.
+   Fichiers à modifier après avoir peuplé createdById (point 17) :
+
+   a) photo.ts → après création : pusher.trigger(channel, "photo:added", {...})
+   b) time-entry.ts → après création : pusher.trigger(channel, "time:logged", {...})
+   c) material.ts → après création : pusher.trigger(channel, "material:added", {...})
+
+   Aussi : Pusher private channels nécessitent un endpoint d'authentification.
+   Vérifier que /api/pusher/auth existe et est configuré.
+
+
+VIII. VERCEL CRON
+================================================================================
+
+[IMPORTANT] 19. vercel.json contient le cron daily à 8h UTC.
+   Vérifier dans Vercel Dashboard → Settings → Cron Jobs que le cron
+   est bien actif après le déploiement.
+   Tester manuellement : GET /api/cron/invoice-reminders
+   avec header Authorization: Bearer <CRON_SECRET>
+
+
+IX. I18N — TEAM.JSON MANQUANT (activity keys)
+================================================================================
+
+[BLOQUANT] 20. TeamActivityFeed utilise des clés team.activity.* qui
+   n'existent peut-être pas dans tous les locales team.json.
+   Vérifier / ajouter dans src/i18n/locales/*/team.json :
+   {
+     "activity": {
+       "title": "Activité récente",
+       "empty": "Aucune activité pour le moment.",
+       "unknownMember": "Membre",
+       "justNow": "À l'instant",
+       "minutesAgo": "Il y a {n} min",
+       "hoursAgo": "Il y a {n}h",
+       "daysAgo": "Il y a {n}j",
+       "events": {
+         "photo": "{member} a ajouté une photo sur {project}",
+         "time": "{member} a pointé {hours}h sur {project}",
+         "material": "{member} a ajouté {label} sur {project}",
+         "invoice": "{member} a créé {number} sur {project}"
+       },
+       "toasts": {
+         "photo": "{member} a ajouté {count} photo(s) sur {project}",
+         "time": "{member} a pointé {hours}h sur {project}",
+         "material": "{member} a ajouté {label} sur {project}"
+       }
+     }
+   }
+
+
+X. SENTRY
+================================================================================
+
+[IMPORTANT] 21. SENTRY_DSN est dans .env.example mais probablement pas configuré.
+   Si vous voulez le monitoring d'erreurs en prod :
+   a) Créer un projet sur https://sentry.io
+   b) Ajouter SENTRY_DSN dans Vercel env vars
+   c) Vérifier que @sentry/nextjs est installé et configuré dans next.config.js
+
+
+XI. CHECKLIST FINALE AVANT DEPLOY
+================================================================================
+
+□ pnpm build — vérifier que le build passe sans erreur TypeScript
+□ pnpm db:push — pousser le schéma sur la DB de production
+□ Vérifier toutes les env vars dans Vercel (voir point 5-6)
+□ Tester le webhook Stripe avec Stripe CLI en mode live
+□ Tester la connexion OTP (email Resend) en prod
+□ Tester la création d'un chantier en FREE puis en PRO
+□ Tester l'invitation d'un membre d'équipe
+□ Tester l'assignation d'un membre à un projet
+□ Vérifier que /c/[token] fonctionne sans authentification
+□ Vérifier que le cron /api/cron/invoice-reminders répond 200
+
+
+================================================================================
+  RÉSUMÉ PRIORITÉS
+================================================================================
+
+  Bloquant (ne pas déployer sans) :
+    1  DB push (schema migration)
+    2  Produits Stripe live + Price IDs
+    3  Webhook Stripe live configuré
+    5  Variables d'env (CRON_SECRET, NEXT_PUBLIC_APP_URL, etc.)
+   20  i18n team.activity.* keys
+
+  Important (à faire dans les 48h après lancement) :
+    4  Clés Stripe live
+    6  Vérif toutes les env vars
+    7-10  Rebranding Worky → OpenChantier
+   14  callbackUrl login avec locale
+   17  Peupler createdById dans les routers (sinon activity feed vide)
+   19  Vérif cron Vercel
+   21  Sentry
+
+  Polish (v1.1) :
+   11-13  Cloudinary folder / env default / logo alt
+   15  Google OAuth
+   16  Email OTP multilingue
+   18  Pusher triggers serveur
+
+================================================================================

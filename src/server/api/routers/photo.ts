@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, requireRole } from "@/server/api/trpc";
 import { getArtisanContext } from "@/server/lib/team-context";
+import { pusher } from "@/lib/pusher";
 
 export const photoRouter = createTRPCRouter({
   listByProject: protectedProcedure
@@ -19,6 +20,7 @@ export const photoRouter = createTRPCRouter({
       return ctx.db.photo.findMany({
         where: { projectId: input.projectId },
         orderBy: [{ order: "asc" }, { takenAt: "desc" }],
+        include: { createdBy: { select: { name: true } } },
       });
     }),
 
@@ -28,7 +30,8 @@ export const photoRouter = createTRPCRouter({
       orders: z.array(z.object({ id: z.string(), order: z.number() })),
     }))
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
 
       const project = await ctx.db.project.findFirst({
         where: { id: input.projectId, artisanId },
@@ -68,7 +71,8 @@ export const photoRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
 
       const photo = await ctx.db.photo.findFirst({
         where: { id: input.id, project: { artisanId } },
@@ -93,7 +97,8 @@ export const photoRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, teamId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      // All roles can upload photos
 
       const project = await ctx.db.project.findFirst({
         where: { id: input.projectId, artisanId },
@@ -101,7 +106,7 @@ export const photoRouter = createTRPCRouter({
 
       if (!project) throw new TRPCError({ code: "NOT_FOUND" });
 
-      return ctx.db.photo.create({
+      const photo = await ctx.db.photo.create({
         data: {
           projectId: input.projectId,
           url: input.url,
@@ -110,7 +115,20 @@ export const photoRouter = createTRPCRouter({
           lat: input.lat,
           lng: input.lng,
           takenAt: input.takenAt ?? new Date(),
+          createdById: ctx.session.user.id,
         },
       });
+
+      // Pusher: notify team channel
+      if (teamId) {
+        const memberName = ctx.session.user.name ?? ctx.session.user.email ?? "Quelqu'un";
+        void pusher.trigger(`private-team-${teamId}`, "photo:added", {
+          memberName,
+          projectName: project.name,
+          count: 1,
+        });
+      }
+
+      return photo;
     }),
 });

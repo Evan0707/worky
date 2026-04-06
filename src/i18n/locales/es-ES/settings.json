@@ -81,7 +81,32 @@
                                  "reminders":  "Recordatorios automáticos",
                                  "clientActions":  "Validación / comentario / firma del cliente",
                                  "support":  "Soporte prioritario"
-                             }
+                             },
+                    "back": "Volver",
+                    "tiers": {
+                        "title": "Elija su plan",
+                        "subtitle": "Precios adaptados al tamaño de su empresa.",
+                        "popular": "Popular",
+                        "select": "Seleccionar este plan",
+                        "allFeatures": "Todas las funciones PRO",
+                        "members": {
+                            "none": "Ideal para autónomos",
+                            "count": "Hasta {count} miembros del equipo",
+                            "unlimited": "Miembros del equipo ilimitados"
+                        },
+                        "PRO": {
+                            "name": "PRO Solo",
+                            "desc": "Gestione todos sus proyectos por su cuenta."
+                        },
+                        "PRO_TEAM": {
+                            "name": "PRO Equipo",
+                            "desc": "Conecte a su equipo de campo."
+                        },
+                        "PRO_PLUS": {
+                            "name": "PRO+",
+                            "desc": "Para toda la empresa."
+                        }
+                    }
                 }
 }
 

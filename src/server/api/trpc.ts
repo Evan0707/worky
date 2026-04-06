@@ -69,3 +69,27 @@ export const requirePro = (ctx: {
     });
   }
 };
+
+/**
+ * Enforce team role access for mutations.
+ *
+ * Role hierarchy: OWNER > ADMIN > MEMBER
+ * - role === null  → solo user (always allowed)
+ * - role in allowed → allowed
+ * - otherwise      → FORBIDDEN
+ *
+ * Usage: requireRole(role, ["OWNER", "ADMIN"])
+ */
+export const requireRole = (
+  role: string | null,
+  allowed: ("OWNER" | "ADMIN" | "MEMBER")[],
+) => {
+  // Solo artisan (no team) is always treated as OWNER of their own data
+  if (role === null) return;
+  if (!allowed.includes(role as "OWNER" | "ADMIN" | "MEMBER")) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "You do not have permission to perform this action.",
+    });
+  }
+};

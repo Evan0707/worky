@@ -1,10 +1,11 @@
 import { type PrismaClient } from "@prisma/client";
+import { type TeamRole } from "@prisma/client";
 
 /**
- * Resolves the effective artisanId for a given user.
+ * Resolves the effective artisanId for a given user AND their team role.
  *
- * - Solo user or team OWNER → their own userId
- * - Team MEMBER / ADMIN     → the team owner's userId
+ * - Solo user or team OWNER → their own userId, role: null
+ * - Team MEMBER / ADMIN     → the team owner's userId, role: "MEMBER" | "ADMIN"
  *
  * All project queries must use this artisanId so team members share
  * the same project space as the team owner.
@@ -12,11 +13,17 @@ import { type PrismaClient } from "@prisma/client";
 export async function getArtisanContext(
   userId: string,
   db: PrismaClient,
-): Promise<{ artisanId: string; isTeamMember: boolean; teamId: string | null }> {
+): Promise<{
+  artisanId: string;
+  isTeamMember: boolean;
+  teamId: string | null;
+  role: TeamRole | null;
+}> {
   const membership = await db.teamMember.findUnique({
     where: { userId },
     select: {
       teamId: true,
+      role: true,
       team: { select: { ownerId: true } },
     },
   });
@@ -26,10 +33,11 @@ export async function getArtisanContext(
       artisanId: membership.team.ownerId,
       isTeamMember: true,
       teamId: membership.teamId,
+      role: membership.role,
     };
   }
 
-  return { artisanId: userId, isTeamMember: false, teamId: null };
+  return { artisanId: userId, isTeamMember: false, teamId: null, role: null };
 }
 
 /**

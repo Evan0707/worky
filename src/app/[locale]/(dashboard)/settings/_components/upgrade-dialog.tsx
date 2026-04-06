@@ -28,15 +28,24 @@ import {
   Bell,
   Signature,
   HeadphonesIcon,
+  ArrowLeft,
+  Users
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { env } from "@/env";
+import { type PlanTier } from "@/server/lib/stripe-utils";
 
 const stripePromise = env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
   ? loadStripe(env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
   : null;
 
-// ─── Feature list ─────────────────────────────────────────────────────────────
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const TIERS: { id: PlanTier; price: number; members: number | "unlimited"; icon: any; popular?: boolean }[] = [
+  { id: "PRO", price: 15, members: 0, icon: Zap },
+  { id: "PRO_TEAM", price: 29, members: 5, icon: Users, popular: true },
+  { id: "PRO_PLUS", price: 49, members: "unlimited", icon: Layers },
+];
 
 const PRO_FEATURES = [
   { icon: Layers, labelKey: "upgrade.feat.projects" as const },
@@ -182,9 +191,11 @@ export function UpgradeDialog({ open, onOpenChange, onSuccess }: UpgradeDialogPr
   const t = useTranslations("settings");
   const utils = api.useUtils();
 
+  const [step, setStep] = useState<"select" | "pay" | "success">("select");
+  const [selectedTier, setSelectedTier] = useState<PlanTier | null>(null);
+
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [intentType, setIntentType] = useState<"setup" | "payment">("setup");
-  const [succeeded, setSucceeded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -200,59 +211,131 @@ export function UpgradeDialog({ open, onOpenChange, onSuccess }: UpgradeDialogPr
     },
   });
 
-  // Trigger the mutation when the dialog opens (open prop controlled externally)
+  // Reset dialog state when it closes
   useEffect(() => {
-    if (open && !clientSecret && !succeeded && !intentMutation.isPending) {
-      setIsLoading(true);
-      setFetchError(null);
-      intentMutation.mutate();
+    if (!open) {
+      setTimeout(() => {
+        setStep("select");
+        setSelectedTier(null);
+        setClientSecret(null);
+        setIsLoading(false);
+        setFetchError(null);
+      }, 300);
     }
-    if (!open && succeeded) {
-      // Reset after successful close
-      setClientSecret(null);
-      setSucceeded(false);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
+  const handleSelectTier = (tier: PlanTier) => {
+    setSelectedTier(tier);
+    setStep("pay");
+    setIsLoading(true);
+    setFetchError(null);
+    intentMutation.mutate({ tier });
+  };
+
   const handlePaymentSuccess = () => {
-    setSucceeded(true);
+    setStep("success");
     void utils.stripe.getSubscriptionDetails.invalidate();
     void utils.project.list.invalidate();
   };
 
   const handleClose = (): void => {
     onOpenChange(false);
-    if (succeeded) {
+    if (step === "success") {
       onSuccess();
-      setClientSecret(null);
-      setSucceeded(false);
     }
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-2xl p-0 overflow-hidden gap-0"
+        className={cn("p-0 overflow-hidden gap-0", step === "select" ? "max-w-4xl" : "max-w-2xl")}
         aria-describedby={undefined}
       >
         <DialogTitle className="sr-only">{t("upgrade.dialogTitle")}</DialogTitle>
 
-        {succeeded ? (
-          <div className="p-8">
-            <SuccessScreen onClose={handleClose} />
+        {step === "select" && (
+          <div className="p-8 bg-muted/30">
+            <div className="text-center mb-8 space-y-2">
+              <h2 className="text-3xl font-bold tracking-tight">{t("upgrade.tiers.title")}</h2>
+              <p className="text-muted-foreground">{t("upgrade.tiers.subtitle")}</p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-6">
+              {TIERS.map((tier) => {
+                const isPopular = tier.popular;
+                return (
+                  <div 
+                    key={tier.id} 
+                    className={cn(
+                      "relative flex flex-col p-6 rounded-2xl border bg-card text-card-foreground shadow-sm transition-all",
+                      isPopular ? "border-primary shadow-primary/10 shadow-xl" : "hover:border-foreground/20"
+                    )}
+                  >
+                    {isPopular && (
+                      <div className="absolute -top-3 inset-x-0 flex justify-center">
+                        <Badge className="bg-primary text-primary-foreground">{t("upgrade.tiers.popular")}</Badge>
+                      </div>
+                    )}
+                    
+                    <div className="mb-4">
+                      <h3 className="font-semibold text-lg">{t(`upgrade.tiers.${tier.id}.name`)}</h3>
+                      <p className="text-3xl font-bold mt-2">
+                        {tier.price} € <span className="text-sm font-normal text-muted-foreground">{t("upgrade.perMonth")}</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">{t("upgrade.htVat")}</p>
+                    </div>
+
+                    <div className="flex-1 space-y-4 mb-6">
+                      <p className="text-sm text-muted-foreground">{t(`upgrade.tiers.${tier.id}.desc`)}</p>
+                      <ul className="space-y-2 text-sm">
+                        <li className="flex items-center gap-2 font-medium text-foreground">
+                          <Check className="h-4 w-4 text-primary" />
+                          {tier.members === 0 
+                            ? t("upgrade.tiers.members.none")
+                            : tier.members === "unlimited"
+                              ? t("upgrade.tiers.members.unlimited")
+                              : t("upgrade.tiers.members.count", { count: tier.members })}
+                        </li>
+                        <li className="flex items-center gap-2 text-muted-foreground">
+                          <Check className="h-4 w-4 text-muted-foreground/70" />
+                          {t("upgrade.tiers.allFeatures")}
+                        </li>
+                      </ul>
+                    </div>
+                    
+                    <Button 
+                      className="w-full" 
+                      variant={isPopular ? "default" : "outline"}
+                      onClick={() => handleSelectTier(tier.id)}
+                    >
+                      {t("upgrade.tiers.select")}
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        ) : (
+        )}
+
+        {step === "pay" && selectedTier && (
           <div className="grid md:grid-cols-[1fr,1.1fr]">
-            {/* Left panel — features */}
+            {/* Left panel — details */}
             <div className="relative bg-gradient-to-br from-primary/90 to-primary p-7 text-primary-foreground flex flex-col gap-6 hidden md:flex">
-              {/* Decorative circles */}
-              <div className="absolute -top-10 -left-10 h-40 w-40 rounded-full bg-white/5" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="absolute top-4 left-4 text-white/70 hover:bg-white/10 hover:text-white"
+                onClick={() => setStep("select")}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                {t("upgrade.back")}
+              </Button>
+
               <div className="absolute -bottom-8 -right-8 h-32 w-32 rounded-full bg-white/5" />
 
-              <div className="relative space-y-1">
+              <div className="relative space-y-1 mt-8">
                 <Badge className="bg-white/20 text-white border-none text-xs font-medium mb-2">
-                  {t("upgrade.trial")}
+                  {t(`upgrade.tiers.${selectedTier}.name`)}
                 </Badge>
                 <h2 className="text-2xl font-bold leading-tight">
                   {t("upgrade.heading")}
@@ -275,7 +358,7 @@ export function UpgradeDialog({ open, onOpenChange, onSuccess }: UpgradeDialogPr
 
               <div className="relative border-t border-white/20 pt-4">
                 <p className="text-3xl font-bold">
-                  15 €
+                  {TIERS.find(t => t.id === selectedTier)?.price} €
                   <span className="text-base font-normal text-primary-foreground/70">
                     {" "}{t("upgrade.perMonth")}
                   </span>
@@ -288,12 +371,13 @@ export function UpgradeDialog({ open, onOpenChange, onSuccess }: UpgradeDialogPr
 
             {/* Right panel — payment */}
             <div className="p-7 flex flex-col gap-5">
-              {/* Mobile heading */}
-              <div className="md:hidden space-y-1">
+              <div className="md:hidden flex items-center gap-2 mb-2">
+                <Button variant="ghost" size="icon" onClick={() => setStep("select")} className="-ml-2">
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
                 <Badge className="bg-primary/10 text-primary border-none text-xs font-medium">
-                  {t("upgrade.trial")}
+                   {t(`upgrade.tiers.${selectedTier}.name`)}
                 </Badge>
-                <h2 className="text-xl font-bold">{t("upgrade.heading")}</h2>
               </div>
 
               <div>
@@ -320,7 +404,7 @@ export function UpgradeDialog({ open, onOpenChange, onSuccess }: UpgradeDialogPr
                     onClick={() => {
                       setFetchError(null);
                       setIsLoading(true);
-                      intentMutation.mutate();
+                      intentMutation.mutate({ tier: selectedTier });
                     }}
                   >
                     {t("upgrade.retry")}
@@ -349,6 +433,12 @@ export function UpgradeDialog({ open, onOpenChange, onSuccess }: UpgradeDialogPr
                 </Elements>
               )}
             </div>
+          </div>
+        )}
+
+        {step === "success" && (
+          <div className="p-8">
+            <SuccessScreen onClose={handleClose} />
           </div>
         )}
       </DialogContent>

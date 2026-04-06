@@ -66,5 +66,25 @@
     "already_member": "Vous êtes déjà membre d'une équipe.",
     "is_owner": "Vous êtes propriétaire d'une équipe. Supprimez-la avant d'en rejoindre une autre."
   },
-  "inviteSuccess": "Bienvenue dans l'équipe {team} !"
+  "inviteSuccess": "Bienvenue dans l'équipe {team} !",
+  "activity": {
+    "title": "Activité récente",
+    "empty": "Aucune activité pour le moment.",
+    "unknownMember": "Membre",
+    "justNow": "À l'instant",
+    "minutesAgo": "Il y a {n} min",
+    "hoursAgo": "Il y a {n}h",
+    "daysAgo": "Il y a {n}j",
+    "events": {
+      "photo": "{member} a ajouté une photo sur {project}",
+      "time": "{member} a pointé {hours}h sur {project}",
+      "material": "{member} a ajouté {label} sur {project}",
+      "invoice": "{member} a créé {number} sur {project}"
+    },
+    "toasts": {
+      "photo": "{member} a ajouté {count} photo(s) sur {project}",
+      "time": "{member} a pointé {hours}h sur {project}",
+      "material": "{member} a ajouté {label} sur {project}"
+    }
+  }
 }

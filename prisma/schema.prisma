@@ -67,13 +67,19 @@ model User {
   createdAt            DateTime    @default(now())
   updatedAt            DateTime    @updatedAt
   proTrialUsed         Boolean     @default(false)
+  maxTeamMembers       Int         @default(0)
   industry             String?
   setupComplete        Boolean     @default(false)
   accounts             Account[]
   projects             Project[]
   sessions             Session[]
-  ownedTeam            Team?       @relation("TeamOwner")
+  ownedTeam            Team?              @relation("TeamOwner")
   teamMember           TeamMember?
+  assignments          ProjectAssignment[]
+  photosCreated        Photo[]            @relation("PhotoCreator")
+  timeEntriesCreated   TimeEntry[]        @relation("TimeEntryCreator")
+  materialsCreated     Material[]         @relation("MaterialCreator")
+  invoicesCreated      Invoice[]          @relation("InvoiceCreator")
 }
 
 model Team {
@@ -118,10 +124,10 @@ model TeamInvitation {
 }
 
 model Project {
-  id                 String         @id @default(cuid())
+  id                 String               @id @default(cuid())
   name               String
   address            String
-  status             ProjectStatus  @default(ACTIVE)
+  status             ProjectStatus        @default(ACTIVE)
   clientName         String
   clientPhone        String?
   clientEmail        String?
@@ -129,39 +135,56 @@ model Project {
   description        String?
   startDate          DateTime?
   endDate            DateTime?
-  shareToken         String         @unique @default(uuid())
+  shareToken         String               @unique @default(uuid())
   shareExpiresAt     DateTime?
   artisanId          String
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
   clientLastViewedAt DateTime?
   budget             Int?
-  progress           Int            @default(0)
+  progress           Int                  @default(0)
   nextSteps          Json?
+  assignments        ProjectAssignment[]
   clientActions      ClientAction[]
   invoices           Invoice[]
   materials          Material[]
   photos             Photo[]
-  artisan            User           @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  artisan            User                 @relation(fields: [artisanId], references: [id], onDelete: Cascade)
   timeEntries        TimeEntry[]
 
   @@index([artisanId])
   @@index([shareToken])
 }
 
+model ProjectAssignment {
+  id         String   @id @default(cuid())
+  projectId  String
+  userId     String
+  assignedAt DateTime @default(now())
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([userId])
+  @@index([projectId])
+}
+
 model Photo {
-  id        String   @id @default(cuid())
-  projectId String
-  url       String
-  key       String   @unique
-  note      String?
-  lat       Float?
-  lng       Float?
-  takenAt   DateTime @default(now())
-  order     Int      @default(0)
-  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  projectId   String
+  url         String
+  key         String   @unique
+  note        String?
+  lat         Float?
+  lng         Float?
+  takenAt     DateTime @default(now())
+  order       Int      @default(0)
+  createdById String?
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy   User?    @relation("PhotoCreator", fields: [createdById], references: [id])
 
   @@index([projectId])
+  @@index([createdById])
 }
 
 model TimeEntry {
@@ -170,21 +193,27 @@ model TimeEntry {
   date        DateTime @db.Date
   hours       Decimal  @db.Decimal(4, 2)
   description String?
+  createdById String?
   project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy   User?    @relation("TimeEntryCreator", fields: [createdById], references: [id])
 
   @@index([projectId])
+  @@index([createdById])
 }
 
 model Material {
-  id        String  @id @default(cuid())
-  projectId String
-  label     String
-  quantity  Decimal @db.Decimal(10, 3)
-  unitPrice Decimal @db.Decimal(10, 2)
-  unit      String  @default("u")
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id          String  @id @default(cuid())
+  projectId   String
+  label       String
+  quantity    Decimal @db.Decimal(10, 3)
+  unitPrice   Decimal @db.Decimal(10, 2)
+  unit        String  @default("u")
+  createdById String?
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy   User?   @relation("MaterialCreator", fields: [createdById], references: [id])
 
   @@index([projectId])
+  @@index([createdById])
 }
 
 model Invoice {
@@ -207,10 +236,13 @@ model Invoice {
   remindersSentAt DateTime[]
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
+  createdById     String?
   project         Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy       User?         @relation("InvoiceCreator", fields: [createdById], references: [id])
 
   @@index([projectId])
   @@index([projectId, status])
+  @@index([createdById])
 }
 
 model ClientAction {

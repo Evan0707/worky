@@ -38,7 +38,19 @@
     "photos": "Fotos",
     "time": "Horas",
     "materials": "Materiales",
-    "invoice": "Presupuesto / Factura"
+    "invoice": "Presupuesto / Factura",
+    "team": "Equipo"
+  },
+  "team": {
+    "title": "Acceso al proyecto",
+    "description": "Elija que miembros del equipo pueden acceder a este proyecto.",
+    "noTeam": "Aun no ha creado un equipo.",
+    "noMembers": "No hay miembros en su equipo.",
+    "assigned": "Asignado",
+    "notAssigned": "No asignado",
+    "assignSuccess": "Miembro asignado al proyecto",
+    "unassignSuccess": "Miembro eliminado del proyecto",
+    "error": "Error al actualizar la asignacion"
   },
   "share": {
     "title": "Compartir con el cliente",
@@ -97,7 +109,8 @@
     "descriptionOptional": "Descripción (opcional)",
     "descriptionPlaceholder": "Instalación eléctrica...",
     "history": "Historial de tiempos",
-    "empty": "Sin registros. Añada sus horas de trabajo en el formulario."
+    "empty": "Sin registros. Añada sus horas de trabajo en el formulario.",
+    "addedBy": "por {name}"
   },
   "materials": {
     "totalTTC": "Total materiales (IVA incluido)",
@@ -109,13 +122,15 @@
     "list": "Lista de materiales",
     "empty": "Sin materiales añadidos. Use el formulario para registrar sus compras.",
     "ht": "sin IVA",
-    "vat": "IVA"
+    "vat": "IVA",
+    "addedBy": "por {name}"
   },
   "photos": {
     "uploadSuccess": "{count} foto(s) añadida(s)",
     "uploadError": "Error al subir",
     "photoAlt": "Foto de la obra",
-    "empty": "Sin fotos por el momento. Suba imágenes arriba."
+    "empty": "Sin fotos por el momento. Suba imágenes arriba.",
+    "addedBy": "por {name}"
   },
   "navigation": {
     "openWith": "Cómo llegar",

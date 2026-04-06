@@ -7,6 +7,7 @@ import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
+  requireRole,
 } from "@/server/api/trpc";
 import { getArtisanContext, getEffectivePlan } from "@/server/lib/team-context";
 import { env } from "@/env";
@@ -22,9 +23,14 @@ export type NextStep = z.infer<typeof nextStepSchema>;
 
 export const projectRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
-    const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+    const userId = ctx.session.user.id!;
+    const { artisanId, role } = await getArtisanContext(userId, ctx.db);
+    const where =
+      role === "MEMBER"
+        ? { artisanId, assignments: { some: { userId } } }
+        : { artisanId };
     return ctx.db.project.findMany({
-      where: { artisanId },
+      where,
       include: { _count: { select: { photos: true } } },
       orderBy: { createdAt: "desc" },
     });
@@ -52,14 +58,19 @@ export const projectRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      const userId = ctx.session.user.id!;
+      const { artisanId, role } = await getArtisanContext(userId, ctx.db);
+      const where =
+        role === "MEMBER"
+          ? { id: input.id, artisanId, assignments: { some: { userId } } }
+          : { id: input.id, artisanId };
       const project = await ctx.db.project.findFirst({
-        where: { id: input.id, artisanId },
+        where,
         include: {
           photos: { orderBy: { takenAt: "desc" } },
           timeEntries: { orderBy: { date: "desc" } },
           materials: true,
-          clientActions: { orderBy: { createdAt: "desc" } }
+          clientActions: { orderBy: { createdAt: "desc" } },
         },
       });
 
@@ -81,7 +92,8 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
       const plan = await getEffectivePlan(ctx.session.user.id!, ctx.db);
 
       if (plan === "FREE") {
@@ -121,7 +133,8 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
       const { id, ...data } = input;
 
       const project = await ctx.db.project.findFirst({
@@ -135,7 +148,8 @@ export const projectRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      requireRole(role, ["OWNER"]);
 
       const project = await ctx.db.project.findFirst({
         where: { id: input.id, artisanId },
@@ -222,7 +236,8 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
 
       const project = await ctx.db.project.findFirst({
         where: { id: input.id, artisanId },
@@ -274,13 +289,109 @@ export const projectRouter = createTRPCRouter({
     }),
 
   /**
+   * Returns all team members with their assignment status for a project.
+   * OWNER and ADMIN only.
+   */
+  getTeamAssignments: protectedProcedure
+    .input(z.object({ projectId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
+
+      const project = await ctx.db.project.findFirst({
+        where: { id: input.projectId, artisanId },
+        select: { id: true },
+      });
+      if (!project) throw new TRPCError({ code: "NOT_FOUND" });
+
+      const team = await ctx.db.team.findUnique({
+        where: { ownerId: artisanId },
+        include: {
+          members: {
+            include: {
+              user: { select: { id: true, name: true, email: true, image: true } },
+            },
+            orderBy: { joinedAt: "asc" },
+          },
+        },
+      });
+
+      if (!team) return [];
+
+      const assignments = await ctx.db.projectAssignment.findMany({
+        where: { projectId: input.projectId },
+        select: { userId: true },
+      });
+      const assignedSet = new Set(assignments.map((a) => a.userId));
+
+      return team.members.map((m) => ({
+        memberId: m.id,
+        userId: m.user.id,
+        name: m.user.name,
+        email: m.user.email,
+        image: m.user.image,
+        role: m.role,
+        isAssigned: assignedSet.has(m.user.id),
+      }));
+    }),
+
+  /**
+   * Assign a team member to a project. OWNER/ADMIN only.
+   */
+  assignMember: protectedProcedure
+    .input(z.object({ projectId: z.string(), userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
+
+      const project = await ctx.db.project.findFirst({
+        where: { id: input.projectId, artisanId },
+      });
+      if (!project) throw new TRPCError({ code: "NOT_FOUND" });
+
+      const membership = await ctx.db.teamMember.findFirst({
+        where: { userId: input.userId, team: { ownerId: artisanId } },
+      });
+      if (!membership) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "User is not a team member" });
+      }
+
+      return ctx.db.projectAssignment.upsert({
+        where: { projectId_userId: { projectId: input.projectId, userId: input.userId } },
+        update: {},
+        create: { projectId: input.projectId, userId: input.userId },
+      });
+    }),
+
+  /**
+   * Remove a team member's assignment from a project. OWNER/ADMIN only.
+   */
+  unassignMember: protectedProcedure
+    .input(z.object({ projectId: z.string(), userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
+
+      const project = await ctx.db.project.findFirst({
+        where: { id: input.projectId, artisanId },
+      });
+      if (!project) throw new TRPCError({ code: "NOT_FOUND" });
+
+      await ctx.db.projectAssignment.deleteMany({
+        where: { projectId: input.projectId, userId: input.userId },
+      });
+      return { success: true };
+    }),
+
+  /**
    * Send the project share link to the client by email via Resend.
    * Requires clientEmail on the project.
    */
   sendShareEmail: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
 
       const project = await ctx.db.project.findFirst({
         where: { id: input.id, artisanId },

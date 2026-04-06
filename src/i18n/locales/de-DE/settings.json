@@ -80,8 +80,32 @@
                                  "analytics":  "Rentabilitäts-Dashboard",
                                  "reminders":  "Automatische Erinnerungen",
                                  "clientActions":  "Kundenvalidierung / Kommentar / Unterschrift",
-                                 "support":  "Prioritätssupport"
-                             }
+                                 "support":  "Priority Support"
+                             },
+                    "back": "Zurück",
+                    "tiers": {
+                        "title": "Wählen Sie Ihren Plan",
+                        "subtitle": "Preise, die auf die Größe Ihres Unternehmens zugeschnitten sind.",
+                        "popular": "Beliebt",
+                        "select": "Diesen Plan wählen",
+                        "allFeatures": "Alle PRO-Funktionen",
+                        "members": {
+                            "none": "Ideal für Einzelunternehmer",
+                            "count": "Bis zu {count} Teammitglieder",
+                            "unlimited": "Unbegrenzte Teammitglieder"
+                        },
+                        "PRO": {
+                            "name": "PRO Solo",
+                            "desc": "Verwalten Sie alle Ihre Projekte allein."
+                        },
+                        "PRO_TEAM": {
+                            "name": "PRO Team",
+                            "desc": "Vernetzen Sie Ihr Außendienst-Team."
+                        },
+                        "PRO_PLUS": {
+                            "name": "PRO+",
+                            "desc": "Für das gesamte Unternehmen."
+                        }
+                    }
                 }
 }
-

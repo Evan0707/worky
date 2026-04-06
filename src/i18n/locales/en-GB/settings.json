@@ -81,7 +81,32 @@
                                  "reminders":  "Automatic reminders",
                                  "clientActions":  "Client validation / comment / signature",
                                  "support":  "Priority support"
-                             }
+                             },
+                    "back": "Back",
+                    "tiers": {
+                        "title": "Choose your plan",
+                        "subtitle": "Pricing tailored to your business size.",
+                        "popular": "Popular",
+                        "select": "Select this plan",
+                        "allFeatures": "All PRO features",
+                        "members": {
+                            "none": "Ideal for solo artisans",
+                            "count": "Up to {count} team members",
+                            "unlimited": "Unlimited team members"
+                        },
+                        "PRO": {
+                            "name": "PRO Solo",
+                            "desc": "Manage all your projects on your own."
+                        },
+                        "PRO_TEAM": {
+                            "name": "PRO Team",
+                            "desc": "Connect your field team."
+                        },
+                        "PRO_PLUS": {
+                            "name": "PRO+",
+                            "desc": "For the whole company."
+                        }
+                    }
                 }
 }
 

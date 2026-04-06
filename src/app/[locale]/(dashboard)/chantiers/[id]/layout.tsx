@@ -5,6 +5,9 @@ import { ProjectTabs } from "./_components/project-tabs";
 import { ChevronRight, HardHat } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { auth } from "@/server/auth";
+import { getArtisanContext } from "@/server/lib/team-context";
+import { db } from "@/server/db";
 
 const statusConfig: Record<string, { label_key: string; classes: string }> = {
   ACTIVE:   { label_key: "status.ACTIVE",   classes: "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-400" },
@@ -28,6 +31,19 @@ export default async function ProjectLayout({
     project = await api.project.getById({ id });
   } catch {
     notFound();
+  }
+
+  // Determine if team tab should be shown (OWNER with team, or ADMIN)
+  let showTeamTab = false;
+  const session = await auth();
+  if (session?.user?.id) {
+    const { artisanId, role } = await getArtisanContext(session.user.id, db);
+    if (role === "ADMIN") {
+      showTeamTab = true;
+    } else if (role === null) {
+      const team = await db.team.findUnique({ where: { ownerId: artisanId }, select: { id: true } });
+      showTeamTab = !!team;
+    }
   }
 
   const status = statusConfig[project.status] ?? statusConfig.ARCHIVED!;
@@ -60,7 +76,7 @@ export default async function ProjectLayout({
       </div>
 
       {/* Tabs */}
-      <ProjectTabs locale={locale} projectId={id} />
+      <ProjectTabs locale={locale} projectId={id} showTeamTab={showTeamTab} />
 
       <main className="mt-2">{children}</main>
     </div>

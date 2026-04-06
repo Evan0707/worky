@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure, requirePro } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, requirePro, requireRole } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { getArtisanContext } from "@/server/lib/team-context";
 import { resend } from "@/lib/resend";
@@ -7,6 +7,7 @@ import { render } from "@react-email/render";
 import { InvoiceReminderEmail } from "../../../../emails/invoice-reminder";
 import { formatCurrency, formatDate } from "@/lib/i18n-helpers";
 import { env } from "@/env";
+import { pusher } from "@/lib/pusher";
 
 export const invoiceRouter = createTRPCRouter({
   list: protectedProcedure
@@ -67,8 +68,9 @@ export const invoiceRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, role, teamId } = await getArtisanContext(ctx.session.user.id, ctx.db);
       requirePro(ctx as { session: { user: { plan: string } } });
+      requireRole(role, ["OWNER", "ADMIN"]);
 
       // 1. Verify project belongs to this artisan
       const project = await ctx.db.project.findUnique({
@@ -120,6 +122,7 @@ export const invoiceRouter = createTRPCRouter({
               totalTTC,
               currency: artisan?.currency ?? "EUR",
               locale: artisan?.locale ?? "fr-FR",
+              createdById: ctx.session.user.id,
             },
           });
           break;
@@ -127,6 +130,16 @@ export const invoiceRouter = createTRPCRouter({
           if (e?.code === "P2002" && attempt < 4) continue;
           throw e;
         }
+      }
+
+      // Pusher: notify team channel
+      if (teamId && invoice) {
+        const memberName = ctx.session.user.name ?? ctx.session.user.email ?? "Quelqu'un";
+        void pusher.trigger(`private-team-${teamId}`, "invoice:created", {
+          memberName,
+          projectName: project.name,
+          number: invoice.number,
+        });
       }
 
       return invoice;
@@ -184,8 +197,9 @@ export const invoiceRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, role, teamId } = await getArtisanContext(ctx.session.user.id, ctx.db);
       requirePro(ctx as { session: { user: { plan: string } } });
+      requireRole(role, ["OWNER", "ADMIN"]);
 
       const project = await ctx.db.project.findUnique({
         where: { id: input.projectId },
@@ -263,6 +277,7 @@ export const invoiceRouter = createTRPCRouter({
               totalTTC: totalHT + totalTVA,
               currency: artisan?.currency ?? "EUR",
               locale: artisan?.locale ?? "fr-FR",
+              createdById: ctx.session.user.id,
             },
           });
           break;
@@ -271,13 +286,25 @@ export const invoiceRouter = createTRPCRouter({
           throw e;
         }
       }
+
+      // Pusher: notify team channel
+      if (teamId && result) {
+        const memberName = ctx.session.user.name ?? ctx.session.user.email ?? "Quelqu'un";
+        void pusher.trigger(`private-team-${teamId}`, "invoice:created", {
+          memberName,
+          projectName: project.name,
+          number: result.number,
+        });
+      }
+
       return result;
     }),
 
   markPaid: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      requireRole(role, ["OWNER"]);
       const invoice = await ctx.db.invoice.findUnique({
         where: { id: input.id },
         include: { project: true },
@@ -375,7 +402,8 @@ export const invoiceRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      requireRole(role, ["OWNER"]);
       const invoice = await ctx.db.invoice.findUnique({
         where: { id: input.id },
         include: { project: true },

@@ -98,9 +98,16 @@ function SortablePhotoCard({ photo, locale, onDelete, onEditNote, isPending }: a
           {photo.note && (
             <p className="text-xs text-white line-clamp-2 leading-tight mb-1 font-medium drop-shadow-sm">{photo.note}</p>
           )}
-          <span className="text-[10px] text-white/80 font-medium inline-block">
-            {formatDate(new Date(photo.takenAt), locale)}
-          </span>
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] text-white/80 font-medium inline-block">
+              {formatDate(new Date(photo.takenAt), locale)}
+            </span>
+            {photo.createdBy?.name && (
+              <span className="text-[10px] text-white/60 italic truncate max-w-[60%] text-right">
+                {t("photos.addedBy", { name: photo.createdBy.name })}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </Card>

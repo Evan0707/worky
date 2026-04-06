@@ -181,6 +181,11 @@ export function MaterialsView({ projectId, locale }: { projectId: string; locale
                       <p className="text-sm font-medium truncate">{item.label}</p>
                       <p className="text-xs text-muted-foreground">
                         {Number(item.quantity)} {item.unit} × {formatCurrency(Number(item.unitPrice), "EUR", locale)}
+                        {(item as any).createdBy?.name && (
+                          <span className="ml-1.5 italic text-muted-foreground/70">
+                            {t("materials.addedBy", { name: (item as any).createdBy.name })}
+                          </span>
+                        )}
                       </p>
                     </div>
                     <p className="text-sm font-semibold tabular-nums shrink-0">

@@ -1,8 +1,9 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, requireRole } from "@/server/api/trpc";
 import { getArtisanContext } from "@/server/lib/team-context";
+import { pusher } from "@/lib/pusher";
 
 export const timeEntryRouter = createTRPCRouter({
   listByProject: protectedProcedure
@@ -19,6 +20,7 @@ export const timeEntryRouter = createTRPCRouter({
       const entries = await ctx.db.timeEntry.findMany({
         where: { projectId: input.projectId },
         orderBy: { date: "desc" },
+        include: { createdBy: { select: { name: true } } },
       });
 
       const totalHours = entries.reduce((sum, e) => sum + Number(e.hours), 0);
@@ -36,7 +38,8 @@ export const timeEntryRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, teamId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      // All roles can log time
 
       const project = await ctx.db.project.findFirst({
         where: { id: input.projectId, artisanId },
@@ -56,14 +59,27 @@ export const timeEntryRouter = createTRPCRouter({
         });
       }
 
-      return ctx.db.timeEntry.create({
+      const entry = await ctx.db.timeEntry.create({
         data: {
           projectId: input.projectId,
           date: input.date,
           hours: input.hours,
           description: input.description,
+          createdById: ctx.session.user.id,
         },
       });
+
+      // Pusher: notify team channel
+      if (teamId) {
+        const memberName = ctx.session.user.name ?? ctx.session.user.email ?? "Quelqu'un";
+        void pusher.trigger(`private-team-${teamId}`, "time:logged", {
+          memberName,
+          projectName: project.name,
+          hours: input.hours,
+        });
+      }
+
+      return entry;
     }),
 
   update: protectedProcedure
@@ -76,7 +92,8 @@ export const timeEntryRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
 
       const entry = await ctx.db.timeEntry.findFirst({
         where: { id: input.id, project: { artisanId } },
@@ -98,7 +115,8 @@ export const timeEntryRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
 
       const entry = await ctx.db.timeEntry.findFirst({
         where: { id: input.id, project: { artisanId } },
