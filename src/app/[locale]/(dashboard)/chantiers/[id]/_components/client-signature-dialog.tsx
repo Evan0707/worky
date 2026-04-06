@@ -12,7 +12,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -28,7 +27,6 @@ interface ClientSignatureDialogProps {
 
 export function ClientSignatureDialog({ projectId, clientName }: ClientSignatureDialogProps) {
   const t = useTranslations("projects"); // Reuse projects translation block
-  const tCommon = useTranslations("common.buttons");
   const router = useRouter();
 
   const [isOpen, setIsOpen] = useState(false);

@@ -3,19 +3,18 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { Mail, Chrome, Loader2, ArrowLeft, Sparkles } from "lucide-react";
+import { Mail, Loader2, ArrowLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function LoginForm() {
   const t = useTranslations("auth");
 
   const [email, setEmail] = useState("");
   const [isEmailLoading, setIsEmailLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -45,10 +44,10 @@ export default function LoginForm() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setIsGoogleLoading(true);
-    await signIn("google", { callbackUrl: "/dashboard" });
-  };
+  // const handleGoogleSignIn = () => {
+  //   setIsGoogleLoading(true);
+  //   void signIn("google", { callbackUrl: "/dashboard" });
+  // };
 
   if (emailSent) {
     return (

@@ -25,7 +25,7 @@ export default async function TeamSettingsPage({
         <p className="text-sm text-muted-foreground mt-1">{t("description")}</p>
       </div>
 
-      <TeamView currentUserId={session.user.id!} />
+      <TeamView currentUserId={session.user.id!} userPlan={session.user.plan} />
     </div>
   );
 }

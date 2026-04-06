@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       env.STRIPE_WEBHOOK_SECRET,
     );
     console.log(`✅ Événement vérifié : ${event.type}`);
-  } catch (err) {
+  } catch {
     console.error("❌ Échec de la vérification de la signature Stripe");
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }

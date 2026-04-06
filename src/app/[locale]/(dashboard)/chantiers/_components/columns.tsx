@@ -28,7 +28,7 @@ export type ProjectRow = {
   _count: { photos: number };
 };
 
-export function getColumns(locale: string, translations: any): ColumnDef<ProjectRow>[] {
+export function getColumns(locale: string, translations: (key: string) => string): ColumnDef<ProjectRow>[] {
   return [
     {
       id: "select",

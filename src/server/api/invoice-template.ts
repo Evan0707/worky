@@ -92,11 +92,48 @@ const invoiceStrings: Record<
   },
 };
 
+interface InvoiceLine {
+  label: string;
+  quantity: number;
+  unitPrice: number;
+  vatRate: number;
+}
+
+export interface InvoiceData {
+  lines: InvoiceLine[];
+  totalHT: number;
+  totalTVA: number;
+  totalTTC: number;
+  currency: string;
+  number: string;
+  type: string;
+  issuedAt?: Date | null;
+}
+
+interface ArtisanData {
+  name?: string | null;
+  email?: string | null;
+  companyName?: string | null;
+  companyAddress?: string | null;
+  siret?: string | null;
+  vatNumber?: string | null;
+  iban?: string | null;
+  logoUrl?: string | null;
+  currency?: string;
+  locale?: string;
+}
+
+interface ProjectData {
+  name: string;
+  address: string;
+  clientName: string;
+}
+
 // A basic HTML invoice template optimized for WeasyPrint
 export function renderInvoiceHtml(
-  invoice: any,
-  artisan: any,
-  project: any,
+  invoice: InvoiceData,
+  artisan: ArtisanData,
+  project: ProjectData,
   locale: string
 ) {
   const { lines, totalHT, totalTVA, totalTTC, currency, number, type } = invoice;
@@ -239,7 +276,7 @@ export function renderInvoiceHtml(
           </tr>
         </thead>
         <tbody>
-          ${lines.map((line: any) => `
+          ${lines.map((line) => `
             <tr>
               <td>${line.label}</td>
               <td class="text-right">${line.quantity}</td>

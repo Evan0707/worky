@@ -35,7 +35,6 @@ export default async function DashboardPage({
     api.project.list(),
   ]);
 
-  const firstName = session.user.name?.split(" ")[0] ?? session.user.name ?? "";
 
   const stats = [
     {
@@ -63,12 +62,6 @@ export default async function DashboardPage({
 
   const recentProjects = projects.slice(0, 5);
 
-  const greeting = () => {
-    const h = new Date().getHours();
-    if (h < 12) return t("greeting.morning");
-    if (h < 18) return t("greeting.afternoon");
-    return t("greeting.evening");
-  };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 flex-1 overflow-auto p-1">

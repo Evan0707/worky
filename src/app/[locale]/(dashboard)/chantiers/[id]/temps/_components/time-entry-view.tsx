@@ -155,9 +155,9 @@ export function TimeEntryView({ projectId, locale }: { projectId: string; locale
                             <CalendarDays className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                             <span className="font-medium">{formatDate(new Date(entry.date), locale)}</span>
                             <span className="text-muted-foreground tabular-nums">{Number(entry.hours)} h</span>
-                            {(entry as any).createdBy?.name && (
+                            {(entry as { createdBy?: { name: string } | null }).createdBy?.name && (
                               <span className="text-xs text-muted-foreground/70 italic">
-                                {t("time.addedBy", { name: (entry as any).createdBy.name })}
+                                {t("time.addedBy", { name: (entry as { createdBy?: { name: string } | null }).createdBy!.name })}
                               </span>
                             )}
                           </div>

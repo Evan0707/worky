@@ -4,7 +4,9 @@
   "noTeam": {
     "heading": "Work as a team",
     "sub": "Create a team to invite artisans or collaborators to your projects.",
-    "cta": "Create my team"
+    "cta": "Create my team",
+    "upgradeRequired": "Upgrade to PRO Team to add collaborators.",
+    "upgradeBtn": "View plans"
   },
   "create": {
     "label": "Team name",
@@ -67,6 +69,12 @@
     "is_owner": "You own a team. Delete it before joining another."
   },
   "inviteSuccess": "Welcome to the {team} team!",
+  "myInvitations": {
+    "title": "Your pending invitations",
+    "invitedBy": "You have been invited to join {team}",
+    "role": "Offered role: {role}",
+    "accept": "Accept invitation"
+  },
   "activity": {
     "title": "Recent activity",
     "empty": "No activity yet.",

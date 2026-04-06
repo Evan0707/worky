@@ -1,4 +1,3 @@
-import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { api } from "@/trpc/server";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,7 +25,7 @@ export default async function ClientProjectView({
     const errorTranslations = (await import(`@/i18n/locales/${browserLocale}/projects.json`)).default;
     tError = errorTranslations.publicView;
     project = await api.project.getByToken({ token });
-  } catch (error) {
+  } catch {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/20 p-4">
         <Card className="max-w-md text-center p-8 shadow-sm animate-scale-in">
@@ -126,7 +125,7 @@ export default async function ClientProjectView({
 
           {project.photos.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {project.photos.map((photo: any) => (
+              {project.photos.map((photo) => (
                 <div key={photo.id} className="relative aspect-square group overflow-hidden rounded-2xl bg-muted border border-border/50 shadow-sm animate-scale-in">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img

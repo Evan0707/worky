@@ -9,11 +9,13 @@ export const timeEntryRouter = createTRPCRouter({
   listByProject: protectedProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const userId = ctx.session.user.id!;
+      const { artisanId, role } = await getArtisanContext(userId, ctx.db);
+      const projectWhere = role === "MEMBER"
+        ? { id: input.projectId, artisanId, assignments: { some: { userId } } }
+        : { id: input.projectId, artisanId };
 
-      const project = await ctx.db.project.findFirst({
-        where: { id: input.projectId, artisanId },
-      });
+      const project = await ctx.db.project.findFirst({ where: projectWhere });
 
       if (!project) throw new TRPCError({ code: "NOT_FOUND" });
 
@@ -38,12 +40,14 @@ export const timeEntryRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { artisanId, teamId } = await getArtisanContext(ctx.session.user.id, ctx.db);
-      // All roles can log time
+      const userId = ctx.session.user.id!;
+      const { artisanId, role, teamId } = await getArtisanContext(userId, ctx.db);
+      // All roles can log time — but MEMBER only on assigned projects
+      const projectWhere = role === "MEMBER"
+        ? { id: input.projectId, artisanId, assignments: { some: { userId } } }
+        : { id: input.projectId, artisanId };
 
-      const project = await ctx.db.project.findFirst({
-        where: { id: input.projectId, artisanId },
-      });
+      const project = await ctx.db.project.findFirst({ where: projectWhere });
 
       if (!project) throw new TRPCError({ code: "NOT_FOUND" });
 

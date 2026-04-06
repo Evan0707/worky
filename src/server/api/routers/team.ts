@@ -2,7 +2,6 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { Resend } from "resend";
 import { render } from "@react-email/render";
-import { type PrismaClient } from "@prisma/client";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { env } from "@/env";
@@ -12,28 +11,6 @@ import { TeamInviteEmail } from "../../../../emails/team-invite";
 const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null;
 
 const INVITE_EXPIRY_DAYS = 7;
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-async function requireOwner(userId: string, db: PrismaClient) {
-  const team = await db.team.findUnique({
-    where: { ownerId: userId },
-    include: {
-      members: {
-        include: { user: { select: { id: true, name: true, email: true, image: true } } },
-        orderBy: { joinedAt: "asc" },
-      },
-      invitations: {
-        where: { acceptedAt: null, expiresAt: { gt: new Date() } },
-        orderBy: { createdAt: "desc" },
-      },
-    },
-  });
-  if (!team) {
-    throw new TRPCError({ code: "FORBIDDEN", message: "You are not a team owner" });
-  }
-  return team;
-}
 
 // ─── Router ───────────────────────────────────────────────────────────────────
 
@@ -93,6 +70,23 @@ export const teamRouter = createTRPCRouter({
     }
 
     return { team: null, role: null, isOwner: false };
+  }),
+
+  getPendingInvitations: protectedProcedure.query(async ({ ctx }) => {
+    const userEmail = ctx.session.user.email!;
+    return ctx.db.teamInvitation.findMany({
+      where: {
+        email: userEmail,
+        acceptedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+      include: {
+        team: {
+          select: { name: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
   }),
 
   /**

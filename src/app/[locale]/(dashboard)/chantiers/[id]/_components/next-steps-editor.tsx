@@ -3,13 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/trpc/react";
-import { 
-  Plus, 
-  Trash2, 
-  CheckCircle2, 
-  Circle, 
-  GripVertical,
-  ChevronRight,
+import {
+  Plus,
+  Trash2,
+  CheckCircle2,
+  Circle,
   ListTodo
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -80,7 +78,7 @@ export function NextStepsEditor({ projectId, initialSteps, translations }: NextS
     setIsSaving(true);
     updateMutation.mutate({
       id: projectId,
-      nextSteps: updatedSteps as any,
+      nextSteps: updatedSteps as NextStep[],
     });
   };
 

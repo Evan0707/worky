@@ -4,7 +4,9 @@
   "noTeam": {
     "heading": "Travaillez en équipe",
     "sub": "Créez une équipe pour inviter des artisans ou collaborateurs sur vos chantiers.",
-    "cta": "Créer mon équipe"
+    "cta": "Créer mon équipe",
+    "upgradeRequired": "Passez au plan PRO Équipe pour ajouter des collaborateurs.",
+    "upgradeBtn": "Découvrir les plans"
   },
   "create": {
     "label": "Nom de l'équipe",
@@ -67,6 +69,12 @@
     "is_owner": "Vous êtes propriétaire d'une équipe. Supprimez-la avant d'en rejoindre une autre."
   },
   "inviteSuccess": "Bienvenue dans l'équipe {team} !",
+  "myInvitations": {
+    "title": "Vos invitations en attente",
+    "invitedBy": "Vous êtes invité(e) à rejoindre l'équipe {team}",
+    "role": "Rôle propôsé : {role}",
+    "accept": "Accepter l'invitation"
+  },
   "activity": {
     "title": "Activité récente",
     "empty": "Aucune activité pour le moment.",

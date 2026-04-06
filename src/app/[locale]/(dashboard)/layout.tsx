@@ -8,7 +8,6 @@ import { SidebarNav } from "./_components/sidebar-nav";
 import { MobileSidebar } from "./_components/mobile-sidebar";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { CommandMenu } from "@/components/command-menu";
-import { Building2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { db } from "@/server/db";

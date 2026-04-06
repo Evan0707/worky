@@ -35,7 +35,7 @@ type FormValues = {
   lines: { label: string; quantity: number; unitPrice: number; vatRate: number }[];
 };
 
-export function InvoiceForm({ projects, locale }: { projects: any[]; locale: string }) {
+export function InvoiceForm({ projects, locale }: { projects: { id: string; name: string; clientName: string }[]; locale: string }) {
   const router = useRouter();
   const utils = api.useUtils();
   const t = useTranslations("invoices");

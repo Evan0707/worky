@@ -26,12 +26,14 @@ import {
 import { buttonVariants } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table/data-table";
 import { ColumnDef } from "@tanstack/react-table";
-import { api } from "@/trpc/react";
+import { api, type RouterOutputs } from "@/trpc/react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
+type InvoiceRow = RouterOutputs["invoice"]["list"][number];
+
 // Controlled delete dialog — needed because trigger is inside DropdownMenu
-function InvoiceActionsCell({ invoice, locale }: { invoice: any; locale: string }) {
+function InvoiceActionsCell({ invoice }: { invoice: InvoiceRow }) {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const router = useRouter();
   const utils = api.useUtils();
@@ -79,8 +81,8 @@ function InvoiceActionsCell({ invoice, locale }: { invoice: any; locale: string 
       a.download = `${invoice.number}.pdf`;
       a.click();
       toast.success(tInvoices("toasts.generated"), { id: "facturx" });
-    } catch (e: any) {
-      toast.error(e.message, { id: "facturx" });
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Erreur", { id: "facturx" });
     }
   };
 
@@ -159,12 +161,11 @@ function InvoiceActionsCell({ invoice, locale }: { invoice: any; locale: string 
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function InvoiceTable({ data, locale, fullHeight = false, actionButton }: { data: any[]; locale: string; fullHeight?: boolean; actionButton?: React.ReactNode }) {
+export function InvoiceTable({ data, locale, fullHeight = false, actionButton }: { data: InvoiceRow[]; locale: string; fullHeight?: boolean; actionButton?: React.ReactNode }) {
   const t = useTranslations("common");
   const tInvoices = useTranslations("invoices");
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<InvoiceRow>[] = [
     {
       accessorKey: "number",
       header: tInvoices("fields.number"),
@@ -204,7 +205,7 @@ export function InvoiceTable({ data, locale, fullHeight = false, actionButton }:
           case "REFUSED":
           case "OVERDUE": variant = "destructive"; break;
         }
-        const translatedStatus = tInvoices(`status.${status}` as any) || status;
+        const translatedStatus = tInvoices(`status.${status}` as Parameters<typeof tInvoices>[0]) || status;
         return <Badge variant={variant}>{translatedStatus}</Badge>;
       },
     },
@@ -227,7 +228,7 @@ export function InvoiceTable({ data, locale, fullHeight = false, actionButton }:
     },
     {
       id: "actions",
-      cell: ({ row }) => <InvoiceActionsCell invoice={row.original} locale={locale} />,
+      cell: ({ row }) => <InvoiceActionsCell invoice={row.original} />,
     },
   ];
 

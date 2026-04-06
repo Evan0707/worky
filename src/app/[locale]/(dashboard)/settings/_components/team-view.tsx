@@ -28,7 +28,6 @@ import {
   Trash2,
   LogOut,
   Clock,
-  Check,
   ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -191,14 +190,12 @@ function MembersCard({
   members,
   owner,
   isOwner,
-  currentUserId,
   locale,
   onRefresh,
 }: {
   members: Member[];
   owner: { id: string; name: string | null; email: string | null; image: string | null };
   isOwner: boolean;
-  currentUserId: string;
   locale: string;
   onRefresh: () => void;
 }) {
@@ -366,9 +363,69 @@ function PendingInvitations({ invitations, locale }: { invitations: Invitation[]
   );
 }
 
+// ─── User pending invitations ──────────────────────────────────────────────────
+
+function UserInvitations({ locale, onAccepted }: { locale: string; onAccepted: () => void }) {
+  const t = useTranslations("team");
+  const utils = api.useUtils();
+
+  const { data: invitations, isLoading } = api.team.getPendingInvitations.useQuery();
+
+  const acceptMutation = api.team.acceptInvite.useMutation({
+    onSuccess: (data) => {
+      toast.success(t("inviteSuccess", { team: data.teamName }));
+      void utils.team.get.invalidate();
+      void utils.team.getPendingInvitations.invalidate();
+      onAccepted();
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
+  if (isLoading || !invitations || invitations.length === 0) return null;
+
+  const formatDate = (d: Date) =>
+    new Intl.DateTimeFormat(locale, { day: "numeric", month: "short" }).format(new Date(d));
+
+  return (
+    <div className="space-y-4">
+      <h3 className="text-sm font-semibold">{t("myInvitations.title")}</h3>
+      <div className="grid gap-3">
+        {invitations.map((inv) => (
+          <Card key={inv.id} className="shadow-sm border-primary/20 bg-primary/5">
+            <CardContent className="p-4 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <Mail className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">
+                    {t("myInvitations.invitedBy", { team: inv.team.name })}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {t("myInvitations.role", { role: t(`roles.${inv.role}`) })} ·{" "}
+                    {t("invite.expires", { date: formatDate(inv.expiresAt) })}
+                  </p>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => acceptMutation.mutate({ token: inv.token })}
+                disabled={acceptMutation.isPending}
+              >
+                {acceptMutation.isPending && <Loader2 className="h-3 w-3 animate-spin mr-2" />}
+                {t("myInvitations.accept")}
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── Main component ────────────────────────────────────────────────────────────
 
-export function TeamView({ currentUserId }: { currentUserId: string }) {
+export function TeamView({ currentUserId, userPlan }: { currentUserId: string; userPlan?: string | null }) {
   const t = useTranslations("team");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -431,28 +488,43 @@ export function TeamView({ currentUserId }: { currentUserId: string }) {
   // ── No team yet ──────────────────────────────────────────────────────────────
   if (!team) {
     return (
-      <Card className="shadow-none border-primary/10">
-        <CardContent className="flex flex-col items-center gap-6 py-14 text-center">
-          <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center">
-            <Users className="h-8 w-8 text-primary" />
-          </div>
-          <div className="space-y-1.5 max-w-sm">
-            <h3 className="font-semibold text-lg">{t("noTeam.heading")}</h3>
-            <p className="text-sm text-muted-foreground">{t("noTeam.sub")}</p>
-          </div>
-          <div className="w-full max-w-sm">
-            <CreateTeamForm onCreated={() => void refetch()} />
-          </div>
-        </CardContent>
-      </Card>
+      <div className="space-y-6">
+        <UserInvitations locale={locale} onAccepted={() => void refetch()} />
+        <Card className="shadow-none border-primary/10">
+          <CardContent className="flex flex-col items-center gap-6 py-14 text-center">
+            <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Users className="h-8 w-8 text-primary" />
+            </div>
+            <div className="space-y-1.5 max-w-sm">
+              <h3 className="font-semibold text-lg">{t("noTeam.heading")}</h3>
+              <p className="text-sm text-muted-foreground">{t("noTeam.sub")}</p>
+            </div>
+            <div className="w-full max-w-sm">
+              {userPlan === "FREE" || userPlan === "PRO" ? (
+                <div className="p-4 bg-muted/30 border border-amber-500/20 rounded-lg flex flex-col items-center gap-3">
+                  <p className="text-sm text-center font-medium text-amber-600 dark:text-amber-400">
+                    {t("noTeam.upgradeRequired", { fallback: "Vous devez passer au plan PRO Équipe pour créer une équipe." })}
+                  </p>
+                  <Button asChild size="sm" className="w-full bg-amber-500 hover:bg-amber-600 text-white">
+                    <a href={`/${locale}/settings/billing`}>{t("noTeam.upgradeBtn", { fallback: "Changer de plan" })}</a>
+                  </Button>
+                </div>
+              ) : (
+                <CreateTeamForm onCreated={() => void refetch()} />
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   // ── Member view ──────────────────────────────────────────────────────────────
   if (!isOwner) {
-    const ownerUser = (team as any).owner;
+    const ownerUser = (team as { owner?: { id: string; name: string | null; email: string | null; image: string | null } }).owner ?? { id: "", name: null, email: null, image: null };
     return (
       <div className="space-y-6">
+        <UserInvitations locale={locale} onAccepted={() => void refetch()} />
         {/* Team header */}
         <Card className="shadow-none border-primary/10 overflow-hidden">
           <CardContent className="p-0">
@@ -475,7 +547,6 @@ export function TeamView({ currentUserId }: { currentUserId: string }) {
           members={team.members as Member[]}
           owner={ownerUser}
           isOwner={false}
-          currentUserId={currentUserId}
           locale={locale}
           onRefresh={() => void refetch()}
         />
@@ -506,16 +577,13 @@ export function TeamView({ currentUserId }: { currentUserId: string }) {
   }
 
   // ── Owner view ───────────────────────────────────────────────────────────────
-  // owner data is now included in the query
-  const ownerUser = (team as any).owner as {
-    id: string;
-    name: string | null;
-    email: string | null;
-    image: string | null;
-  } | null ?? { id: currentUserId, name: null, email: null, image: null };
+  type OwnerShape = { id: string; name: string | null; email: string | null; image: string | null };
+  // owner data is included in the query via the "owner" relation
+  const ownerUser = (team as { owner?: OwnerShape | null }).owner ?? { id: currentUserId, name: null, email: null, image: null };
 
   return (
     <div className="space-y-6">
+      <UserInvitations locale={locale} onAccepted={() => void refetch()} />
       {/* Team header */}
       <Card className="shadow-none border-primary/10 overflow-hidden">
         <CardContent className="p-0">
@@ -539,7 +607,6 @@ export function TeamView({ currentUserId }: { currentUserId: string }) {
         members={team.members as Member[]}
         owner={ownerUser}
         isOwner
-        currentUserId={currentUserId}
         locale={locale}
         onRefresh={() => void refetch()}
       />

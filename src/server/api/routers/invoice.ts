@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure, requirePro, requireRole } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, requireRole } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { getArtisanContext } from "@/server/lib/team-context";
 import { resend } from "@/lib/resend";
@@ -13,7 +13,8 @@ export const invoiceRouter = createTRPCRouter({
   list: protectedProcedure
     .input(z.object({ limit: z.number().optional() }).optional())
     .query(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
       const invoices = await ctx.db.invoice.findMany({
         where: {
           project: {
@@ -34,7 +35,8 @@ export const invoiceRouter = createTRPCRouter({
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
 
       const invoice = await ctx.db.invoice.findUnique({
         where: { id: input.id },
@@ -68,9 +70,12 @@ export const invoiceRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { artisanId, role, teamId } = await getArtisanContext(ctx.session.user.id, ctx.db);
-      requirePro(ctx as { session: { user: { plan: string } } });
+      const { artisanId, role, teamId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
       requireRole(role, ["OWNER", "ADMIN"]);
+      const ownerForPlan = await ctx.db.user.findUnique({ where: { id: artisanId }, select: { plan: true } });
+      if (ownerForPlan?.plan !== "PRO") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Cette fonctionnalité nécessite un abonnement PRO." });
+      }
 
       // 1. Verify project belongs to this artisan
       const project = await ctx.db.project.findUnique({
@@ -126,8 +131,8 @@ export const invoiceRouter = createTRPCRouter({
             },
           });
           break;
-        } catch (e: any) {
-          if (e?.code === "P2002" && attempt < 4) continue;
+        } catch (e: unknown) {
+          if ((e as { code?: string })?.code === "P2002" && attempt < 4) continue;
           throw e;
         }
       }
@@ -160,7 +165,8 @@ export const invoiceRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
 
       const invoice = await ctx.db.invoice.findUnique({
         where: { id: input.id },
@@ -197,9 +203,12 @@ export const invoiceRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { artisanId, role, teamId } = await getArtisanContext(ctx.session.user.id, ctx.db);
-      requirePro(ctx as { session: { user: { plan: string } } });
+      const { artisanId, role, teamId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
       requireRole(role, ["OWNER", "ADMIN"]);
+      const ownerForPlan = await ctx.db.user.findUnique({ where: { id: artisanId }, select: { plan: true } });
+      if (ownerForPlan?.plan !== "PRO") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Cette fonctionnalité nécessite un abonnement PRO." });
+      }
 
       const project = await ctx.db.project.findUnique({
         where: { id: input.projectId },
@@ -281,8 +290,8 @@ export const invoiceRouter = createTRPCRouter({
             },
           });
           break;
-        } catch (e: any) {
-          if (e?.code === "P2002" && attempt < 4) continue;
+        } catch (e: unknown) {
+          if ((e as { code?: string })?.code === "P2002" && attempt < 4) continue;
           throw e;
         }
       }
@@ -321,8 +330,12 @@ export const invoiceRouter = createTRPCRouter({
   sendReminder: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      requirePro(ctx as { session: { user: { plan: string } } });
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
+      const ownerForPlan = await ctx.db.user.findUnique({ where: { id: artisanId }, select: { plan: true } });
+      if (ownerForPlan?.plan !== "PRO") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Cette fonctionnalité nécessite un abonnement PRO." });
+      }
 
       const invoice = await ctx.db.invoice.findUnique({
         where: { id: input.id },
@@ -419,7 +432,8 @@ export const invoiceRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       // 1. Resolve effective artisanId (handles team members)
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const { artisanId, role } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      requireRole(role, ["OWNER", "ADMIN"]);
 
       const invoice = await ctx.db.invoice.findUnique({
         where: { id: input.id },
@@ -445,7 +459,7 @@ export const invoiceRouter = createTRPCRouter({
           // B2B Requires a SIRET, MVP handles general names
           siret: invoice.project.clientEmail ? undefined : undefined, 
         },
-        items: (invoice.lines as any[]).map((line) => ({
+        items: (invoice.lines as { label: string; quantity: number; unitPrice: number; vatRate: number }[]).map((line) => ({
           description: line.label,
           quantity: line.quantity,
           unitPrice: line.unitPrice / 100, // Cents to decimal for specific API

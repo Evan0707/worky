@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -41,7 +41,7 @@ const stripePromise = env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TIERS: { id: PlanTier; price: number; members: number | "unlimited"; icon: any; popular?: boolean }[] = [
+const TIERS: { id: PlanTier; price: number; members: number | "unlimited"; icon: React.ElementType; popular?: boolean }[] = [
   { id: "PRO", price: 15, members: 0, icon: Zap },
   { id: "PRO_TEAM", price: 29, members: 5, icon: Users, popular: true },
   { id: "PRO_PLUS", price: 49, members: "unlimited", icon: Layers },

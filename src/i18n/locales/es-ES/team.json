@@ -4,7 +4,9 @@
   "noTeam": {
     "heading": "Trabaje en equipo",
     "sub": "Cree un equipo para invitar a artesanos o colaboradores a sus obras.",
-    "cta": "Crear mi equipo"
+    "cta": "Crear mi equipo",
+    "upgradeRequired": "Actualice al plan Equipo PRO para añadir colaboradores.",
+    "upgradeBtn": "Ver planes"
   },
   "create": {
     "label": "Nombre del equipo",
@@ -67,6 +69,12 @@
     "is_owner": "Es propietario de un equipo. Elimínelo antes de unirse a otro."
   },
   "inviteSuccess": "¡Bienvenido al equipo {team}!",
+  "myInvitations": {
+    "title": "Tus invitaciones pendientes",
+    "invitedBy": "Has sido invitado/a a unirte a {team}",
+    "role": "Rol propuesto: {role}",
+    "accept": "Aceptar invitación"
+  },
   "activity": {
     "title": "Actividad reciente",
     "empty": "Ninguna actividad por el momento.",

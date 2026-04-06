@@ -9,11 +9,13 @@ export const photoRouter = createTRPCRouter({
   listByProject: protectedProcedure
     .input(z.object({ projectId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const userId = ctx.session.user.id!;
+      const { artisanId, role } = await getArtisanContext(userId, ctx.db);
+      const projectWhere = role === "MEMBER"
+        ? { id: input.projectId, artisanId, assignments: { some: { userId } } }
+        : { id: input.projectId, artisanId };
 
-      const project = await ctx.db.project.findFirst({
-        where: { id: input.projectId, artisanId },
-      });
+      const project = await ctx.db.project.findFirst({ where: projectWhere });
 
       if (!project) throw new TRPCError({ code: "NOT_FOUND" });
 
@@ -54,10 +56,14 @@ export const photoRouter = createTRPCRouter({
   updateNote: protectedProcedure
     .input(z.object({ id: z.string(), note: z.string().max(1000) }))
     .mutation(async ({ ctx, input }) => {
-      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const userId = ctx.session.user.id!;
+      const { artisanId, role } = await getArtisanContext(userId, ctx.db);
+      const projectWhere = role === "MEMBER"
+        ? { artisanId, assignments: { some: { userId } } }
+        : { artisanId };
 
       const photo = await ctx.db.photo.findFirst({
-        where: { id: input.id, project: { artisanId } },
+        where: { id: input.id, project: projectWhere },
       });
 
       if (!photo) throw new TRPCError({ code: "NOT_FOUND" });
@@ -97,12 +103,14 @@ export const photoRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { artisanId, teamId } = await getArtisanContext(ctx.session.user.id, ctx.db);
-      // All roles can upload photos
+      const userId = ctx.session.user.id!;
+      const { artisanId, role, teamId } = await getArtisanContext(userId, ctx.db);
+      // All roles can upload photos — but MEMBER only on assigned projects
+      const projectWhere = role === "MEMBER"
+        ? { id: input.projectId, artisanId, assignments: { some: { userId } } }
+        : { id: input.projectId, artisanId };
 
-      const project = await ctx.db.project.findFirst({
-        where: { id: input.projectId, artisanId },
-      });
+      const project = await ctx.db.project.findFirst({ where: projectWhere });
 
       if (!project) throw new TRPCError({ code: "NOT_FOUND" });
 

@@ -4,7 +4,9 @@
   "noTeam": {
     "heading": "Als Team arbeiten",
     "sub": "Erstellen Sie ein Team, um Handwerker oder Mitarbeiter zu Ihren Baustellen einzuladen.",
-    "cta": "Mein Team erstellen"
+    "cta": "Mein Team erstellen",
+    "upgradeRequired": "Führen Sie ein Upgrade auf den PRO-Team-Plan durch, um Mitarbeiter hinzuzufügen.",
+    "upgradeBtn": "Pläne anzeigen"
   },
   "create": {
     "label": "Teamname",
@@ -67,6 +69,12 @@
     "is_owner": "Sie besitzen ein Team. Löschen Sie es, bevor Sie einem anderen beitreten."
   },
   "inviteSuccess": "Willkommen im Team {team}!",
+  "myInvitations": {
+    "title": "Ihre ausstehenden Einladungen",
+    "invitedBy": "Sie wurden eingeladen, {team} beizutreten",
+    "role": "Angebotene Rolle: {role}",
+    "accept": "Einladung annehmen"
+  },
   "activity": {
     "title": "Letzte Aktivitäten",
     "empty": "Noch keine Aktivitäten für den Moment.",

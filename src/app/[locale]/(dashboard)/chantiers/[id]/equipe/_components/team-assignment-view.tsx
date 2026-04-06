@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Users, Shield, User, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { type TeamRole } from "@prisma/client";
 
 const ROLE_CONFIG: Record<"ADMIN" | "MEMBER", { icon: typeof Shield; className: string }> = {
   ADMIN: { icon: Shield, className: "bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/20" },

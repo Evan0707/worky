@@ -42,7 +42,7 @@ export function ShareProjectButton({ url, projectId }: ShareProjectButtonProps) 
       setCopied(true);
       toast.success(tToasts("shared"));
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
+    } catch {
       toast.error("Erreur de copie");
     }
   };

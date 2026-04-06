@@ -26,7 +26,6 @@ import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { DataTablePagination } from "./pagination";
 import { cn } from "@/lib/utils";
-import { Grid2X2X } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

@@ -4,12 +4,12 @@ import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import imageCompression from "browser-image-compression";
-import { api } from "@/trpc/react";
+import { api, type RouterOutputs } from "@/trpc/react";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/i18n-helpers";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2, Trash2, X, ImagePlus, GripHorizontal, Mic } from "lucide-react";
+import { Loader2, X, ImagePlus, GripHorizontal, Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -24,6 +24,8 @@ import {
   useSensor,
   useSensors,
   DragOverlay,
+  type DragStartEvent,
+  type DragEndEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -34,7 +36,38 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-function SortablePhotoCard({ photo, locale, onDelete, onEditNote, isPending }: any) {
+type Photo = RouterOutputs["photo"]["listByProject"][number];
+
+// Minimal Web Speech API types (not available as globals in all TS configs)
+interface ISpeechRecognitionResult {
+  isFinal: boolean;
+  0: { transcript: string };
+}
+interface ISpeechRecognitionEvent {
+  resultIndex: number;
+  results: { length: number; [index: number]: ISpeechRecognitionResult };
+}
+interface ISpeechRecognitionErrorEvent { error: string }
+interface ISpeechRecognition {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  onresult: ((event: ISpeechRecognitionEvent) => void) | null;
+  onerror: ((event: ISpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+}
+
+interface SortablePhotoCardProps {
+  photo: Photo;
+  locale: string;
+  onDelete: (id: string) => void;
+  onEditNote: (photo: Photo) => void;
+  isPending: boolean;
+}
+
+function SortablePhotoCard({ photo, locale, onDelete, onEditNote, isPending }: SortablePhotoCardProps) {
   const t = useTranslations("projects");
   const {
     attributes,
@@ -128,10 +161,10 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
   const [activeId, setActiveId] = useState<string | null>(null);
   
   // Dialog state
-  const [selectedPhoto, setSelectedPhoto] = useState<any>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [editingNote, setEditingNote] = useState("");
   const [isRecording, setIsRecording] = useState(false);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
 
   useEffect(() => {
     if (serverPhotos) {
@@ -166,7 +199,7 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
     }
   });
 
-  const handleEditNoteStart = (photo: any) => {
+  const handleEditNoteStart = (photo: Photo) => {
     setSelectedPhoto(photo);
     setEditingNote(photo.note || "");
   };
@@ -195,28 +228,28 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
       return;
     }
 
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
+    type SpeechRecognitionCtor = new () => ISpeechRecognition;
+    const win = window as Window & { SpeechRecognition?: SpeechRecognitionCtor; webkitSpeechRecognition?: SpeechRecognitionCtor };
+    const SpeechRecognitionAPI = win.SpeechRecognition ?? win.webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) return;
+    const recognition = new SpeechRecognitionAPI();
     recognition.lang = locale; // Use current locale for better dictation
     recognition.interimResults = true;
     recognition.continuous = true;
 
-    recognition.onresult = (event: any) => {
-      let interimTranscript = "";
+    recognition.onresult = (event: ISpeechRecognitionEvent) => {
       let finalTranscript = "";
 
       for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-        } else {
-          interimTranscript += event.results[i][0].transcript;
+        if (event.results[i]?.isFinal) {
+          finalTranscript += event.results[i]?.[0]?.transcript ?? "";
         }
       }
 
       setEditingNote(prev => prev + (prev.endsWith(" ") || prev === "" ? "" : " ") + finalTranscript);
     };
 
-    recognition.onerror = (event: any) => {
+    recognition.onerror = (event: ISpeechRecognitionErrorEvent) => {
       console.error(event.error);
       setIsRecording(false);
     };
@@ -265,27 +298,27 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
     })
   );
 
-  const handleDragStart = (event: any) => {
-    setActiveId(event.active.id);
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(String(event.active.id));
   };
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
-      setPhotos((items: any) => {
-        const oldIndex = items.findIndex((item: any) => item.id === active.id);
-        const newIndex = items.findIndex((item: any) => item.id === over.id);
-        
+      setPhotos((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+
         const newItems = arrayMove(items, oldIndex, newIndex);
-        
+
         // Save the new order
         updateOrder.mutate({
           projectId,
-          orders: newItems.map((item: any, index: number) => ({ id: item.id, order: index }))
+          orders: newItems.map((item, index) => ({ id: item.id, order: index }))
         });
 
-        return newItems as any;
+        return newItems;
       });
     }
     setActiveId(null);
@@ -566,7 +599,7 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
               <p className="text-xs text-muted-foreground mt-1">
                 ou <span className="text-primary font-medium underline underline-offset-2">cliquez pour sélectionner</span>
               </p>
-              <p className="text-xs text-muted-foreground mt-2">JPG, PNG, WEBP — max 8 Mo par photo — jusqu'à 10 fichiers</p>
+              <p className="text-xs text-muted-foreground mt-2">JPG, PNG, WEBP — max 8 Mo par photo — jusqu&apos;à 10 fichiers</p>
             </div>
           </>
         )}
@@ -589,7 +622,7 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
         >
           <SortableContext items={photos} strategy={rectSortingStrategy}>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-              {photos.map((photo: any) => (
+              {photos.map((photo) => (
                 <SortablePhotoCard
                   key={photo.id}
                   photo={photo}
@@ -604,7 +637,7 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
           <DragOverlay>
             {activeId ? (
               <SortablePhotoCard
-                photo={photos.find((p: any) => p.id === activeId)}
+                photo={photos.find((p) => p.id === activeId) ?? photos[0]!}
                 locale={locale}
                 onDelete={() => {}}
                 onEditNote={() => {}}

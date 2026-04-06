@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/server/auth";
 import { db } from "@/server/db";
-import { renderInvoiceHtml } from "@/server/api/invoice-template";
+import { renderInvoiceHtml, type InvoiceData } from "@/server/api/invoice-template";
 
 export async function POST(req: NextRequest) {
   try {
@@ -36,8 +36,8 @@ export async function POST(req: NextRequest) {
 
     // 1. Generate HTML
     const htmlString = renderInvoiceHtml(
-      invoice,
-      artisan,
+      invoice as unknown as InvoiceData,
+      artisan ?? {},
       invoice.project,
       invoice.locale
     );
@@ -89,8 +89,9 @@ export async function POST(req: NextRequest) {
     // For now we return it to the client so they can download it.
 
     return NextResponse.json({ pdfBase64: result.pdfBase64 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Factur-X Route Error", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

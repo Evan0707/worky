@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { api } from "@/trpc/server";
@@ -78,7 +79,7 @@ export default async function ProjectOverviewPage({
         <div className="lg:col-span-2">
           <NextStepsEditor
             projectId={project.id}
-            initialSteps={project.nextSteps as any}
+            initialSteps={(project.nextSteps as { text: string; done: boolean }[] | null) ?? []}
             translations={{
               title: tProjects("nextSteps.title"),
               placeholder: tProjects("nextSteps.placeholder"),
@@ -156,11 +157,12 @@ export default async function ProjectOverviewPage({
                   <CheckCircle2 className="h-3.5 w-3.5" />
                   {tProjects("clientAction.alreadySigned")}
                 </div>
-                <div className="border rounded-lg overflow-hidden bg-white dark:bg-neutral-900">
-                  <img
-                    src={(signature.payload as any)?.signature}
+                <div className="border rounded-lg overflow-hidden bg-white dark:bg-neutral-900 relative w-full h-32">
+                  <Image
+                    src={(signature.payload as { signature?: string } | null)?.signature ?? ""}
                     alt={tProjects("clientAction.signatureImageAlt")}
-                    className="w-full h-auto"
+                    fill
+                    className="object-contain"
                   />
                 </div>
               </div>
