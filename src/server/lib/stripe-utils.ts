@@ -16,6 +16,17 @@ export function maxTeamMembersForPriceId(priceId: string | null | undefined): nu
 export type PlanTier = "PRO" | "PRO_TEAM" | "PRO_PLUS";
 
 /**
+ * Derives the PlanTier from a Stripe Price ID.
+ */
+export function tierFromPriceId(priceId: string | null | undefined): PlanTier | null {
+  if (!priceId) return null;
+  if (priceId === env.STRIPE_PRICE_ID_PRO_PLUS) return "PRO_PLUS";
+  if (priceId === env.STRIPE_PRICE_ID_PRO_TEAM) return "PRO_TEAM";
+  if (priceId === env.STRIPE_PRICE_ID_PRO) return "PRO";
+  return null;
+}
+
+/**
  * Maps our internal PlanTier to actual Stripe Price IDs.
  */
 export function getPriceIdForTier(tier: PlanTier): string | undefined {

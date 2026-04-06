@@ -95,7 +95,9 @@ export default async function LandingPage({
   ];
 
   const freeFeatures = [t("pricing.free.f1"), t("pricing.free.f2"), t("pricing.free.f3"), t("pricing.free.f4")];
-  const proFeatures = [t("pricing.pro.f1"), t("pricing.pro.f2"), t("pricing.pro.f3"), t("pricing.pro.f4"), t("pricing.pro.f5"), t("pricing.pro.f6"), t("pricing.pro.f7"), t("pricing.pro.f8")];
+  const proFeatures = [t("pricing.pro.f1"), t("pricing.pro.f2"), t("pricing.pro.f3")];
+  const proTeamFeatures = [t("pricing.proTeam.f1"), t("pricing.proTeam.f2"), t("pricing.proTeam.f3")];
+  const proPlusFeatures = [t("pricing.proPlus.f1"), t("pricing.proPlus.f2"), t("pricing.proPlus.f3")];
 
   return (
     <>
@@ -341,7 +343,7 @@ export default async function LandingPage({
 
       {/* ───────── PRICING ───────── */}
       <section id="pricing" className="relative bg-neutral-50 dark:bg-[#0a0a0a] py-28 sm:py-36">
-        <div className="mx-auto max-w-4xl px-6">
+        <div className="mx-auto max-w-7xl px-6">
           {/* Divider */}
           <div className="h-px bg-gradient-to-r from-transparent via-white/[0.06] to-transparent mb-28" />
 
@@ -359,7 +361,7 @@ export default async function LandingPage({
             </div>
           </FadeIn>
 
-          <div className="grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
             {/* Free plan */}
             <FadeIn delay={0}>
               <div className="rounded-2xl border border-black/[0.06] dark:border-white/[0.06] bg-white dark:bg-[#111] p-8 flex flex-col h-full">
@@ -398,9 +400,6 @@ export default async function LandingPage({
             {/* Pro plan */}
             <FadeIn delay={100}>
               <div className="relative rounded-2xl border border-white/[0.12] bg-white dark:bg-[#111] p-8 flex flex-col h-full shadow-[0_0_80px_-20px_rgba(255,255,255,0.05)]">
-                <div className="absolute -top-3 right-6 rounded-full bg-white px-3 py-0.5 text-[11px] font-semibold text-neutral-900 dark:text-black">
-                  {t("pricing.pro.popular")}
-                </div>
                 <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">{t("pricing.pro.name")}</h3>
                 <p className="mt-1 text-[14px] text-neutral-500">
                   {t("pricing.pro.description")}
@@ -429,6 +428,79 @@ export default async function LandingPage({
                   className="mt-8 flex items-center justify-center rounded-full bg-white px-6 py-2.5 text-[14px] font-medium text-neutral-900 dark:text-black transition-all hover:bg-neutral-200"
                 >
                   {t("pricing.pro.cta")}
+                </Link>
+              </div>
+            </FadeIn>
+
+            {/* Pro Team plan */}
+            <FadeIn delay={200}>
+              <div className="relative rounded-2xl border border-primary/50 bg-white dark:bg-[#111] p-8 flex flex-col h-full shadow-[0_0_80px_-20px_rgba(0,0,0,0.1)] dark:shadow-[0_0_80px_-20px_rgba(255,255,255,0.05)]">
+                <div className="absolute -top-3 right-6 rounded-full bg-primary px-3 py-0.5 text-[11px] font-semibold text-white">
+                  {t("pricing.proTeam.popular")}
+                </div>
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">{t("pricing.proTeam.name")}</h3>
+                <p className="mt-1 text-[14px] text-neutral-500">
+                  {t("pricing.proTeam.description")}
+                </p>
+                <div className="mt-6 flex items-baseline gap-1">
+                  <span className="text-5xl font-bold tracking-tight text-neutral-900 dark:text-white">
+                    {t("pricing.proTeam.price")}
+                  </span>
+                  <span className="text-xl font-semibold text-neutral-500">
+                    {t("pricing.proTeam.currency")}
+                  </span>
+                  <span className="text-[14px] text-neutral-600 ml-1">
+                    {t("pricing.proTeam.period")}
+                  </span>
+                </div>
+                <ul className="mt-8 space-y-3.5 flex-1">
+                  {proTeamFeatures.map((feature) => (
+                    <li key={feature} className="flex items-start gap-3 text-[14px] text-neutral-600 dark:text-neutral-400">
+                      <Check className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href={`/${locale}/login`}
+                  className="mt-8 flex items-center justify-center rounded-full bg-primary px-6 py-2.5 text-[14px] font-medium text-white transition-all hover:bg-primary/90"
+                >
+                  {t("pricing.proTeam.cta")}
+                </Link>
+              </div>
+            </FadeIn>
+
+            {/* Pro Plus plan */}
+            <FadeIn delay={300}>
+              <div className="rounded-2xl border border-black/[0.06] dark:border-white/[0.06] bg-white dark:bg-[#111] p-8 flex flex-col h-full">
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">{t("pricing.proPlus.name")}</h3>
+                <p className="mt-1 text-[14px] text-neutral-500">
+                  {t("pricing.proPlus.description")}
+                </p>
+                <div className="mt-6 flex items-baseline gap-1">
+                  <span className="text-5xl font-bold tracking-tight text-neutral-900 dark:text-white">
+                    {t("pricing.proPlus.price")}
+                  </span>
+                  <span className="text-xl font-semibold text-neutral-500">
+                    {t("pricing.proPlus.currency")}
+                  </span>
+                  <span className="text-[14px] text-neutral-600 ml-1">
+                    {t("pricing.proPlus.period")}
+                  </span>
+                </div>
+                <ul className="mt-8 space-y-3.5 flex-1">
+                  {proPlusFeatures.map((feature) => (
+                    <li key={feature} className="flex items-start gap-3 text-[14px] text-neutral-600 dark:text-neutral-400">
+                      <Check className="h-4 w-4 text-neutral-900 dark:text-white mt-0.5 shrink-0" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href={`/${locale}/login`}
+                  className="mt-8 flex items-center justify-center rounded-full border border-black/[0.1] dark:border-white/[0.1] bg-transparent px-6 py-2.5 text-[14px] font-medium text-neutral-900 dark:text-white transition-all hover:bg-black/5 dark:bg-white/[0.04] hover:border-white/20"
+                >
+                  {t("pricing.proPlus.cta")}
                 </Link>
               </div>
             </FadeIn>

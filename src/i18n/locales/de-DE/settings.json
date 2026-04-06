@@ -83,11 +83,17 @@
                                  "support":  "Priority Support"
                              },
                     "back": "Zurück",
+                    "changePlan": "Plan wechseln",
+                    "currentPlan": "Aktueller Plan",
+                    "changePlanDesc": "Die Änderung erfolgt sofort. Die Abrechnung wird anteilig berechnet.",
+                    "changePlanSuccessTitle": "Plan aktualisiert!",
+                    "changePlanSuccessDesc": "Ihr Abonnement wurde geändert. Neue Funktionen sind sofort verfügbar.",
                     "tiers": {
                         "title": "Wählen Sie Ihren Plan",
                         "subtitle": "Preise, die auf die Größe Ihres Unternehmens zugeschnitten sind.",
                         "popular": "Beliebt",
                         "select": "Diesen Plan wählen",
+                        "switchTo": "Zu diesem Plan wechseln",
                         "allFeatures": "Alle PRO-Funktionen",
                         "members": {
                             "none": "Ideal für Einzelunternehmer",

@@ -160,7 +160,7 @@ function PaymentForm({
 
 // ─── Success screen ────────────────────────────────────────────────────────────
 
-function SuccessScreen({ onClose }: { onClose: () => void }) {
+function SuccessScreen({ onClose, isChange }: { onClose: () => void; isChange?: boolean }) {
   const t = useTranslations("settings");
 
   return (
@@ -169,8 +169,12 @@ function SuccessScreen({ onClose }: { onClose: () => void }) {
         <PartyPopper className="h-10 w-10 text-primary" />
       </div>
       <div className="space-y-2">
-        <h3 className="text-2xl font-bold tracking-tight">{t("upgrade.successTitle")}</h3>
-        <p className="text-muted-foreground text-sm max-w-xs">{t("upgrade.successDesc")}</p>
+        <h3 className="text-2xl font-bold tracking-tight">
+          {isChange ? t("upgrade.changePlanSuccessTitle") : t("upgrade.successTitle")}
+        </h3>
+        <p className="text-muted-foreground text-sm max-w-xs">
+          {isChange ? t("upgrade.changePlanSuccessDesc") : t("upgrade.successDesc")}
+        </p>
       </div>
       <Button size="lg" onClick={onClose} className="min-w-40">
         {t("upgrade.successCta")}
@@ -185,14 +189,22 @@ interface UpgradeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
+  currentTier?: PlanTier;
+  isPro?: boolean;
+  subscriptionStatus?: string | null;
+  hasPaymentMethod?: boolean;
 }
 
-export function UpgradeDialog({ open, onOpenChange, onSuccess }: UpgradeDialogProps) {
+export function UpgradeDialog({ open, onOpenChange, onSuccess, currentTier, isPro, subscriptionStatus, hasPaymentMethod }: UpgradeDialogProps) {
   const t = useTranslations("settings");
   const utils = api.useUtils();
+  const isChangingPlan = isPro ?? !!currentTier;
+  // Must collect card when: trialing without a saved payment method
+  const needsCard = isChangingPlan && subscriptionStatus === "trialing" && !hasPaymentMethod;
 
   const [step, setStep] = useState<"select" | "pay" | "success">("select");
   const [selectedTier, setSelectedTier] = useState<PlanTier | null>(null);
+  const [isChanging, setIsChanging] = useState(false);
 
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [intentType, setIntentType] = useState<"setup" | "payment">("setup");
@@ -211,6 +223,18 @@ export function UpgradeDialog({ open, onOpenChange, onSuccess }: UpgradeDialogPr
     },
   });
 
+  const changeMutation = api.stripe.changeSubscriptionTier.useMutation({
+    onSuccess: () => {
+      setIsChanging(false);
+      setStep("success");
+      void utils.stripe.getSubscriptionDetails.invalidate();
+    },
+    onError: (err) => {
+      setIsChanging(false);
+      setFetchError(err.message);
+    },
+  });
+
   // Reset dialog state when it closes
   useEffect(() => {
     if (!open) {
@@ -219,12 +243,22 @@ export function UpgradeDialog({ open, onOpenChange, onSuccess }: UpgradeDialogPr
         setSelectedTier(null);
         setClientSecret(null);
         setIsLoading(false);
+        setIsChanging(false);
         setFetchError(null);
       }, 300);
     }
   }, [open]);
 
   const handleSelectTier = (tier: PlanTier) => {
+    if (isChangingPlan && !needsCard) {
+      // Active subscriber with card — update subscription directly, no payment needed
+      setSelectedTier(tier);
+      setIsChanging(true);
+      setFetchError(null);
+      changeMutation.mutate({ tier });
+      return;
+    }
+    // New subscriber OR trialing without card — go through payment form
     setSelectedTier(tier);
     setStep("pay");
     setIsLoading(true);
@@ -256,27 +290,47 @@ export function UpgradeDialog({ open, onOpenChange, onSuccess }: UpgradeDialogPr
         {step === "select" && (
           <div className="p-8 bg-muted/30">
             <div className="text-center mb-8 space-y-2">
-              <h2 className="text-3xl font-bold tracking-tight">{t("upgrade.tiers.title")}</h2>
+              <h2 className="text-3xl font-bold tracking-tight">
+                {isChangingPlan ? t("upgrade.changePlan") : t("upgrade.tiers.title")}
+              </h2>
               <p className="text-muted-foreground">{t("upgrade.tiers.subtitle")}</p>
             </div>
-            
+
+            {fetchError && (
+              <div className="mb-6 rounded-lg bg-destructive/10 p-3 text-sm text-destructive text-center">
+                {fetchError}
+              </div>
+            )}
+
             <div className="grid md:grid-cols-3 gap-6">
               {TIERS.map((tier) => {
-                const isPopular = tier.popular;
+                const isCurrent = currentTier === tier.id;
+                const isPopular = tier.popular && !isCurrent;
+                const isDisabled = isChanging || isCurrent;
                 return (
-                  <div 
-                    key={tier.id} 
+                  <div
+                    key={tier.id}
                     className={cn(
                       "relative flex flex-col p-6 rounded-2xl border bg-card text-card-foreground shadow-sm transition-all",
-                      isPopular ? "border-primary shadow-primary/10 shadow-xl" : "hover:border-foreground/20"
+                      isCurrent
+                        ? "border-primary/50 ring-2 ring-primary/20 opacity-80"
+                        : isPopular
+                          ? "border-primary shadow-primary/10 shadow-xl"
+                          : "hover:border-foreground/20"
                     )}
                   >
+                    {/* Badges */}
+                    {isCurrent && (
+                      <div className="absolute -top-3 inset-x-0 flex justify-center">
+                        <Badge className="bg-primary/15 text-primary border-primary/30">{t("upgrade.currentPlan")}</Badge>
+                      </div>
+                    )}
                     {isPopular && (
                       <div className="absolute -top-3 inset-x-0 flex justify-center">
                         <Badge className="bg-primary text-primary-foreground">{t("upgrade.tiers.popular")}</Badge>
                       </div>
                     )}
-                    
+
                     <div className="mb-4">
                       <h3 className="font-semibold text-lg">{t(`upgrade.tiers.${tier.id}.name`)}</h3>
                       <p className="text-3xl font-bold mt-2">
@@ -290,7 +344,7 @@ export function UpgradeDialog({ open, onOpenChange, onSuccess }: UpgradeDialogPr
                       <ul className="space-y-2 text-sm">
                         <li className="flex items-center gap-2 font-medium text-foreground">
                           <Check className="h-4 w-4 text-primary" />
-                          {tier.members === 0 
+                          {tier.members === 0
                             ? t("upgrade.tiers.members.none")
                             : tier.members === "unlimited"
                               ? t("upgrade.tiers.members.unlimited")
@@ -302,18 +356,31 @@ export function UpgradeDialog({ open, onOpenChange, onSuccess }: UpgradeDialogPr
                         </li>
                       </ul>
                     </div>
-                    
-                    <Button 
-                      className="w-full" 
-                      variant={isPopular ? "default" : "outline"}
-                      onClick={() => handleSelectTier(tier.id)}
+
+                    <Button
+                      className="w-full"
+                      variant={isCurrent ? "secondary" : isPopular ? "default" : "outline"}
+                      disabled={isDisabled}
+                      onClick={() => !isCurrent && handleSelectTier(tier.id)}
                     >
-                      {t("upgrade.tiers.select")}
+                      {isChanging && selectedTier === tier.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : isCurrent ? (
+                        t("upgrade.currentPlan")
+                      ) : (
+                        t(isChangingPlan ? "upgrade.tiers.switchTo" : "upgrade.tiers.select")
+                      )}
                     </Button>
                   </div>
                 );
               })}
             </div>
+
+            {isChangingPlan && (
+              <p className="text-center text-xs text-muted-foreground mt-6">
+                {t("upgrade.changePlanDesc")}
+              </p>
+            )}
           </div>
         )}
 
@@ -346,7 +413,7 @@ export function UpgradeDialog({ open, onOpenChange, onSuccess }: UpgradeDialogPr
               </div>
 
               <ul className="relative space-y-3 flex-1">
-                {PRO_FEATURES.map(({ icon: Icon, labelKey }) => (
+                {PRO_FEATURES.map(({ labelKey }) => (
                   <li key={labelKey} className="flex items-center gap-3 text-sm">
                     <span className="h-6 w-6 rounded-full bg-white/15 flex items-center justify-center shrink-0">
                       <Check className="h-3.5 w-3.5" />
@@ -438,7 +505,7 @@ export function UpgradeDialog({ open, onOpenChange, onSuccess }: UpgradeDialogPr
 
         {step === "success" && (
           <div className="p-8">
-            <SuccessScreen onClose={handleClose} />
+            <SuccessScreen onClose={handleClose} isChange={isChangingPlan} />
           </div>
         )}
       </DialogContent>

@@ -4,7 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { env } from "@/env";
 import { z } from "zod";
-import { getPriceIdForTier, maxTeamMembersForPriceId, type PlanTier } from "@/server/lib/stripe-utils";
+import { getPriceIdForTier, maxTeamMembersForPriceId, tierFromPriceId, type PlanTier } from "@/server/lib/stripe-utils";
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY ?? "", {
   apiVersion: "2025-02-24.acacia",
@@ -43,22 +43,45 @@ export const stripeRouter = createTRPCRouter({
       throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
     }
 
-    // ── Guard: already an active PRO subscriber ──────────────────────────────
-    if (user.plan === "PRO") {
-      throw new TRPCError({ code: "BAD_REQUEST", message: "Already subscribed to PRO" });
-    }
-
-    // ── Guard: pending subscription already exists — return existing intent ──
-    // This makes the mutation idempotent: re-opening the dialog returns the same
-    // intent instead of creating a duplicate subscription.
+    // ── Guard / special case: user already has a subscription ───────────────
     if (user.stripeSubscriptionId) {
       try {
         const existing = await stripe.subscriptions.retrieve(user.stripeSubscriptionId, {
-          expand: ["pending_setup_intent", "latest_invoice.payment_intent"],
+          expand: ["pending_setup_intent", "latest_invoice.payment_intent", "default_payment_method"],
         });
 
+        // Trialing + no default payment method → collect card, optionally change tier
+        if (existing.status === "trialing" && !existing.default_payment_method) {
+          // Update price to requested tier if different
+          const currentPriceId = existing.items.data[0]?.price.id;
+          const itemId = existing.items.data[0]?.id;
+          if (itemId && priceId !== currentPriceId) {
+            await stripe.subscriptions.update(user.stripeSubscriptionId, {
+              items: [{ id: itemId, price: priceId }],
+            });
+            await ctx.db.user.update({
+              where: { id: ctx.session.user.id },
+              data: { maxTeamMembers: maxTeamMembersForPriceId(priceId) },
+            });
+          }
+          // Return the pending setup intent to collect card
+          if (existing.pending_setup_intent) {
+            const si = existing.pending_setup_intent as Stripe.SetupIntent;
+            if (si.client_secret) {
+              return { clientSecret: si.client_secret, type: "setup" as const };
+            }
+          }
+          // No pending setup intent — create one for this customer
+          const newSi = await stripe.setupIntents.create({
+            customer: existing.customer as string,
+            usage: "off_session",
+            metadata: { userId: ctx.session.user.id },
+          });
+          return { clientSecret: newSi.client_secret!, type: "setup" as const };
+        }
+
         if (["active", "trialing"].includes(existing.status)) {
-          // Somehow already active but plan not updated — activate silently
+          // Active subscriber with a card — nothing to do here
           await ctx.db.user.update({
             where: { id: ctx.session.user.id },
             data: { plan: "PRO", proTrialUsed: true },
@@ -66,18 +89,32 @@ export const stripeRouter = createTRPCRouter({
           throw new TRPCError({ code: "BAD_REQUEST", message: "Already subscribed to PRO" });
         }
 
-        if (existing.status === "incomplete" || existing.status === "trialing") {
-          // Return the existing pending intent — do NOT create a new subscription
-          if (existing.pending_setup_intent) {
-            const si = existing.pending_setup_intent as Stripe.SetupIntent;
-            if (si.client_secret) {
-              return { clientSecret: si.client_secret, type: "setup" as const };
+        if (existing.status === "incomplete") {
+          const currentPriceId = existing.items.data[0]?.price.id;
+          const itemId = existing.items.data[0]?.id;
+
+          if (itemId && priceId !== currentPriceId) {
+            const updatedSub = await stripe.subscriptions.update(user.stripeSubscriptionId, {
+              items: [{ id: itemId, price: priceId }],
+              payment_behavior: "default_incomplete",
+              expand: ["latest_invoice.payment_intent"],
+            });
+            await ctx.db.user.update({
+              where: { id: ctx.session.user.id },
+              data: { maxTeamMembers: maxTeamMembersForPriceId(priceId) },
+            });
+            const invoice = updatedSub.latest_invoice as Stripe.Invoice | null;
+            const pi = invoice?.payment_intent as Stripe.PaymentIntent | null;
+            if (pi?.client_secret) {
+              return { clientSecret: pi.client_secret, type: "payment" as const };
             }
-          }
-          const invoice = existing.latest_invoice as Stripe.Invoice | null;
-          const pi = invoice?.payment_intent as Stripe.PaymentIntent | null;
-          if (pi?.client_secret) {
-            return { clientSecret: pi.client_secret, type: "payment" as const };
+          } else {
+            // Return existing payment intent
+            const invoice = existing.latest_invoice as Stripe.Invoice | null;
+            const pi = invoice?.payment_intent as Stripe.PaymentIntent | null;
+            if (pi?.client_secret) {
+              return { clientSecret: pi.client_secret, type: "payment" as const };
+            }
           }
         }
 
@@ -96,6 +133,11 @@ export const stripeRouter = createTRPCRouter({
       }
     }
 
+    // ── Guard: active PRO with no subscription ID (edge case) ────────────────
+    if (user.plan === "PRO") {
+      throw new TRPCError({ code: "BAD_REQUEST", message: "Already subscribed to PRO" });
+    }
+
     // ── Find or create Stripe customer ───────────────────────────────────────
     let customerId = user.stripeCustomerId;
     if (!customerId) {
@@ -111,26 +153,25 @@ export const stripeRouter = createTRPCRouter({
     }
 
     // ── Create subscription ──────────────────────────────────────────────────
-    // Trial only offered once. Idempotency key prevents duplicate subscriptions
-    // if the client fires this mutation twice concurrently.
-    const withTrial = !user.proTrialUsed;
+    // Trial feature temporarily disabled per request
+    const withTrial = false; // !user.proTrialUsed && input.tier === "PRO";
 
       const subscription = await stripe.subscriptions.create(
         {
           customer: customerId,
           items: [{ price: priceId }],
-        ...(withTrial ? { trial_period_days: 14 } : {}),
-        payment_behavior: "default_incomplete",
-        payment_settings: { save_default_payment_method: "on_subscription" },
-        expand: ["pending_setup_intent", "latest_invoice.payment_intent"],
-        metadata: { userId: ctx.session.user.id },
-      },
-      {
-        // Deterministic key: only one subscription can be created per user per day.
-        // Stripe returns the existing object if called again within 24h.
-        idempotencyKey: `sub_create_${ctx.session.user.id}_${new Date().toISOString().slice(0, 10)}`,
-      },
-    );
+          ...(withTrial ? { trial_period_days: 14 } : {}),
+          payment_behavior: "default_incomplete",
+          payment_settings: { save_default_payment_method: "on_subscription" },
+          expand: ["pending_setup_intent", "latest_invoice.payment_intent"],
+          metadata: { userId: ctx.session.user.id },
+        },
+        {
+          // We append a random string or timestamp to allow rapid retry testing.
+          // In an actual prod environment with strict concurrency, use a client-provided UUID.
+          idempotencyKey: `sub_create_${ctx.session.user.id}_${priceId}_${Date.now()}`,
+        },
+      );
 
     await ctx.db.user.update({
       where: { id: ctx.session.user.id },
@@ -219,13 +260,19 @@ export const stripeRouter = createTRPCRouter({
     });
 
     if (!user?.stripeSubscriptionId) {
-      return { plan: user?.plan ?? "FREE", subscription: null };
+      return { plan: user?.plan ?? "FREE", currentTier: null, hasPaymentMethod: false, subscription: null };
     }
 
     try {
-      const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+      const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId, {
+        expand: ["default_payment_method"],
+      });
+      const priceId = subscription.items.data[0]?.price.id ?? null;
+      const hasPaymentMethod = !!subscription.default_payment_method;
       return {
         plan: user.plan,
+        currentTier: tierFromPriceId(priceId),
+        hasPaymentMethod,
         subscription: {
           id: subscription.id,
           status: subscription.status,
@@ -234,8 +281,16 @@ export const stripeRouter = createTRPCRouter({
           trial_end: subscription.trial_end,
         },
       };
-    } catch {
-      return { plan: user.plan, subscription: null };
+    } catch (err) {
+      if (err instanceof Stripe.errors.StripeInvalidRequestError) {
+        // The subscription was deleted in Stripe (404), so we self-heal the DB
+        await ctx.db.user.update({
+          where: { id: ctx.session.user.id },
+          data: { plan: "FREE", stripeSubscriptionId: null, maxTeamMembers: 0 },
+        });
+        return { plan: "FREE" as const, currentTier: null, hasPaymentMethod: false, subscription: null };
+      }
+      return { plan: user.plan, currentTier: null, hasPaymentMethod: false, subscription: null };
     }
   }),
 
@@ -258,6 +313,52 @@ export const stripeRouter = createTRPCRouter({
 
     return { success: true, cancel_at_period_end: subscription.cancel_at_period_end };
   }),
+
+  /**
+   * Change tier for an existing active PRO subscription (no payment needed).
+   * Stripe handles proration automatically.
+   */
+  changeSubscriptionTier: protectedProcedure
+    .input(z.object({ tier: z.enum(["PRO", "PRO_TEAM", "PRO_PLUS"]) }))
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.db.user.findUnique({
+        where: { id: ctx.session.user.id },
+        select: { stripeSubscriptionId: true, plan: true },
+      });
+
+      if (user?.plan !== "PRO") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Not subscribed to PRO" });
+      }
+      if (!user.stripeSubscriptionId) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No active subscription found" });
+      }
+
+      const newPriceId = getPriceIdForTier(input.tier as PlanTier);
+      if (!newPriceId) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Stripe price not configured for tier ${input.tier}`,
+        });
+      }
+
+      const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+      const itemId = subscription.items.data[0]?.id;
+      if (!itemId) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Subscription item not found" });
+      }
+
+      await stripe.subscriptions.update(user.stripeSubscriptionId, {
+        items: [{ id: itemId, price: newPriceId }],
+        proration_behavior: "create_prorations",
+      });
+
+      await ctx.db.user.update({
+        where: { id: ctx.session.user.id },
+        data: { maxTeamMembers: maxTeamMembersForPriceId(newPriceId) },
+      });
+
+      return { success: true, tier: input.tier };
+    }),
 
   /**
    * Resume a subscription set to cancel at period end

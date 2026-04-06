@@ -83,11 +83,17 @@
                                  "support":  "Support prioritaire"
                              },
                     "back": "Retour",
+                    "changePlan": "Changer de plan",
+                    "currentPlan": "Plan actuel",
+                    "changePlanDesc": "Le changement est immédiat. La facturation sera ajustée au prorata.",
+                    "changePlanSuccessTitle": "Plan mis à jour !",
+                    "changePlanSuccessDesc": "Votre abonnement a été modifié. Les nouvelles fonctionnalités sont disponibles immédiatement.",
                     "tiers": {
                         "title": "Choisissez votre formule",
                         "subtitle": "Un tarif adapté à la taille de votre entreprise.",
                         "popular": "Populaire",
                         "select": "Choisir cette formule",
+                        "switchTo": "Passer à ce plan",
                         "allFeatures": "Toutes les fonctionnalités PRO",
                         "members": {
                             "none": "Idéal pour un artisan seul",

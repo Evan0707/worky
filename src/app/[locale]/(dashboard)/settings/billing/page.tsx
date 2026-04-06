@@ -31,6 +31,8 @@ export default async function BillingSettingsPage({
         <BillingView
           subscription={subDetails.subscription}
           plan={subDetails.plan}
+          currentTier={subDetails.currentTier ?? undefined}
+          hasPaymentMethod={subDetails.hasPaymentMethod}
           activeProjectsCount={activeProjectsCount}
         />
       </section>

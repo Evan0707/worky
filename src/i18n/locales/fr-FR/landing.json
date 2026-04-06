@@ -93,7 +93,7 @@
       "period": "/ mois",
       "popular": "Populaire",
       "description": "Pour les artisans qui veulent tout gérer",
-      "cta": "Essai gratuit 14 jours",
+      "cta": "S'abonner",
       "f1": "Chantiers illimités",
       "f2": "Photos illimitées",
       "f3": "Suivi du temps avancé",
@@ -102,6 +102,29 @@
       "f6": "Gestion d'équipe",
       "f7": "Analytiques détaillées",
       "f8": "Support prioritaire"
+    },
+    "proTeam": {
+      "name": "Pro Équipe",
+      "price": "29",
+      "currency": "€",
+      "period": "/ mois",
+      "popular": "Populaire",
+      "description": "Idéal pour les petites équipes",
+      "cta": "S'abonner",
+      "f1": "Jusqu'à 5 membres",
+      "f2": "Tout de l'offre Pro",
+      "f3": "Gestion des permissions"
+    },
+    "proPlus": {
+      "name": "Pro+",
+      "price": "49",
+      "currency": "€",
+      "period": "/ mois",
+      "description": "Pour les entreprises en croissance",
+      "cta": "Contacter les ventes",
+      "f1": "Membres illimités",
+      "f2": "Accès API",
+      "f3": "Support prioritaire 24/7"
     }
   },
   "cta": {

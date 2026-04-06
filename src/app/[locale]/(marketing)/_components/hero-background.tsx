@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-// Dot constellation that echoes the Worky logo pattern
+// Dot constellation that echoes the OpenChantier logo pattern
 export function HeroBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 

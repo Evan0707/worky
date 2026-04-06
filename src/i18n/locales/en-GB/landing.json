@@ -93,7 +93,7 @@
       "period": "/ month",
       "popular": "Popular",
       "description": "For tradespeople who want to manage everything",
-      "cta": "14-day free trial",
+      "cta": "Subscribe",
       "f1": "Unlimited projects",
       "f2": "Unlimited photos",
       "f3": "Advanced time tracking",
@@ -102,6 +102,29 @@
       "f6": "Team management",
       "f7": "Detailed analytics",
       "f8": "Priority support"
+    },
+    "proTeam": {
+      "name": "Pro Team",
+      "price": "29",
+      "currency": "£",
+      "period": "/ month",
+      "popular": "Popular",
+      "description": "Ideal for small teams",
+      "cta": "Subscribe",
+      "f1": "Up to 5 members",
+      "f2": "Everything in Pro",
+      "f3": "Role-based permissions"
+    },
+    "proPlus": {
+      "name": "Pro+",
+      "price": "49",
+      "currency": "£",
+      "period": "/ month",
+      "description": "For growing businesses",
+      "cta": "Contact sales",
+      "f1": "Unlimited members",
+      "f2": "API access",
+      "f3": "24/7 priority support"
     }
   },
   "cta": {

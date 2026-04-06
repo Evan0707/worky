@@ -83,11 +83,17 @@
                                  "support":  "Priority support"
                              },
                     "back": "Back",
+                    "changePlan": "Change plan",
+                    "currentPlan": "Current plan",
+                    "changePlanDesc": "The change is immediate. Billing will be prorated.",
+                    "changePlanSuccessTitle": "Plan updated!",
+                    "changePlanSuccessDesc": "Your subscription has been changed. New features are available immediately.",
                     "tiers": {
                         "title": "Choose your plan",
                         "subtitle": "Pricing tailored to your business size.",
                         "popular": "Popular",
                         "select": "Select this plan",
+                        "switchTo": "Switch to this plan",
                         "allFeatures": "All PRO features",
                         "members": {
                             "none": "Ideal for solo artisans",

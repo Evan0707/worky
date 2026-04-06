@@ -93,7 +93,7 @@
       "period": "/ Monat",
       "popular": "Beliebt",
       "description": "Für Handwerker, die alles verwalten möchten",
-      "cta": "14 Tage kostenlos testen",
+      "cta": "Abonnieren",
       "f1": "Unbegrenzte Baustellen",
       "f2": "Unbegrenzte Fotos",
       "f3": "Erweiterte Zeiterfassung",
@@ -102,6 +102,29 @@
       "f6": "Teamverwaltung",
       "f7": "Detaillierte Analysen",
       "f8": "Prioritäts-Support"
+    },
+    "proTeam": {
+      "name": "Pro Team",
+      "price": "29",
+      "currency": "€",
+      "period": "/ Monat",
+      "popular": "Beliebt",
+      "description": "Ideal für kleine Teams",
+      "cta": "Abonnieren",
+      "f1": "Bis zu 5 Mitglieder",
+      "f2": "Alles im Pro-Tarif",
+      "f3": "Berechtigungsverwaltung"
+    },
+    "proPlus": {
+      "name": "Pro+",
+      "price": "49",
+      "currency": "€",
+      "period": "/ Monat",
+      "description": "Für wachsende Unternehmen",
+      "cta": "Vertrieb kontaktieren",
+      "f1": "Unbegrenzte Mitglieder",
+      "f2": "API-Zugang",
+      "f3": "24/7 Premium-Support"
     }
   },
   "cta": {

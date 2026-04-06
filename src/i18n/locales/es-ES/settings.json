@@ -83,11 +83,17 @@
                                  "support":  "Soporte prioritario"
                              },
                     "back": "Volver",
+                    "changePlan": "Cambiar plan",
+                    "currentPlan": "Plan actual",
+                    "changePlanDesc": "El cambio es inmediato. La facturación se ajustará proporcionalmente.",
+                    "changePlanSuccessTitle": "Plan actualizado!",
+                    "changePlanSuccessDesc": "Su suscripción ha sido modificada. Las nuevas funciones están disponibles inmediatamente.",
                     "tiers": {
                         "title": "Elija su plan",
                         "subtitle": "Precios adaptados al tamaño de su empresa.",
                         "popular": "Popular",
                         "select": "Seleccionar este plan",
+                        "switchTo": "Cambiar a este plan",
                         "allFeatures": "Todas las funciones PRO",
                         "members": {
                             "none": "Ideal para autónomos",

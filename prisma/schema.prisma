@@ -259,6 +259,8 @@ model ClientAction {
 enum Plan {
   FREE
   PRO
+  PRO_EQUIPE
+  PRO_PLUS
 }
 
 enum TeamRole {

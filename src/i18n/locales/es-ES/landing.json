@@ -93,7 +93,7 @@
       "period": "/ mes",
       "popular": "Popular",
       "description": "Para autónomos que quieren gestionarlo todo",
-      "cta": "Prueba gratuita 14 días",
+      "cta": "Suscribirse",
       "f1": "Obras ilimitadas",
       "f2": "Fotos ilimitadas",
       "f3": "Control de horas avanzado",
@@ -102,6 +102,29 @@
       "f6": "Gestión de equipo",
       "f7": "Analíticas detalladas",
       "f8": "Soporte prioritario"
+    },
+    "proTeam": {
+      "name": "Pro Equipo",
+      "price": "29",
+      "currency": "€",
+      "period": "/ mes",
+      "popular": "Popular",
+      "description": "Ideal para equipos pequeños",
+      "cta": "Suscribirse",
+      "f1": "Hasta 5 miembros",
+      "f2": "Todo del plan Pro",
+      "f3": "Gestión de permisos"
+    },
+    "proPlus": {
+      "name": "Pro+",
+      "price": "49",
+      "currency": "€",
+      "period": "/ mes",
+      "description": "Para empresas en crecimiento",
+      "cta": "Contactar ventas",
+      "f1": "Miembros ilimitados",
+      "f2": "Acceso API",
+      "f3": "Soporte prioritario 24/7"
     }
   },
   "cta": {

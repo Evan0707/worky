@@ -6,7 +6,7 @@ import { api } from "@/trpc/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, CheckCircle2, XCircle, Clock, Zap, AlertTriangle } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Clock, Zap, AlertTriangle, ArrowUpDown } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -15,6 +15,7 @@ import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { UpgradeDialog } from "./upgrade-dialog";
 import confetti from "canvas-confetti";
+import { type PlanTier } from "@/server/lib/stripe-utils";
 
 interface BillingViewProps {
   subscription: {
@@ -25,15 +26,17 @@ interface BillingViewProps {
     trial_end: number | null;
   } | null;
   plan: string;
+  currentTier?: PlanTier;
+  hasPaymentMethod?: boolean;
   activeProjectsCount: number;
 }
 
-export function BillingView({ subscription, plan, activeProjectsCount }: BillingViewProps) {
+export function BillingView({ subscription, plan, currentTier, hasPaymentMethod = false, activeProjectsCount }: BillingViewProps) {
   const t = useTranslations("settings");
   const router = useRouter();
   const searchParams = useSearchParams();
   const utils = api.useUtils();
-  const isPro = plan === "PRO";
+  const isPro = ["PRO", "PRO_TEAM", "PRO_PLUS"].includes(plan);
   const limit = 3;
   const usagePercentage = (activeProjectsCount / limit) * 100;
   const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -110,7 +113,7 @@ export function BillingView({ subscription, plan, activeProjectsCount }: Billing
                   <p className="text-sm font-medium text-muted-foreground">{t("plans.currentPlan")}</p>
                   <div className="flex items-center gap-2">
                     <h3 className="text-2xl font-bold tracking-tight">
-                      {isPro ? t("plans.pro") : t("plans.free")}
+                      {isPro ? t(`upgrade.tiers.${currentTier || plan}.name`) : t("plans.free")}
                     </h3>
                     {isPro && (
                       <Badge className="bg-primary/15 text-primary border-none animate-pulse">
@@ -210,6 +213,17 @@ export function BillingView({ subscription, plan, activeProjectsCount }: Billing
                 </>
               ) : (
                 <>
+                  {/* Change plan — always visible for PRO users */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setUpgradeOpen(true)}
+                    className="w-full h-10 border-primary/20 text-primary hover:bg-primary/5"
+                  >
+                    <ArrowUpDown className="h-3.5 w-3.5 mr-2" />
+                    {t("upgrade.changePlan")}
+                  </Button>
+
                   {subscription?.cancel_at_period_end ? (
                     <Button
                       variant="outline"
@@ -244,6 +258,10 @@ export function BillingView({ subscription, plan, activeProjectsCount }: Billing
         open={upgradeOpen}
         onOpenChange={setUpgradeOpen}
         onSuccess={handleUpgradeSuccess}
+        currentTier={currentTier}
+        isPro={isPro}
+        subscriptionStatus={subscription?.status}
+        hasPaymentMethod={hasPaymentMethod}
       />
     </>
   );

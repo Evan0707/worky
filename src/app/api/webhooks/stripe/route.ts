@@ -84,29 +84,50 @@ export async function POST(req: NextRequest) {
         const isActive = ["active", "trialing"].includes(subscription.status);
         const priceId = subscription.items.data[0]?.price.id ?? null;
 
+        // userId can come from subscription metadata (set at creation time)
+        const userId = subscription.metadata?.userId;
+
+        const user = userId
+          ? await db.user.findUnique({ where: { id: userId }, select: { id: true } })
+          : await db.user.findUnique({ where: { stripeCustomerId: customerId }, select: { id: true } });
+
+        if (!user) {
+          console.warn(`⚠️ No user found for customerId=${customerId} / userId=${userId}`);
+          break; // 200 OK to Stripe — avoid retries for unknown customers
+        }
+
         await db.user.update({
-          where: { stripeCustomerId: customerId },
+          where: { id: user.id },
           data: {
             plan: isActive ? "PRO" : "FREE",
-            stripeSubscriptionId: isActive ? subscription.id : null,
+            stripeCustomerId: customerId,
+            stripeSubscriptionId: ["canceled", "incomplete_expired"].includes(subscription.status) ? null : subscription.id,
             maxTeamMembers: isActive ? maxTeamMembersForPriceId(priceId) : 0,
           },
         });
+        console.log(`✅ subscription.${event.type.split(".").pop()} → user ${user.id} → plan=${isActive ? "PRO" : "FREE"}`);
         break;
       }
 
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
+        const userId = subscription.metadata?.userId;
+
+        const user = userId
+          ? await db.user.findUnique({ where: { id: userId }, select: { id: true } })
+          : await db.user.findUnique({ where: { stripeCustomerId: customerId }, select: { id: true } });
+
+        if (!user) {
+          console.warn(`⚠️ No user found for customerId=${customerId}`);
+          break;
+        }
 
         await db.user.update({
-          where: { stripeCustomerId: customerId },
-          data: {
-            plan: "FREE",
-            stripeSubscriptionId: null,
-            maxTeamMembers: 0,
-          },
+          where: { id: user.id },
+          data: { plan: "FREE", stripeSubscriptionId: null, maxTeamMembers: 0 },
         });
+        console.log(`✅ subscription.deleted → user ${user.id} → plan=FREE`);
         break;
       }
 
