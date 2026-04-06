@@ -1,5 +1,96 @@
-import React from "react";
 import { formatCurrency, formatDate } from "@/lib/i18n-helpers";
+
+type InvoiceLocale = "fr-FR" | "en-GB" | "de-DE" | "es-ES";
+
+const invoiceStrings: Record<
+  InvoiceLocale,
+  {
+    invoice: string;
+    quote: string;
+    issueDate: string;
+    project: string;
+    designation: string;
+    qty: string;
+    unitPriceHT: string;
+    vat: string;
+    totalHT: string;
+    totalHTLabel: string;
+    vatLabel: string;
+    totalTTC: string;
+    thanks: string;
+    bankTransfer: string;
+    client: string;
+  }
+> = {
+  "fr-FR": {
+    invoice: "Facture",
+    quote: "Devis",
+    issueDate: "Date d'émission",
+    project: "Chantier",
+    designation: "Désignation",
+    qty: "Qté",
+    unitPriceHT: "Prix Unitaire HT",
+    vat: "TVA",
+    totalHT: "Total HT",
+    totalHTLabel: "Total HT",
+    vatLabel: "TVA",
+    totalTTC: "Total TTC",
+    thanks: "Merci pour votre confiance.",
+    bankTransfer: "Règlement par virement bancaire : IBAN",
+    client: "Client",
+  },
+  "en-GB": {
+    invoice: "Invoice",
+    quote: "Quote",
+    issueDate: "Issue date",
+    project: "Project",
+    designation: "Description",
+    qty: "Qty",
+    unitPriceHT: "Unit price (excl. VAT)",
+    vat: "VAT",
+    totalHT: "Total (excl. VAT)",
+    totalHTLabel: "Subtotal",
+    vatLabel: "VAT",
+    totalTTC: "Total (incl. VAT)",
+    thanks: "Thank you for your business.",
+    bankTransfer: "Payment by bank transfer: IBAN",
+    client: "Client",
+  },
+  "de-DE": {
+    invoice: "Rechnung",
+    quote: "Angebot",
+    issueDate: "Ausstellungsdatum",
+    project: "Baustelle",
+    designation: "Beschreibung",
+    qty: "Menge",
+    unitPriceHT: "Einzelpreis (netto)",
+    vat: "MwSt.",
+    totalHT: "Nettobetrag",
+    totalHTLabel: "Nettobetrag",
+    vatLabel: "MwSt.",
+    totalTTC: "Bruttobetrag",
+    thanks: "Vielen Dank für Ihr Vertrauen.",
+    bankTransfer: "Zahlung per Banküberweisung: IBAN",
+    client: "Kunde",
+  },
+  "es-ES": {
+    invoice: "Factura",
+    quote: "Presupuesto",
+    issueDate: "Fecha de emisión",
+    project: "Obra",
+    designation: "Descripción",
+    qty: "Cant.",
+    unitPriceHT: "Precio unitario (sin IVA)",
+    vat: "IVA",
+    totalHT: "Total sin IVA",
+    totalHTLabel: "Base imponible",
+    vatLabel: "IVA",
+    totalTTC: "Total con IVA",
+    thanks: "Gracias por su confianza.",
+    bankTransfer: "Pago por transferencia bancaria: IBAN",
+    client: "Cliente",
+  },
+};
 
 // A basic HTML invoice template optimized for WeasyPrint
 export function renderInvoiceHtml(
@@ -9,6 +100,7 @@ export function renderInvoiceHtml(
   locale: string
 ) {
   const { lines, totalHT, totalTVA, totalTTC, currency, number, type } = invoice;
+  const s = invoiceStrings[(locale as InvoiceLocale)] ?? invoiceStrings["fr-FR"];
 
   return `
     <!DOCTYPE html>
@@ -36,7 +128,7 @@ export function renderInvoiceHtml(
           font-size: 24px;
           font-weight: bold;
           margin-bottom: 5px;
-          color: #1A4F8A; /* Primary brand color */
+          color: #0a0a0a;
         }
         .client-info {
           background-color: #f8fafc;
@@ -115,23 +207,23 @@ export function renderInvoiceHtml(
           <div>TVA: ${artisan.vatNumber || ""}</div>
         </div>
         <div class="client-info">
-          <strong>Client</strong><br/>
+          <strong>${s.client}</strong><br/>
           ${project.clientName}<br/>
           ${project.address}
         </div>
       </div>
 
       <div class="invoice-title">
-        ${type === "INVOICE" ? "Facture" : "Devis"} ${number}
+        ${type === "INVOICE" ? s.invoice : s.quote} ${number}
       </div>
 
       <div class="invoice-meta">
         <div>
-          <strong>Date d'émission</strong><br/>
+          <strong>${s.issueDate}</strong><br/>
           ${formatDate(new Date(), locale)}
         </div>
         <div>
-          <strong>Chantier</strong><br/>
+          <strong>${s.project}</strong><br/>
           ${project.name}
         </div>
       </div>
@@ -139,11 +231,11 @@ export function renderInvoiceHtml(
       <table>
         <thead>
           <tr>
-            <th>Désignation</th>
-            <th class="text-right">Qté</th>
-            <th class="text-right">Prix Unitaire HT</th>
-            <th class="text-right">TVA</th>
-            <th class="text-right">Total HT</th>
+            <th>${s.designation}</th>
+            <th class="text-right">${s.qty}</th>
+            <th class="text-right">${s.unitPriceHT}</th>
+            <th class="text-right">${s.vat}</th>
+            <th class="text-right">${s.totalHT}</th>
           </tr>
         </thead>
         <tbody>
@@ -162,23 +254,23 @@ export function renderInvoiceHtml(
       <div class="totals-container">
         <table class="totals-table">
           <tr>
-            <td>Total HT</td>
+            <td>${s.totalHTLabel}</td>
             <td class="text-right">${formatCurrency(totalHT, currency, locale)}</td>
           </tr>
           <tr>
-            <td>TVA</td>
+            <td>${s.vatLabel}</td>
             <td class="text-right">${formatCurrency(totalTVA, currency, locale)}</td>
           </tr>
           <tr>
-            <td class="grand-total">Total TTC</td>
+            <td class="grand-total">${s.totalTTC}</td>
             <td class="grand-total text-right">${formatCurrency(totalTTC, currency, locale)}</td>
           </tr>
         </table>
       </div>
 
       <div class="footer">
-        <p>Merci pour votre confiance.</p>
-        <p>Règlement par virement bancaire : IBAN ${artisan.iban || "Non renseigné"}</p>
+        <p>${s.thanks}</p>
+        <p>${s.bankTransfer} ${artisan.iban || "—"}</p>
       </div>
     </body>
     </html>

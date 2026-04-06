@@ -46,10 +46,10 @@ export function SettingsNav() {
             variant="ghost"
             asChild
             className={cn(
-              "justify-start whitespace-nowrap shrink-0",
+              "relative flex w-full items-center justify-start gap-3 rounded-md px-3 h-10 text-sm font-medium transition-colors duration-150",
               isActive 
-                ? "bg-primary/10 text-primary font-medium hover:bg-primary/20" 
-                : "hover:bg-muted"
+                ? "text-foreground" 
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
           >
             <Link href={item.href}>

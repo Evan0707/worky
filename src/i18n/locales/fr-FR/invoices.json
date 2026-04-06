@@ -44,7 +44,14 @@
     "send": "Envoyer par email",
     "download": "Télécharger PDF",
     "markPaid": "Marquer comme payé",
-    "markSent": "Marquer comme envoyé"
+    "markSent": "Marquer comme envoyé",
+    "sendReminder": "Envoyer une relance"
+  },
+  "reminder": {
+    "sent": "Relance envoyée",
+    "error": "Erreur lors de l'envoi de la relance",
+    "noEmail": "Le client n'a pas d'adresse email renseignée",
+    "emailSubject": "Rappel : facture {number} en attente de règlement"
   },
   "proRequired": {
     "title": "Fonctionnalité PRO",
@@ -77,7 +84,10 @@
     "save": "Enregistrer le document",
     "cancel": "Annuler",
     "placeholderLabel": "Prestation...",
-    "confirmDelete": "Supprimer ce document ?"
+    "confirmDelete": "Supprimer ce document ?",
+    "errorProjectRequired": "Veuillez sélectionner un chantier",
+    "errorLabelRequired": "La désignation est requise",
+    "errorMinOneLine": "Ajoutez au moins une ligne"
   },
   "newDocument": "Nouveau Document",
   "newSubtitle": "Créez un document conforme pour un de vos chantiers."

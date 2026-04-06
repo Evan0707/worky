@@ -96,7 +96,7 @@ export default async function DashboardLayout({
               height={32} 
               className="h-8 w-auto object-contain"
             />
-            <p className="font-heading ml-1">Worky</p>
+            <p className="font-heading ml-1">OpenChantier</p>
           </Link>
         </div>
 

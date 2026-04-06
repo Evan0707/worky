@@ -1,174 +1,173 @@
 {
   "terms": {
-    "title": "Conditions Générales d'Utilisation",
-    "lastUpdate": "Dernière mise à jour : avril 2026",
+    "title": "Allgemeine Nutzungsbedingungen",
+    "lastUpdate": "Letzte Aktualisierung: April 2026",
     "s1": {
-      "title": "1. Objet",
-      "p1": "Les présentes Conditions Générales d'Utilisation (ci-après « CGU ») ont pour objet de définir les modalités et conditions d'utilisation de la plateforme Worky (ci-après « le Service »), accessible à l'adressWorkyorkr.fr.",
-      "p2": "Le Service est une application web de gestion de chantier destinée aux artisans et petites entreprises du bâtiment."
+      "title": "1. Gegenstand",
+      "p1": "Diese Allgemeinen Nutzungsbedingungen (nachfolgend 'ANB') regeln die Nutzung der OpenChantier-Plattform (nachfolgend 'der Dienst').",
+      "p2": "Der Dienst ist eine webbasierte Baustellenverwaltungsanwendung für Handwerker und kleine Bauunternehmen."
     },
     "s2": {
-      "title": "2. Acceptation des CGU",
-      "p1": "L'utilisation du Service implique l'acceptation pleine et entière des présentes CGU. En créant un compte, l'Utilisateur reconnaît avoir pris connaissance des présentes conditions et les accepte sans réserve."
+      "title": "2. Annahme der ANB",
+      "p1": "Die Nutzung des Dienstes setzt die vollständige und vorbehaltslose Annahme dieser ANB voraus. Durch die Erstellung eines Kontos bestätigt der Nutzer, die Bedingungen zur Kenntnis genommen und ohne Vorbehalt akzeptiert zu haben."
     },
     "s3": {
-      "title": "3. Inscription et compte",
-      "p1": "L'accès au Service nécessite la création d'un compte. L'Utilisateur s'engage à fournir des informations exactes et à jour.",
-      "p2": "L'Utilisateur est responsable de la confidentialité de ses identifiants de connexion. Toute activité réalisée depuis son compte est réputée effectuée par lui."
+      "title": "3. Registrierung und Konto",
+      "p1": "Der Zugang zum Dienst erfordert die Erstellung eines Kontos. Der Nutzer verpflichtet sich, genaue und aktuelle Angaben zu machen.",
+      "p2": "Der Nutzer ist für die Vertraulichkeit seiner Zugangsdaten verantwortlich. Jede Aktivität über sein Konto gilt als von ihm selbst durchgeführt."
     },
     "s4": {
-      "title": "4. Description du Service",
-      "p1": "Worky propose les fonctionnalités suivantes :",
-      "f1": "Gestion de chantiers (création, suivi, archivage)",
-      "f2": "Prise et stockage de photos de chantier",
-      "f3": "Suivi du temps de travail par chantier",
-      "f4": "Génération de devis et factures (offre Pro)",
-      "f5": "Partage d'avancement avec les clients via lien sécurisé",
-      "f6": "Gestion d'équipe et collaboration",
-      "p2": "Les fonctionnalités disponibles dépendent de l'offre souscrite (Gratuit ou Pro)."
+      "title": "4. Beschreibung des Dienstes",
+      "p1": "OpenChantier bietet folgende Funktionen:",
+      "f1": "Baustellenverwaltung (Erstellen, Verfolgen, Archivieren)",
+      "f2": "Aufnahme und Speicherung von Baustellenfotos",
+      "f3": "Zeiterfassung pro Baustelle",
+      "f4": "Angebots- und Rechnungserstellung (Pro-Plan)",
+      "f5": "Fortschrittsfreigabe für Kunden über sicheren Link",
+      "f6": "Teamverwaltung und Zusammenarbeit",
+      "p2": "Die verfügbaren Funktionen hängen vom gewählten Plan ab (Kostenlos oder Pro)."
     },
     "s5": {
-      "title": "5. Offres et tarification",
-      "p1": "Le Service est proposé en deux formules :",
-      "free": "Offre Gratuite : jusqu'à 3 chantiers actifs, photos et suivi du temps illimités.",
-      "pro": "Offre Pro (15 €/mois) : chantiers illimités, facturation, partage client interactif, gestion d'équipe et analytiques.",
-      "p2": "Les prix sont indiqués en euros TTC. L'Éditeur se réserve le droit de modifier ses tarifs, sous réserve d'en informer les Utilisateurs 30 jours à l'avance."
+      "title": "5. Pläne und Preise",
+      "p1": "Der Dienst wird in zwei Varianten angeboten:",
+      "free": "Kostenloser Plan: bis zu 3 aktive Baustellen, unbegrenzte Fotos und Zeiterfassung.",
+      "pro": "Pro-Plan (15 €/Monat): unbegrenzte Baustellen, Rechnungsstellung, interaktives Kunden-Sharing, Teamverwaltung und Analysen.",
+      "p2": "Die Preise verstehen sich inklusive der jeweils gültigen Steuern. Der Anbieter behält sich das Recht vor, die Preise mit 30 Tagen Vorankündigung zu ändern."
     },
     "s6": {
-      "title": "6. Données personnelles",
-      "p1": "Le traitement des données personnelles est détaillé dans notre Politique de Confidentialité. L'Utilisateur consent au traitement de ses données conformément au RGPD et à la loi Informatique et Libertés."
+      "title": "6. Personenbezogene Daten",
+      "p1": "Die Verarbeitung personenbezogener Daten ist in unserer Datenschutzrichtlinie beschrieben. Der Nutzer stimmt der Verarbeitung seiner Daten gemäß DSGVO zu."
     },
     "s7": {
-      "title": "7. Propriété intellectuelle",
-      "p1": "L'ensemble des éléments constituant le Service (textes, graphismes, logiciels, marques, etc.) sont la propriété exclusive de l'Éditeur ou de ses partenaires.",
-      "p2": "L'Utilisateur conserve l'intégralité de ses droits sur les contenus qu'il publie via le Service (photos, documents, données de chantier)."
+      "title": "7. Geistiges Eigentum",
+      "p1": "Alle Elemente des Dienstes (Texte, Grafiken, Software, Marken usw.) sind ausschließliches Eigentum des Anbieters oder seiner Partner.",
+      "p2": "Der Nutzer behält die vollständigen Rechte an den Inhalten, die er über den Dienst veröffentlicht (Fotos, Dokumente, Baustellendaten)."
     },
     "s8": {
-      "title": "8. Responsabilité",
-      "p1": "L'Éditeur s'engage à mettre en oeuvre tous les moyens raisonnables pour assurer la disponibilité et la sécurité du Service.",
-      "p2": "L'Éditeur ne saurait être tenu responsable des dommages indirects résultant de l'utilisation ou de l'impossibilité d'utiliser le Service.",
-      "p3": "L'Utilisateur est seul responsable de l'utilisation qu'il fait du Service et des données qu'il y saisit."
+      "title": "8. Haftung",
+      "p1": "Der Anbieter verpflichtet sich, alle zumutbaren Mittel einzusetzen, um die Verfügbarkeit und Sicherheit des Dienstes zu gewährleisten.",
+      "p2": "Der Anbieter haftet nicht für mittelbare Schäden, die aus der Nutzung oder der Unmöglichkeit der Nutzung des Dienstes entstehen.",
+      "p3": "Der Nutzer ist allein verantwortlich für die Nutzung des Dienstes und die von ihm eingegebenen Daten."
     },
     "s9": {
-      "title": "9. Résiliation",
-      "p1": "L'Utilisateur peut résilier son compte à tout moment depuis les paramètres de son compte. La résiliation de l'offre Pro prend effet à la fin de la période de facturation en cours.",
-      "p2": "L'Éditeur se réserve le droit de suspendre ou supprimer un compte en cas de manquement aux présentes CGU."
+      "title": "9. Kündigung",
+      "p1": "Der Nutzer kann sein Konto jederzeit in den Kontoeinstellungen kündigen. Die Kündigung des Pro-Plans wird zum Ende des laufenden Abrechnungszeitraums wirksam.",
+      "p2": "Der Anbieter behält sich das Recht vor, ein Konto bei Verstößen gegen diese ANB zu sperren oder zu löschen."
     },
     "s10": {
-      "title": "10. Droit applicable",
-      "p1": "Les présentes CGU sont soumises au droit français. Tout litige relatif à leur interprétation ou exécution relève de la compétence exclusive des tribunaux français."
+      "title": "10. Anwendbares Recht",
+      "p1": "Diese ANB unterliegen dem deutschen Recht. Alle Streitigkeiten bezüglich ihrer Auslegung oder Durchführung unterliegen der ausschließlichen Zuständigkeit der deutschen Gerichte."
     }
   },
   "privacy": {
-    "title": "Politique de Confidentialité",
-    "lastUpdate": "Dernière mise à jour : avril 2026",
+    "title": "Datenschutzrichtlinie",
+    "lastUpdate": "Letzte Aktualisierung: April 2026",
     "s1": {
-      "title": "1. Responsable du traitement",
-      "p1": "Le responsable du traitement des données personnelles collectées via le Service Worky est la société éditrice, dont les coordonnées figurent dans les Mentions Légales."
+      "title": "1. Verantwortlicher für die Datenverarbeitung",
+      "p1": "Der Verantwortliche für die Verarbeitung personenbezogener Daten, die über den OpenChantier-Dienst erhoben werden, ist das herausgebende Unternehmen, dessen Kontaktdaten im Impressum aufgeführt sind."
     },
     "s2": {
-      "title": "2. Données collectées",
-      "p1": "Dans le cadre de l'utilisation du Service, nous collectons les données suivantes :",
-      "d1": "Données d'identification : nom, prénom, adresse email",
-      "d2": "Données professionnelles : nom d'entreprise, numéro SIRET, numéro de TVA",
-      "d3": "Données d'utilisation : chantiers, photos, heures de travail, documents",
-      "d4": "Données techniques : adresse IP, type de navigateur, données de connexion",
-      "d5": "Données de paiement : traitées exclusivement par notre prestataire Stripe"
+      "title": "2. Erhobene Daten",
+      "p1": "Im Rahmen der Nutzung des Dienstes erheben wir folgende Daten:",
+      "d1": "Identifikationsdaten: Vor- und Nachname, E-Mail-Adresse",
+      "d2": "Berufliche Daten: Unternehmensname, Handelsregisternummer, USt-IdNr.",
+      "d3": "Nutzungsdaten: Baustellen, Fotos, Arbeitsstunden, Dokumente",
+      "d4": "Technische Daten: IP-Adresse, Browsertyp, Verbindungsdaten",
+      "d5": "Zahlungsdaten: ausschließlich verarbeitet durch unseren Zahlungsanbieter Stripe"
     },
     "s3": {
-      "title": "3. Finalités du traitement",
-      "p1": "Vos données sont collectées pour les finalités suivantes :",
-      "f1": "Fourniture et gestion du Service",
-      "f2": "Gestion de votre compte et de votre abonnement",
-      "f3": "Communication relative au Service (notifications, mises à jour)",
-      "f4": "Amélioration du Service et analyse d'usage",
-      "f5": "Respect de nos obligations légales et réglementaires"
+      "title": "3. Verarbeitungszwecke",
+      "p1": "Ihre Daten werden für folgende Zwecke erhoben:",
+      "f1": "Bereitstellung und Verwaltung des Dienstes",
+      "f2": "Verwaltung Ihres Kontos und Abonnements",
+      "f3": "Dienstbezogene Kommunikation (Benachrichtigungen, Updates)",
+      "f4": "Verbesserung des Dienstes und Nutzungsanalyse",
+      "f5": "Einhaltung unserer gesetzlichen und regulatorischen Pflichten"
     },
     "s4": {
-      "title": "4. Base légale",
-      "p1": "Le traitement de vos données repose sur :",
-      "b1": "L'exécution du contrat (fourniture du Service)",
-      "b2": "Votre consentement (communications marketing)",
-      "b3": "Notre intérêt légitime (amélioration du Service, sécurité)",
-      "b4": "Le respect de nos obligations légales (facturation, comptabilité)"
+      "title": "4. Rechtsgrundlage",
+      "p1": "Die Verarbeitung Ihrer Daten basiert auf:",
+      "b1": "Vertragserfüllung (Erbringung des Dienstes)",
+      "b2": "Ihrer Einwilligung (Marketingkommunikation)",
+      "b3": "Unserem berechtigten Interesse (Serviceverbesserung, Sicherheit)",
+      "b4": "Einhaltung gesetzlicher Pflichten (Fakturierung, Buchhaltung)"
     },
     "s5": {
-      "title": "5. Durée de conservation",
-      "p1": "Vos données sont conservées pendant la durée de votre utilisation du Service, puis pendant une durée de 3 ans après la suppression de votre compte, sauf obligation légale contraire.",
-      "p2": "Les données de facturation sont conservées pendant 10 ans conformément aux obligations comptables."
+      "title": "5. Speicherdauer",
+      "p1": "Ihre Daten werden für die Dauer Ihrer Nutzung des Dienstes gespeichert, danach für 3 Jahre nach der Kontolöschung, sofern keine gesetzliche Verpflichtung etwas anderes vorschreibt.",
+      "p2": "Rechnungsdaten werden gemäß den handelsrechtlichen Pflichten 10 Jahre aufbewahrt."
     },
     "s6": {
-      "title": "6. Destinataires des données",
-      "p1": "Vos données peuvent être partagées avec les prestataires suivants, dans le strict cadre de la fourniture du Service :",
-      "r1": "Vercel (hébergement) — UE/US",
-      "r2": "Neon (base de données) — UE (Francfort)",
-      "r3": "Stripe (paiements) — UE/US",
-      "r4": "UploadThing (stockage de fichiers)",
-      "r5": "Resend (envoi d'emails)",
-      "p2": "Aucune donnée n'est vendue à des tiers."
+      "title": "6. Datenempfänger",
+      "p1": "Ihre Daten können mit folgenden Dienstleistern geteilt werden, ausschließlich im Rahmen der Erbringung des Dienstes:",
+      "r1": "Vercel (Hosting) — EU/US",
+      "r2": "Neon (Datenbank) — EU (Frankfurt)",
+      "r3": "Stripe (Zahlungen) — EU/US",
+      "r4": "UploadThing (Dateispeicherung)",
+      "r5": "Resend (E-Mail-Versand)",
+      "p2": "Es werden keine Daten an Dritte verkauft."
     },
     "s7": {
-      "title": "7. Transferts hors UE",
-      "p1": "Certains de nos prestataires sont situés aux États-Unis. Les transferts de données sont encadrés par des clauses contractuelles types (CCT) approuvées par la Commission européenne, conformément au RGPD."
+      "title": "7. Datenübermittlungen außerhalb der EU",
+      "p1": "Einige unserer Dienstleister befinden sich in den USA. Datenübertragungen werden durch von der Europäischen Kommission genehmigte Standardvertragsklauseln (SCC) gemäß DSGVO geregelt."
     },
     "s8": {
-      "title": "8. Vos droits",
-      "p1": "Conformément au RGPD, vous disposez des droits suivants :",
-      "r1": "Droit d'accès à vos données personnelles",
-      "r2": "Droit de rectification des données inexactes",
-      "r3": "Droit à l'effacement (« droit à l'oubli »)",
-      "r4": "Droit à la limitation du traitement",
-      "r5": "Droit à la portabilité de vos données",
-      "r6": "Droit d'opposition au traitement",
-      "p2": "Pour exercer ces droits, contactez-nous à l'adresse indiquée dans les Mentions Légales. Vous pouvez également introduire une réclamation auprès de la CNIL (www.cnil.fr)."
+      "title": "8. Ihre Rechte",
+      "p1": "Gemäß DSGVO haben Sie folgende Rechte:",
+      "r1": "Recht auf Auskunft über Ihre personenbezogenen Daten",
+      "r2": "Recht auf Berichtigung unrichtiger Daten",
+      "r3": "Recht auf Löschung ('Recht auf Vergessenwerden')",
+      "r4": "Recht auf Einschränkung der Verarbeitung",
+      "r5": "Recht auf Datenübertragbarkeit",
+      "r6": "Widerspruchsrecht gegen die Verarbeitung",
+      "p2": "Um diese Rechte auszuüben, kontaktieren Sie uns unter der im Impressum angegebenen Adresse. Sie können auch eine Beschwerde bei der zuständigen Datenschutzbehörde einreichen."
     },
     "s9": {
       "title": "9. Cookies",
-      "p1": "Le Service utilise des cookies strictement nécessaires au fonctionnement (authentification, préférences de langue). Aucun cookie de tracking ou publicitaire n'est utilisé.",
-      "p2": "Vous pouvez configurer votre navigateur pour refuser les cookies, mais certaines fonctionnalités du Service pourraient être affectées."
+      "p1": "Der Dienst verwendet ausschließlich technisch notwendige Cookies (Authentifizierung, Spracheinstellungen). Keine Tracking- oder Werbe-Cookies werden verwendet.",
+      "p2": "Sie können Ihren Browser so konfigurieren, dass Cookies abgelehnt werden, einige Funktionen des Dienstes könnten jedoch beeinträchtigt sein."
     },
     "s10": {
-      "title": "10. Sécurité",
-      "p1": "Nous mettons en oeuvre des mesures techniques et organisationnelles appropriées pour protéger vos données : chiffrement en transit (HTTPS/TLS), isolation des données par utilisateur, et accès restreint aux données de production."
+      "title": "10. Sicherheit",
+      "p1": "Wir implementieren geeignete technische und organisatorische Maßnahmen zum Schutz Ihrer Daten: Verschlüsselung bei der Übertragung (HTTPS/TLS), benutzerbezogene Datenisolierung und eingeschränkter Zugriff auf Produktionsdaten."
     }
   },
   "legalNotice": {
-    "title": "Mentions Légales",
-    "lastUpdate": "Dernière mise à jour : avril 2026",
+    "title": "Impressum",
+    "lastUpdate": "Letzte Aktualisierung: April 2026",
     "s1": {
-      "title": "1. Éditeur du site",
-      "p1": "Le site Worky.fr est édité par :",
-      "company": "Worky SAS (en cours d'immatriculation)",
-      "address": "France",
-      "email": "Contact : contact@Worky.fr",
-      "director": "Directeur de la publication : le représentant légal de la société"
+      "title": "1. Anbieter",
+      "p1": "Die OpenChantier-Plattform wird betrieben von:",
+      "company": "OpenChantier SAS (in Gründung)",
+      "address": "Frankreich",
+      "email": "Kontakt: contact@open-chantier.fr",
+      "director": "Verantwortlicher im Sinne des Presserechts: der gesetzliche Vertreter des Unternehmens"
     },
     "s2": {
-      "title": "2. Hébergement",
-      "p1": "Le site est hébergé par :",
+      "title": "2. Hosting",
+      "p1": "Die Plattform wird gehostet von:",
       "host": "Vercel Inc.",
-      "hostAddress": "340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis",
+      "hostAddress": "340 S Lemon Ave #4133, Walnut, CA 91789, USA",
       "hostSite": "https://vercel.com",
-      "dbHost": "Base de données hébergée par Neon (UE — Francfort, Allemagne)"
+      "dbHost": "Datenbank gehostet bei Neon (EU — Frankfurt, Deutschland)"
     },
     "s3": {
-      "title": "3. Propriété intellectuelle",
-      "p1": "L'ensemble du contenu du site (textes, images, graphismes, logo, icônes, logiciels) est la propriété exclusive de Worky SAS ou de ses partenaires et est protégé par les lois françaises et internationales relatives à la propriété intellectuelle.",
-      "p2": "Toute reproduction, représentation, modification ou exploitation non autorisée de tout ou partie du site est interdite."
+      "title": "3. Geistiges Eigentum",
+      "p1": "Alle Inhalte der Plattform (Texte, Bilder, Grafiken, Logo, Icons, Software) sind ausschließliches Eigentum von OpenChantier SAS oder seinen Partnern und sind durch französische und internationale Gesetze zum Schutz des geistigen Eigentums geschützt.",
+      "p2": "Jede unerlaubte Vervielfältigung, Darstellung, Änderung oder Verwertung der Plattform ist untersagt."
     },
     "s4": {
-      "title": "4. Données personnelles",
-      "p1": "Le traitement des données personnelles est régi par notre Politique de Confidentialité, accessible depuis le pied de page du site.",
-      "p2": "Conformément au RGPD et à la loi Informatique et Libertés du 6 janvier 1978, vous disposez d'un droit d'accès, de rectification et de suppression de vos données."
+      "title": "4. Personenbezogene Daten",
+      "p1": "Die Verarbeitung personenbezogener Daten wird durch unsere Datenschutzrichtlinie geregelt, die über die Fußzeile der Plattform zugänglich ist.",
+      "p2": "Gemäß DSGVO haben Sie das Recht auf Zugang, Berichtigung und Löschung Ihrer Daten."
     },
     "s5": {
       "title": "5. Cookies",
-      "p1": "Le site utilise uniquement des cookies techniques nécessaires au bon fonctionnement du Service. Aucun cookie publicitaire ou de tracking n'est déposé."
+      "p1": "Die Plattform verwendet ausschließlich technisch notwendige Cookies für den ordnungsgemäßen Betrieb des Dienstes. Es werden keine Werbe- oder Tracking-Cookies gesetzt."
     },
     "s6": {
-      "title": "6. Droit applicable",
-      "p1": "Les présentes mentions légales sont régies par le droit français. Tout litige relatif à l'utilisation du site sera soumis à la compétence exclusive des tribunaux français."
+      "title": "6. Anwendbares Recht",
+      "p1": "Dieses Impressum unterliegt deutschem Recht. Alle Streitigkeiten bezüglich der Nutzung der Plattform unterliegen der ausschließlichen Zuständigkeit der deutschen Gerichte."
     }
   }
 }
-

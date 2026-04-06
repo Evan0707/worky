@@ -51,7 +51,7 @@
     "regenerate": "Regenerar enlace",
     "regenerateWarning": "El enlace anterior quedará inmediatamente invalidado.",
     "smsMessage": "Hola, siga el progreso de su obra aquí: {url}",
-    "emailSubject": "Actualizaciones de su obra - Worky",
+    "emailSubject": "Actualizaciones de su obra - OpenChantier",
     "emailBody": "Hola,\n\nPuede seguir el progreso de su obra aquí:\n{url}\n\nAtentamente"
   },
   "limit": {

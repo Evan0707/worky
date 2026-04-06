@@ -21,35 +21,35 @@ const translations: Record<
   }
 > = {
   "fr-FR": {
-    preview: "Votre lien de connexion Worky",
+    preview: "Votre lien de connexion OpenChantier",
     heading: "Connexion à votre compte",
-    body: "Cliquez sur le bouton ci-dessous pour vous connecter à Worky. Ce lien est valable 24 heures et ne peut être utilisé qu'une seule fois.",
+    body: "Cliquez sur le bouton ci-dessous pour vous connecter à OpenChantier. Ce lien est valable 24 heures et ne peut être utilisé qu'une seule fois.",
     button: "Se connecter",
     ignore:
       "Si vous n'avez pas demandé ce lien, vous pouvez ignorer cet email en toute sécurité.",
     footer: "Lien de connexion envoyé depuis",
   },
   "en-GB": {
-    preview: "Your Worky sign-in link",
+    preview: "Your OpenChantier sign-in link",
     heading: "Sign in to your account",
-    body: "Click the button below to sign in to Worky. This link is valid for 24 hours and can only be used once.",
+    body: "Click the button below to sign in to OpenChantier. This link is valid for 24 hours and can only be used once.",
     button: "Sign in",
     ignore: "If you did not request this link, you can safely ignore this email.",
     footer: "Sign-in link sent from",
   },
   "de-DE": {
-    preview: "Ihr Worky-Anmeldelink",
+    preview: "Ihr OpenChantier-Anmeldelink",
     heading: "Anmeldung bei Ihrem Konto",
-    body: "Klicken Sie auf die Schaltfläche unten, um sich bei Worky anzumelden. Dieser Link ist 24 Stunden gültig und kann nur einmal verwendet werden.",
+    body: "Klicken Sie auf die Schaltfläche unten, um sich bei OpenChantier anzumelden. Dieser Link ist 24 Stunden gültig und kann nur einmal verwendet werden.",
     button: "Anmelden",
     ignore:
       "Wenn Sie diesen Link nicht angefordert haben, können Sie diese E-Mail ignorieren.",
     footer: "Anmelde-Link gesendet von",
   },
   "es-ES": {
-    preview: "Su enlace de acceso a Worky",
+    preview: "Su enlace de acceso a OpenChantier",
     heading: "Iniciar sesión en su cuenta",
-    body: "Haga clic en el botón de abajo para iniciar sesión en Worky. Este enlace es válido durante 24 horas y solo puede usarse una vez.",
+    body: "Haga clic en el botón de abajo para iniciar sesión en OpenChantier. Este enlace es válido durante 24 horas y solo puede usarse una vez.",
     button: "Iniciar sesión",
     ignore:
       "Si no ha solicitado este enlace, puede ignorar este correo electrónico.",

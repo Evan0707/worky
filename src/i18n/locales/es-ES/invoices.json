@@ -44,7 +44,14 @@
     "send": "Enviar por email",
     "download": "Descargar PDF",
     "markPaid": "Marcar como pagado",
-    "markSent": "Marcar como enviado"
+    "markSent": "Marcar como enviado",
+    "sendReminder": "Enviar recordatorio"
+  },
+  "reminder": {
+    "sent": "Recordatorio enviado",
+    "error": "Error al enviar el recordatorio",
+    "noEmail": "El cliente no tiene dirección de email registrada",
+    "emailSubject": "Recordatorio: factura {number} pendiente de pago"
   },
   "proRequired": {
     "title": "Función PRO",
@@ -79,6 +86,9 @@
     "save": "Guardar el documento",
     "cancel": "Cancelar",
     "placeholderLabel": "Servicio...",
-    "confirmDelete": "¿Eliminar este documento?"
+    "confirmDelete": "¿Eliminar este documento?",
+    "errorProjectRequired": "Por favor, seleccione un proyecto",
+    "errorLabelRequired": "La descripción es obligatoria",
+    "errorMinOneLine": "Añada al menos una línea"
   }
 }

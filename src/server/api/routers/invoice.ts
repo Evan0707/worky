@@ -2,6 +2,11 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, requirePro } from "@/server/api/trpc";
 import { TRPCError } from "@trpc/server";
 import { getArtisanContext } from "@/server/lib/team-context";
+import { resend } from "@/lib/resend";
+import { render } from "@react-email/render";
+import { InvoiceReminderEmail } from "../../../../emails/invoice-reminder";
+import { formatCurrency, formatDate } from "@/lib/i18n-helpers";
+import { env } from "@/env";
 
 export const invoiceRouter = createTRPCRouter({
   list: protectedProcedure
@@ -267,6 +272,104 @@ export const invoiceRouter = createTRPCRouter({
         }
       }
       return result;
+    }),
+
+  markPaid: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+      const invoice = await ctx.db.invoice.findUnique({
+        where: { id: input.id },
+        include: { project: true },
+      });
+      if (!invoice || invoice.project.artisanId !== artisanId) {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+      return ctx.db.invoice.update({
+        where: { id: input.id },
+        data: { status: "PAID" },
+      });
+    }),
+
+  sendReminder: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      requirePro(ctx as { session: { user: { plan: string } } });
+      const { artisanId } = await getArtisanContext(ctx.session.user.id, ctx.db);
+
+      const invoice = await ctx.db.invoice.findUnique({
+        where: { id: input.id },
+        include: {
+          project: {
+            select: { name: true, clientName: true, clientEmail: true, artisanId: true },
+          },
+        },
+      });
+
+      if (!invoice || invoice.project.artisanId !== artisanId) {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+      if (!["SENT", "OVERDUE"].includes(invoice.status)) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Reminders can only be sent for SENT or OVERDUE invoices." });
+      }
+      if (!invoice.project.clientEmail) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Client has no email address." });
+      }
+
+      const artisan = await ctx.db.user.findUnique({
+        where: { id: artisanId },
+        select: { name: true, email: true, locale: true, currency: true },
+      });
+
+      const locale = (invoice.locale ?? artisan?.locale ?? "fr-FR") as "fr-FR" | "en-GB" | "de-DE" | "es-ES";
+      const host = new URL(env.NEXT_PUBLIC_APP_URL).host;
+
+      const daysOverdue = invoice.dueAt
+        ? Math.max(0, Math.floor((Date.now() - invoice.dueAt.getTime()) / 86_400_000))
+        : undefined;
+
+      const totalTTC = formatCurrency(invoice.totalTTC, invoice.currency, locale);
+      const dueDate = invoice.dueAt ? formatDate(invoice.dueAt, locale) : "";
+
+      const subjectTemplates: Record<string, string> = {
+        "fr-FR": `Rappel : facture ${invoice.number} en attente de règlement`,
+        "en-GB": `Reminder: invoice ${invoice.number} awaiting payment`,
+        "de-DE": `Erinnerung: Rechnung ${invoice.number} wartet auf Bezahlung`,
+        "es-ES": `Recordatorio: factura ${invoice.number} pendiente de pago`,
+      };
+
+      const html = await render(
+        InvoiceReminderEmail({
+          clientName: invoice.project.clientName ?? "Client",
+          artisanName: artisan?.name ?? artisan?.email ?? "OpenChantier",
+          invoiceNumber: invoice.number,
+          totalTTC,
+          dueDate,
+          daysOverdue,
+          invoiceUrl: `${env.NEXT_PUBLIC_APP_URL}/${locale}/factures`,
+          host,
+          locale,
+        })
+      );
+
+      const result = await resend.emails.send({
+        from: env.AUTH_EMAIL_FROM,
+        to: invoice.project.clientEmail,
+        subject: subjectTemplates[locale] ?? subjectTemplates["fr-FR"]!,
+        html,
+      });
+
+      if (result.error) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: result.error.message });
+      }
+
+      // Track reminder sent date
+      await ctx.db.invoice.update({
+        where: { id: input.id },
+        data: { remindersSentAt: { push: new Date() } },
+      });
+
+      return { success: true };
     }),
 
   delete: protectedProcedure

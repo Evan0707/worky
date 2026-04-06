@@ -58,7 +58,7 @@ export default async function LoginPage({
             <Logo className="h-12 w-12" />
           </div>
           <h1 className="mt-6 font-heading text-3xl font-bold tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
-            Worky
+            OpenChantier
           </h1>
           <p className="mt-3 text-[17px] text-neutral-500 dark:text-neutral-400">
             {t("login.subtitle")}

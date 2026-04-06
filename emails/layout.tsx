@@ -42,7 +42,7 @@ export function EmailLayout({
                 <Text style={styles.logoMark}>●</Text>
               </Column>
               <Column>
-                <Text style={styles.logoText}>Worky</Text>
+                <Text style={styles.logoText}>OpenChantier</Text>
               </Column>
             </Row>
           </Section>
@@ -64,7 +64,7 @@ export function EmailLayout({
               )}
             </Text>
             <Text style={styles.footerCopy}>
-              © {new Date().getFullYear()} Worky · Tous droits réservés
+              © {new Date().getFullYear()} OpenChantier · Tous droits réservés
             </Text>
           </Section>
 

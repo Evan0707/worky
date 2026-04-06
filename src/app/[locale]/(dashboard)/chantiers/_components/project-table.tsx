@@ -10,9 +10,10 @@ interface ProjectTableProps {
   hidePagination?: boolean;
   hideFilter?: boolean;
   fullHeight?: boolean;
+  actionButton?: React.ReactNode;
 }
 
-export function ProjectTable({ data, locale, hidePagination, hideFilter, fullHeight }: ProjectTableProps) {
+export function ProjectTable({ data, locale, hidePagination, hideFilter, fullHeight, actionButton }: ProjectTableProps) {
   const tProjects = useTranslations("projects");
   const columns = getColumns(locale, tProjects);
 
@@ -25,6 +26,7 @@ export function ProjectTable({ data, locale, hidePagination, hideFilter, fullHei
       hidePagination={hidePagination}
       hideFilter={hideFilter}
       fullHeight={fullHeight}
+      actionButton={actionButton}
     />
   );
 }

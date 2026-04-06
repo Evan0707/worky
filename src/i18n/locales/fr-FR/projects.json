@@ -51,7 +51,7 @@
     "regenerate": "Régénérer le lien",
     "regenerateWarning": "L'ancien lien sera immédiatement invalide.",
     "smsMessage": "Bonjour, suivez l'avancement de vos travaux ici : {url}",
-    "emailSubject": "Suivi de vos travaux - Worky",
+    "emailSubject": "Suivi de vos travaux - OpenChantier",
     "emailBody": "Bonjour,\n\nVous pouvez suivre l'avancement de vos travaux ici :\n{url}\n\nCordialement"
   },
   "limit": {

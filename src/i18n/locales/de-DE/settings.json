@@ -9,7 +9,11 @@
                     "hourlyRate":  "Stundensatz (netto)",
                     "currency":  "Standardwährung",
                     "locale":  "Standardsprache",
-                    "save":  "Änderungen speichern"
+                    "save":  "Änderungen speichern",
+                    "dangerZone": {
+                        "title": "Gefahrenbereich",
+                        "description": "Sie werden auf diesem Gerät von Ihrem Konto abgemeldet."
+                    }
                 },
     "billing":  {
                     "title":  "Abrechnung \u0026 Rechtliches",
@@ -51,7 +55,7 @@
               },
     "upgrade":  {
                     "dialogTitle":  "Auf PRO upgraden",
-                    "heading":  "Alle Worky PRO-Funktionen freischalten",
+                    "heading":  "Alle OpenChantier PRO-Funktionen freischalten",
                     "subheading":  "Ersetzen Sie Papier, Excel und WhatsApp durch ein einziges Tool.",
                     "trial":  "14 Tage kostenlos testen",
                     "cancelAnytime":  "Jederzeit kündbar",
@@ -67,7 +71,7 @@
                     "cancelScheduled":  "Kündigung geplant",
                     "autoRenew":  "Automatische Verlängerung",
                     "nextBilling":  "Nächstes Abrechnungsdatum",
-                    "successTitle":  "Willkommen bei Worky PRO!",
+                    "successTitle":  "Willkommen bei OpenChantier PRO!",
                     "successDesc":  "Ihre 14-tägige Testphase hat begonnen. Genießen Sie alle Funktionen.",
                     "successCta":  "Los geht\u0027s!",
                     "feat":  {

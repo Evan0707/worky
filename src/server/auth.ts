@@ -31,7 +31,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           const result = await resend.emails.send({
             to: identifier,
             from: provider.from!,
-            subject: `Connexion à Worky`,
+            subject: `Connexion à OpenChantier`,
             html: html,
           });
           if (result.error) {

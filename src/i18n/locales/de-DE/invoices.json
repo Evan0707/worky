@@ -44,7 +44,14 @@
     "send": "Per E-Mail senden",
     "download": "PDF herunterladen",
     "markPaid": "Als bezahlt markieren",
-    "markSent": "Als gesendet markieren"
+    "markSent": "Als gesendet markieren",
+    "sendReminder": "Zahlungserinnerung senden"
+  },
+  "reminder": {
+    "sent": "Erinnerung gesendet",
+    "error": "Fehler beim Senden der Erinnerung",
+    "noEmail": "Für den Kunden ist keine E-Mail-Adresse hinterlegt",
+    "emailSubject": "Erinnerung: Rechnung {number} wartet auf Bezahlung"
   },
   "proRequired": {
     "title": "PRO-Funktion",
@@ -79,6 +86,9 @@
     "save": "Dokument speichern",
     "cancel": "Abbrechen",
     "placeholderLabel": "Leistung...",
-    "confirmDelete": "Dieses Dokument löschen?"
+    "confirmDelete": "Dieses Dokument löschen?",
+    "errorProjectRequired": "Bitte wählen Sie ein Projekt aus",
+    "errorLabelRequired": "Bezeichnung ist erforderlich",
+    "errorMinOneLine": "Fügen Sie mindestens eine Zeile hinzu"
   }
 }

@@ -1,11 +1,13 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { Resend } from "resend";
+import { render } from "@react-email/render";
 import { type PrismaClient } from "@prisma/client";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { env } from "@/env";
 import { type TeamRole } from "@prisma/client";
+import { TeamInviteEmail } from "../../../../emails/team-invite";
 
 const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null;
 
@@ -220,17 +222,22 @@ export const teamRouter = createTRPCRouter({
       });
 
       if (resend) {
+        const inviterName = inviterUser?.name ?? inviterUser?.email ?? "Un utilisateur";
+        const emailHtml = await render(
+          TeamInviteEmail({
+            teamName: invitation.team.name,
+            inviterName,
+            role: input.role as "ADMIN" | "MEMBER",
+            inviteUrl,
+            expiryDays: INVITE_EXPIRY_DAYS,
+            host: new URL(env.NEXT_PUBLIC_APP_URL).host,
+          })
+        );
         await resend.emails.send({
           from: env.AUTH_EMAIL_FROM,
           to: input.email,
-          subject: `${inviterUser?.name ?? "Someone"} vous invite à rejoindre ${invitation.team.name} sur Worky`,
-          html: buildInviteEmail({
-            teamName: invitation.team.name,
-            inviterName: inviterUser?.name ?? inviterUser?.email ?? "Un utilisateur",
-            role: input.role,
-            inviteUrl,
-            expiryDays: INVITE_EXPIRY_DAYS,
-          }),
+          subject: `${inviterName} vous invite à rejoindre ${invitation.team.name} sur OpenChantier`,
+          html: emailHtml,
         });
       }
 
@@ -430,35 +437,4 @@ export const teamRouter = createTRPCRouter({
   }),
 });
 
-// ─── Email builder ────────────────────────────────────────────────────────────
-
-function buildInviteEmail(opts: {
-  teamName: string;
-  inviterName: string;
-  role: string;
-  inviteUrl: string;
-  expiryDays: number;
-}): string {
-  const roleLabel = opts.role === "ADMIN" ? "Administrateur" : "Membre";
-  return `
-    <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:40px 20px;background:#fff;border-radius:8px">
-      <h1 style="color:#1a1a1a;font-size:22px;font-weight:700;margin:0 0 8px">Worky</h1>
-      <h2 style="color:#333;font-size:18px;font-weight:600;margin:0 0 20px">Invitation à rejoindre une équipe</h2>
-      <p style="color:#444;font-size:15px;line-height:1.6">
-        <strong>${opts.inviterName}</strong> vous invite à rejoindre l'équipe <strong>${opts.teamName}</strong>
-        sur Worky en tant que <strong>${roleLabel}</strong>.
-      </p>
-      <div style="text-align:center;margin:32px 0">
-        <a href="${opts.inviteUrl}"
-           style="background:#1A4F8A;color:#fff;padding:14px 32px;border-radius:6px;
-                  font-size:16px;font-weight:600;text-decoration:none;display:inline-block">
-          Rejoindre l'équipe
-        </a>
-      </div>
-      <p style="color:#666;font-size:13px">
-        Ce lien est valable ${opts.expiryDays} jours. Si vous n'attendiez pas cette invitation, ignorez cet email.
-      </p>
-    </div>
-  `;
-}
 

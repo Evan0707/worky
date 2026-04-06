@@ -46,7 +46,14 @@
     "send": "Send by email",
     "download": "Download PDF",
     "markPaid": "Mark as paid",
-    "markSent": "Mark as sent"
+    "markSent": "Mark as sent",
+    "sendReminder": "Send reminder"
+  },
+  "reminder": {
+    "sent": "Reminder sent",
+    "error": "Error sending reminder",
+    "noEmail": "The client has no email address on file",
+    "emailSubject": "Reminder: invoice {number} awaiting payment"
   },
   "proRequired": {
     "title": "PRO feature",
@@ -79,6 +86,9 @@
     "save": "Save document",
     "cancel": "Cancel",
     "placeholderLabel": "Service...",
-    "confirmDelete": "Delete this document?"
+    "confirmDelete": "Delete this document?",
+    "errorProjectRequired": "Please select a project",
+    "errorLabelRequired": "Description is required",
+    "errorMinOneLine": "Add at least one line"
   }
 }

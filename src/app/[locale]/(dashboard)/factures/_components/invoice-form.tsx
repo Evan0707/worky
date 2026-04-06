@@ -29,27 +29,31 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 
-const formSchema = z.object({
-  projectId: z.string().min(1, "Veuillez sélectionner un chantier"),
-  type: z.enum(["QUOTE", "INVOICE"]),
-  lines: z
-    .array(
-      z.object({
-        label: z.string().min(1, "La désignation est requise"),
-        quantity: z.coerce.number().min(0.01),
-        unitPrice: z.coerce.number().min(0), // in EUR
-        vatRate: z.coerce.number().min(0),
-      })
-    )
-    .min(1, "Ajoutez au moins une ligne"),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = {
+  projectId: string;
+  type: "QUOTE" | "INVOICE";
+  lines: { label: string; quantity: number; unitPrice: number; vatRate: number }[];
+};
 
 export function InvoiceForm({ projects, locale }: { projects: any[]; locale: string }) {
   const router = useRouter();
   const utils = api.useUtils();
   const t = useTranslations("invoices");
+
+  const formSchema = z.object({
+    projectId: z.string().min(1, t("form.errorProjectRequired")),
+    type: z.enum(["QUOTE", "INVOICE"]),
+    lines: z
+      .array(
+        z.object({
+          label: z.string().min(1, t("form.errorLabelRequired")),
+          quantity: z.coerce.number().min(0.01),
+          unitPrice: z.coerce.number().min(0),
+          vatRate: z.coerce.number().min(0),
+        })
+      )
+      .min(1, t("form.errorMinOneLine")),
+  });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),

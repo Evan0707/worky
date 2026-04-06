@@ -9,7 +9,11 @@
                     "hourlyRate":  "Hourly Rate (excl. VAT)",
                     "currency":  "Default Currency",
                     "locale":  "Default Language",
-                    "save":  "Save changes"
+                    "save":  "Save changes",
+                    "dangerZone": {
+                        "title": "Danger Zone",
+                        "description": "You will be logged out of your account on this device."
+                    }
                 },
     "billing":  {
                     "title":  "Billing \u0026 Legal",
@@ -51,7 +55,7 @@
                },
     "upgrade":  {
                     "dialogTitle":  "Upgrade to PRO",
-                    "heading":  "Unlock all of Worky PRO",
+                    "heading":  "Unlock all of OpenChantier PRO",
                     "subheading":  "Replace paper, Excel and WhatsApp with one unified tool.",
                     "trial":  "14-day free trial",
                     "cancelAnytime":  "Cancel anytime",
@@ -67,7 +71,7 @@
                     "cancelScheduled":  "Cancellation scheduled",
                     "autoRenew":  "Auto-renewal",
                     "nextBilling":  "Next billing date",
-                    "successTitle":  "Welcome to Worky PRO!",
+                    "successTitle":  "Welcome to OpenChantier PRO!",
                     "successDesc":  "Your 14-day trial has started. Enjoy all the features.",
                     "successCta":  "Let\u0027s go!",
                     "feat":  {

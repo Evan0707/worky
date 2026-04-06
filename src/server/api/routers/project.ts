@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { v4 as uuidv4 } from "uuid";
+import { Resend } from "resend";
+import { render } from "@react-email/render";
 
 import {
   createTRPCRouter,
@@ -8,8 +9,16 @@ import {
   publicProcedure,
 } from "@/server/api/trpc";
 import { getArtisanContext, getEffectivePlan } from "@/server/lib/team-context";
+import { env } from "@/env";
+import { ClientShareEmail } from "../../../../emails/client-share";
+
+const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null;
 
 const FREE_PLAN_PROJECT_LIMIT = 3;
+
+const nextStepSchema = z.object({ text: z.string(), done: z.boolean() });
+const nextStepsSchema = z.array(nextStepSchema);
+export type NextStep = z.infer<typeof nextStepSchema>;
 
 export const projectRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
@@ -88,7 +97,7 @@ export const projectRouter = createTRPCRouter({
       }
 
       return ctx.db.project.create({
-        data: { ...input, artisanId, shareToken: uuidv4() },
+        data: { ...input, artisanId, shareToken: crypto.randomUUID() },
       });
     }),
 
@@ -105,7 +114,7 @@ export const projectRouter = createTRPCRouter({
         clientPhone: z.string().optional(),
         clientEmail: z.string().email().optional(),
         description: z.string().max(2000).optional(),
-        nextSteps: z.any().optional(),
+        nextSteps: nextStepsSchema.optional(),
         startDate: z.date().optional(),
         endDate: z.date().optional(),
         shareExpiresAt: z.date().nullable().optional(),
@@ -222,7 +231,7 @@ export const projectRouter = createTRPCRouter({
 
       return ctx.db.project.update({
         where: { id: input.id },
-        data: { shareToken: uuidv4(), shareExpiresAt: input.shareExpiresAt },
+        data: { shareToken: crypto.randomUUID(), shareExpiresAt: input.shareExpiresAt },
         select: { shareToken: true, shareExpiresAt: true },
       });
     }),
@@ -262,5 +271,59 @@ export const projectRouter = createTRPCRouter({
 
         return action;
       });
+    }),
+
+  /**
+   * Send the project share link to the client by email via Resend.
+   * Requires clientEmail on the project.
+   */
+  sendShareEmail: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+
+      const project = await ctx.db.project.findFirst({
+        where: { id: input.id, artisanId },
+        select: {
+          id: true, name: true, clientName: true, clientEmail: true,
+          shareToken: true,
+        },
+      });
+      if (!project) throw new TRPCError({ code: "NOT_FOUND" });
+      if (!project.clientEmail) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No client email on this project." });
+      }
+      if (!resend) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Email service not configured." });
+      }
+
+      const artisan = await ctx.db.user.findUnique({
+        where: { id: artisanId },
+        select: { name: true, companyName: true, locale: true },
+      });
+
+      const shareUrl = `${env.NEXT_PUBLIC_APP_URL}/c/${project.shareToken}`;
+      const locale = (artisan?.locale ?? "fr-FR") as "fr-FR" | "en-GB" | "de-DE" | "es-ES";
+      const host = new URL(env.NEXT_PUBLIC_APP_URL).host;
+
+      const emailHtml = await render(
+        ClientShareEmail({
+          clientName: project.clientName,
+          artisanName: artisan?.companyName ?? artisan?.name ?? "",
+          projectName: project.name,
+          shareUrl,
+          host,
+          locale,
+        })
+      );
+
+      await resend.emails.send({
+        from: env.AUTH_EMAIL_FROM,
+        to: project.clientEmail,
+        subject: `${artisan?.companyName ?? artisan?.name} — Suivi de votre chantier`,
+        html: emailHtml,
+      });
+
+      return { success: true };
     }),
 });

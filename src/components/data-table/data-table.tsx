@@ -36,6 +36,7 @@ interface DataTableProps<TData, TValue> {
   hidePagination?: boolean;
   hideFilter?: boolean;
   fullHeight?: boolean;
+  actionButton?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
@@ -46,6 +47,7 @@ export function DataTable<TData, TValue>({
   hidePagination = false,
   hideFilter = false,
   fullHeight = false,
+  actionButton,
 }: DataTableProps<TData, TValue>) {
   const tCommon = useTranslations("common");
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -133,11 +135,16 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-32 text-center text-muted-foreground"
+                  className="flex-1 text-center text-muted-foreground"
                 >
-
-                  <Grid2X2X className="mx-auto mb-2 w-[50px] h-[50px] opacity-40" />
-                  {tCommon("table.noResults")}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img 
+                    src="/No_content.svg" 
+                    alt="No data" 
+                    className="mx-auto h-[120px] mb-4 opacity-80" 
+                  />
+                  <p className="mb-0 text-base font-light text-muted-foreground">{tCommon("table.noResults")}</p>
+                  {actionButton && <div>{actionButton}</div>}
                 </TableCell>
               </TableRow>
             )}

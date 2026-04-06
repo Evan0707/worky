@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { formatCurrency, formatDate } from "@/lib/i18n-helpers";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, MoreHorizontal, Trash2, Send } from "lucide-react";
+import { FileText, MoreHorizontal, Trash2, Send, Bell } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,6 +53,11 @@ function InvoiceActionsCell({ invoice, locale }: { invoice: any; locale: string 
       utils.invoice.list.invalidate();
       router.refresh();
     },
+    onError: (err) => toast.error(err.message),
+  });
+
+  const sendReminderMutation = api.invoice.sendReminder.useMutation({
+    onSuccess: () => toast.success(tInvoices("reminder.sent")),
     onError: (err) => toast.error(err.message),
   });
 
@@ -108,6 +113,15 @@ function InvoiceActionsCell({ invoice, locale }: { invoice: any; locale: string 
             <FileText className="mr-2 h-4 w-4" />
             {tInvoices("actions.generate")}
           </DropdownMenuItem>
+          {["SENT", "OVERDUE"].includes(invoice.status) && invoice.type === "INVOICE" && (
+            <DropdownMenuItem
+              onClick={() => sendReminderMutation.mutate({ id: invoice.id })}
+              disabled={sendReminderMutation.isPending}
+            >
+              <Bell className="mr-2 h-4 w-4 text-orange-500" />
+              {tInvoices("actions.sendReminder")}
+            </DropdownMenuItem>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="text-destructive focus:bg-destructive focus:text-destructive-foreground"
@@ -146,7 +160,7 @@ function InvoiceActionsCell({ invoice, locale }: { invoice: any; locale: string 
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function InvoiceTable({ data, locale, fullHeight = false }: { data: any[]; locale: string; fullHeight?: boolean }) {
+export function InvoiceTable({ data, locale, fullHeight = false, actionButton }: { data: any[]; locale: string; fullHeight?: boolean; actionButton?: React.ReactNode }) {
   const t = useTranslations("common");
   const tInvoices = useTranslations("invoices");
 
@@ -217,5 +231,5 @@ export function InvoiceTable({ data, locale, fullHeight = false }: { data: any[]
     },
   ];
 
-  return <DataTable columns={columns} data={data} fullHeight={fullHeight} />;
+  return <DataTable columns={columns} data={data} fullHeight={fullHeight} actionButton={actionButton} />;
 }

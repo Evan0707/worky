@@ -1,126 +1,126 @@
 {
   "nav": {
-    "features": "Fonctionnalités",
-    "pricing": "Tarifs",
-    "login": "Connexion",
-    "start": "Commencer gratuitement"
+    "features": "Funcionalidades",
+    "pricing": "Precios",
+    "login": "Iniciar sesión",
+    "start": "Empezar gratis"
   },
   "hero": {
-    "badge": "La solution n°1 des artisans du BTP",
-    "title": "Gérez vos chantiers",
-    "titleHighlight": "en toute simplicité",
-    "subtitle": "Photos, pointage, devis et factures — tout au même endroit. L'outil professionnel qui remplace le carnet, WhatsApp et Excel.",
-    "cta": "Commencer gratuitement",
-    "ctaSecondary": "Voir les fonctionnalités",
-    "noCard": "Gratuit — aucune carte bancaire requise"
+    "badge": "La solución nº1 para autónomos y contratistas",
+    "title": "Gestiona tus obras",
+    "titleHighlight": "con total facilidad",
+    "subtitle": "Fotos, control de horas, presupuestos y facturas — todo en un solo lugar. La herramienta profesional que sustituye al cuaderno, WhatsApp y Excel.",
+    "cta": "Empezar gratis",
+    "ctaSecondary": "Ver funcionalidades",
+    "noCard": "Gratis — sin tarjeta bancaria"
   },
   "features": {
-    "badge": "Fonctionnalités",
-    "title": "Tout ce dont vous avez besoin",
-    "subtitle": "Un outil complet pensé pour le terrain. Gérez chaque aspect de vos chantiers depuis votre téléphone ou ordinateur.",
+    "badge": "Funcionalidades",
+    "title": "Todo lo que necesitas",
+    "subtitle": "Una herramienta completa pensada para el campo. Gestiona cada aspecto de tus obras desde tu móvil u ordenador.",
     "projects": {
-      "title": "Gestion de chantiers",
-      "description": "Créez et organisez vos chantiers avec statuts, notes et informations client. Vue d'ensemble en un coup d'oeil."
+      "title": "Gestión de obras",
+      "description": "Crea y organiza tus obras con estados, notas e información del cliente. Vista general de un vistazo."
     },
     "photos": {
-      "title": "Photos & documents",
-      "description": "Prenez des photos directement sur le terrain, annotez-les et partagez-les avec vos clients."
+      "title": "Fotos y documentos",
+      "description": "Haz fotos directamente en la obra, anótalas y compártelas con tus clientes."
     },
     "time": {
-      "title": "Suivi du temps",
-      "description": "Pointez vos heures par chantier. Rapports détaillés pour une facturation précise."
+      "title": "Control de horas",
+      "description": "Registra tus horas por obra. Informes detallados para una facturación precisa."
     },
     "invoices": {
-      "title": "Devis & factures",
-      "description": "Générez des devis et factures professionnels conformes en quelques clics."
+      "title": "Presupuestos y facturas",
+      "description": "Genera presupuestos y facturas profesionales conformes en pocos clics."
     },
     "sharing": {
-      "title": "Partage client",
-      "description": "Un lien magique pour que vos clients suivent l'avancement en temps réel. Zéro friction."
+      "title": "Compartir con el cliente",
+      "description": "Un enlace mágico para que tus clientes sigan el avance en tiempo real. Sin fricciones."
     },
     "team": {
-      "title": "Travail en équipe",
-      "description": "Invitez vos collaborateurs et travaillez ensemble sur les mêmes chantiers."
+      "title": "Trabajo en equipo",
+      "description": "Invita a tus colaboradores y trabajad juntos en las mismas obras."
     }
   },
   "steps": {
-    "badge": "Comment ça marche",
-    "title": "Opérationnel en 2 minutes",
-    "subtitle": "Trois étapes suffisent pour digitaliser votre gestion de chantier.",
+    "badge": "Cómo funciona",
+    "title": "Operativo en 2 minutos",
+    "subtitle": "Tres pasos son suficientes para digitalizar tu gestión de obras.",
     "step1": {
-      "title": "Créez votre compte",
-      "description": "Inscription gratuite en 30 secondes avec Google ou par email."
+      "title": "Crea tu cuenta",
+      "description": "Registro gratuito en 30 segundos con Google o por email."
     },
     "step2": {
-      "title": "Ajoutez un chantier",
-      "description": "Renseignez les infos du projet et invitez votre client."
+      "title": "Añade una obra",
+      "description": "Introduce los datos del proyecto e invita a tu cliente."
     },
     "step3": {
-      "title": "Gérez tout au même endroit",
-      "description": "Photos, heures, matériaux et factures — tout centralisé et accessible."
+      "title": "Gestiona todo en un solo lugar",
+      "description": "Fotos, horas, materiales y facturas — todo centralizado y accesible."
     }
   },
   "mobileApp": {
-    "badge": "À venir",
-    "title": "Worky dans votre poche",
-    "subtitle": "L'application mobile Worky arrive très prochainement sur iOS et Android. Prenez vos photos, pointez vos heures et gérez vos chantiers directement depuis le terrain.",
+    "badge": "Próximamente",
+    "title": "OpenChantier en tu bolsillo",
+    "subtitle": "La aplicación móvil OpenChantier llegará muy pronto a iOS y Android. Haz fotos, registra horas y gestiona tus obras directamente desde la obra.",
     "features": {
-      "offline": "Mode hors-ligne",
-      "notifications": "Notifications en temps réel",
-      "fast": "Interface ultra-rapide"
+      "offline": "Modo sin conexión",
+      "notifications": "Notificaciones en tiempo real",
+      "fast": "Interfaz ultrarrápida"
     }
   },
   "pricing": {
-    "badge": "Tarifs",
-    "title": "Simple et transparent",
-    "subtitle": "Pas de frais cachés. Commencez gratuitement, passez Pro quand vous êtes prêt.",
+    "badge": "Precios",
+    "title": "Sencillo y transparente",
+    "subtitle": "Sin cargos ocultos. Empieza gratis, pasa a Pro cuando estés listo.",
     "free": {
-      "name": "Gratuit",
+      "name": "Gratis",
       "price": "0",
       "currency": "€",
-      "period": "/ mois",
-      "description": "Pour démarrer et découvrir Worky",
-      "cta": "Commencer gratuitement",
-      "f1": "3 chantiers actifs",
-      "f2": "Photos illimitées",
-      "f3": "Suivi du temps",
-      "f4": "Partage client (lecture seule)"
+      "period": "/ mes",
+      "description": "Para empezar a descubrir OpenChantier",
+      "cta": "Empezar gratis",
+      "f1": "3 obras activas",
+      "f2": "Fotos ilimitadas",
+      "f3": "Control de horas",
+      "f4": "Compartir con cliente (solo lectura)"
     },
     "pro": {
       "name": "Pro",
       "price": "15",
       "currency": "€",
-      "period": "/ mois",
-      "popular": "Populaire",
-      "description": "Pour les artisans qui veulent tout gérer",
-      "cta": "Essai gratuit 14 jours",
-      "f1": "Chantiers illimités",
-      "f2": "Photos illimitées",
-      "f3": "Suivi du temps avancé",
-      "f4": "Devis & factures PDF",
-      "f5": "Partage client interactif",
-      "f6": "Gestion d'équipe",
-      "f7": "Analytiques détaillées",
-      "f8": "Support prioritaire"
+      "period": "/ mes",
+      "popular": "Popular",
+      "description": "Para autónomos que quieren gestionarlo todo",
+      "cta": "Prueba gratuita 14 días",
+      "f1": "Obras ilimitadas",
+      "f2": "Fotos ilimitadas",
+      "f3": "Control de horas avanzado",
+      "f4": "Presupuestos y facturas PDF",
+      "f5": "Compartir con cliente interactivo",
+      "f6": "Gestión de equipo",
+      "f7": "Analíticas detalladas",
+      "f8": "Soporte prioritario"
     }
   },
   "cta": {
-    "title": "Prêt à simplifier votre quotidien ?",
-    "subtitle": "Rejoignez les artisans qui gèrent déjà leurs chantiers avec Worky. C'est gratuit.",
-    "button": "Commencer maintenant"
+    "title": "¿Listo para simplificar tu día a día?",
+    "subtitle": "Únete a los profesionales que ya gestionan sus obras con OpenChantier. Es gratis.",
+    "button": "Empezar ahora"
   },
   "footer": {
-    "description": "La solution de gestion de chantier conçue pour les artisans du BTP.",
-    "product": "Produit",
-    "legal": "Légal",
-    "terms": "Conditions générales",
-    "privacy": "Confidentialité",
-    "legalNotice": "Mentions légales",
-    "rights": "Tous droits réservés."
+    "description": "La solución de gestión de obras diseñada para autónomos y contratistas.",
+    "product": "Producto",
+    "legal": "Legal",
+    "terms": "Términos y condiciones",
+    "privacy": "Privacidad",
+    "legalNotice": "Aviso legal",
+    "rights": "Todos los derechos reservados."
   },
   "seo": {
-    "title": "Worky — Software de gestión de obras para obreros y contratistas",
-    "description": "Worky es la aplicación todo en uno para equipos de construcción: gestión de proyectos, fotos de obra, seguimiento del tiempo, presupuestos y facturación.",
+    "title": "OpenChantier — Software de gestión de obras para autónomos y contratistas",
+    "description": "OpenChantier es la aplicación todo en uno para equipos de construcción: gestión de proyectos, fotos de obra, control de horas, presupuestos y facturación.",
     "keywords": "contratista, construcción, gestión de proyectos, software, SaaS, facturación, control de horas, obra, aplicación móvil"
   }
 }

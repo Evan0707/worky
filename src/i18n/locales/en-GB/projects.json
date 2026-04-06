@@ -51,7 +51,7 @@
     "regenerate": "Regenerate link",
     "regenerateWarning": "The old link will be immediately invalidated.",
     "smsMessage": "Hello, track your project progress here: {url}",
-    "emailSubject": "Your project updates - Worky",
+    "emailSubject": "Your project updates - OpenChantier",
     "emailBody": "Hello,\n\nYou can track your project progress here:\n{url}\n\nKind regards"
   },
   "limit": {
