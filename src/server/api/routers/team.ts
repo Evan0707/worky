@@ -5,6 +5,7 @@ import { render } from "@react-email/render";
 
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { env } from "@/env";
+import { getEffectivePlan } from "@/server/lib/team-context";
 import { type TeamRole } from "@prisma/client";
 import { TeamInviteEmail } from "../../../../emails/team-invite";
 
@@ -96,11 +97,13 @@ export const teamRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ name: z.string().min(1).max(100) }))
     .mutation(async ({ ctx, input }) => {
-      // [SEC-05]
-      if (ctx.session.user.plan !== "PRO") {
+      const userId = ctx.session.user.id!;
+
+      // [SEC-05] Check PRO plan from DB, not from stale session
+      const plan = await getEffectivePlan(userId, ctx.db);
+      if (plan === "FREE") {
         throw new TRPCError({ code: "FORBIDDEN", message: "PRO plan required" });
       }
-      const userId = ctx.session.user.id!;
 
       // Guard: already owns a team
       const existing = await ctx.db.team.findUnique({ where: { ownerId: userId } });
@@ -395,6 +398,11 @@ export const teamRouter = createTRPCRouter({
         throw new TRPCError({ code: "FORBIDDEN", message: "Admins cannot remove other admins" });
       }
 
+      // Clean up orphaned ProjectAssignments for the removed member
+      await ctx.db.projectAssignment.deleteMany({
+        where: { userId: target.userId },
+      });
+
       return ctx.db.teamMember.delete({ where: { id: input.memberId } });
     }),
 
@@ -408,6 +416,9 @@ export const teamRouter = createTRPCRouter({
     if (!membership) {
       throw new TRPCError({ code: "BAD_REQUEST", message: "You are not a team member" });
     }
+
+    // Clean up orphaned ProjectAssignments for the leaving member
+    await ctx.db.projectAssignment.deleteMany({ where: { userId } });
 
     return ctx.db.teamMember.delete({ where: { userId } });
   }),

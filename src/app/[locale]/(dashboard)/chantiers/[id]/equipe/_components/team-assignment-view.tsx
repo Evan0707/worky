@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Users, Shield, User, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ROLE_CONFIG: Record<"ADMIN" | "MEMBER", { icon: typeof Shield; className: string }> = {
   ADMIN: { icon: Shield, className: "bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/20" },
@@ -65,8 +66,22 @@ export function TeamAssignmentView({ projectId }: TeamAssignmentViewProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div className="rounded-xl border bg-card divide-y divide-border/50">
+        <div className="px-5 py-4 space-y-1">
+          <Skeleton className="h-4 w-40" />
+          <Skeleton className="h-3 w-64" />
+        </div>
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="flex items-center gap-3 px-5 py-3.5">
+            <Skeleton className="h-9 w-9 rounded-full" />
+            <div className="flex-1 space-y-1.5">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-3 w-44" />
+            </div>
+            <Skeleton className="h-5 w-16 rounded-full" />
+            <Skeleton className="h-7 w-24 rounded-md" />
+          </div>
+        ))}
       </div>
     );
   }

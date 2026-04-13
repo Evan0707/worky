@@ -39,7 +39,75 @@
     "time": "Heures",
     "materials": "Matériaux",
     "invoice": "Devis / Facture",
-    "team": "Équipe"
+    "team": "Équipe",
+    "notes": "Notes",
+    "tasks": "Tâches",
+    "messages": "Messages",
+    "safety": "Sécurité"
+  },
+  "messages": {
+    "title": "Messages",
+    "empty": "Aucun message. Commencez la conversation.",
+    "placeholder": "Écrire un message...",
+    "send": "Envoyer",
+    "deleteConfirm": "Supprimer ce message ?",
+    "deleteDesc": "Cette action est irréversible.",
+    "deleteSuccess": "Message supprimé",
+    "error": "Erreur lors de l'envoi",
+    "client": "Client",
+    "you": "Vous"
+  },
+  "notes": {
+    "title": "Journal de chantier",
+    "empty": "Aucune note pour le moment. Ajoutez votre première note.",
+    "placeholder": "Écrivez une note... (ex: mur nord terminé, livraison carrelage demain)",
+    "add": "Ajouter une note",
+    "pin": "Épingler",
+    "unpin": "Désépingler",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "deleteConfirm": "Supprimer cette note ?",
+    "deleteDesc": "Cette action est irréversible.",
+    "pinned": "Épinglée",
+    "by": "par {name}",
+    "addSuccess": "Note ajoutée",
+    "updateSuccess": "Note mise à jour",
+    "deleteSuccess": "Note supprimée",
+    "error": "Erreur lors de la sauvegarde"
+  },
+  "tasks": {
+    "title": "Tâches",
+    "empty": "Aucune tâche. Créez votre première tâche.",
+    "add": "Nouvelle tâche",
+    "addTitle": "Nouvelle tâche",
+    "titleLabel": "Titre",
+    "titlePlaceholder": "Ex: Poser le carrelage...",
+    "descriptionLabel": "Description (optionnel)",
+    "descriptionPlaceholder": "Détails...",
+    "dueDateLabel": "Date limite",
+    "assigneeLabel": "Assigner à",
+    "assigneePlaceholder": "Choisir un membre",
+    "priorityLabel": "Priorité",
+    "priority": {
+      "0": "Normal",
+      "1": "Urgent",
+      "2": "Critique"
+    },
+    "status": {
+      "TODO": "À faire",
+      "IN_PROGRESS": "En cours",
+      "DONE": "Terminé"
+    },
+    "overdue": "En retard",
+    "dueOn": "Pour le {date}",
+    "assignedTo": "Assigné à {name}",
+    "createSuccess": "Tâche créée",
+    "updateSuccess": "Tâche mise à jour",
+    "deleteSuccess": "Tâche supprimée",
+    "deleteConfirm": "Supprimer cette tâche ?",
+    "deleteDesc": "Cette action est irréversible.",
+    "error": "Erreur lors de la sauvegarde",
+    "noAssignee": "Non assigné"
   },
   "team": {
     "title": "Accès au chantier",
@@ -84,11 +152,16 @@
     "updated": "Chantier mis à jour",
     "deleted": "Chantier supprimé",
     "shared": "Lien copié dans le presse-papier",
-    "regenerated": "Lien régénéré avec succès"
+    "regenerated": "Lien régénéré avec succès",
+    "copyError": "Erreur lors de la copie"
   },
   "new": {
     "title": "Nouveau chantier",
-    "subtitle": "Saisissez les informations de base pour démarrer un nouveau chantier."
+    "subtitle": "Saisissez les informations de base pour démarrer un nouveau chantier.",
+    "templateLabel": "Modèle de chantier (optionnel)",
+    "templatePlaceholder": "Choisir un modèle...",
+    "templateHint": "Les tâches et matériaux du modèle seront ajoutés automatiquement.",
+    "templateNone": "Aucun modèle"
   },
   "overview": {
     "generalInfo": "Informations générales",
@@ -130,7 +203,25 @@
     "uploadError": "Erreur lors de l'upload",
     "photoAlt": "Photo du chantier",
     "empty": "Aucune photo pour le moment. Uploadez des images ci-dessus.",
-    "addedBy": "par {name}"
+    "addedBy": "par {name}",
+    "invalidFiles": "Fichiers invalides : images uniquement, max 8 Mo",
+    "noteUpdateError": "Erreur lors de la mise à jour de la légende",
+    "orderSaveError": "Erreur lors de la sauvegarde de l'ordre",
+    "dictationUnsupported": "Dictée vocale non supportée sur ce navigateur",
+    "dictationStarted": "À vous de parler...",
+    "dropzone": {
+      "dragOver": "Déposez vos photos ici",
+      "drop": "Glissez vos photos ici",
+      "orClick": "ou cliquez pour sélectionner",
+      "constraints": "JPG, PNG, WEBP — max 16 Mo par photo"
+    },
+    "caption": {
+      "label": "Légende",
+      "placeholder": "Ajouter une légende...",
+      "save": "Enregistrer",
+      "labelDictation": "Légende (dictée vocale disponible)",
+      "placeholderDictation": "Ex: Fissure dans le mur nord"
+    }
   },
   "navigation": {
     "openWith": "Y aller",
@@ -159,6 +250,47 @@
     "title": "Prochaines étapes",
     "placeholder": "Ex: Finir carrelage...",
     "saveSuccess": "Liste mise à jour"
+  },
+  "safety": {
+    "title": "Checklists sécurité",
+    "empty": "Aucune checklist. Créez-en une à partir d'un modèle.",
+    "new": "Nouvelle checklist",
+    "newTitle": "Nouvelle checklist sécurité",
+    "chooseTemplate": "Choisir un modèle",
+    "templateLabel": "Modèle",
+    "create": "Créer la checklist",
+    "createSuccess": "Checklist créée",
+    "deleteConfirm": "Supprimer cette checklist ?",
+    "deleteDesc": "Cette action est irréversible.",
+    "deleteSuccess": "Checklist supprimée",
+    "signedAt": "Signée le {date}",
+    "signedBy": "par {name}",
+    "notSigned": "Non signée",
+    "sign": "Signer la checklist",
+    "signTitle": "Signature de la checklist",
+    "signDesc": "Signez pour confirmer que toutes les vérifications ont été effectuées.",
+    "signSuccess": "Checklist signée",
+    "alreadySigned": "Cette checklist a déjà été signée.",
+    "itemCount": "{count} points",
+    "error": "Erreur lors de la sauvegarde",
+    "templates": {
+      "EPI": "Équipements de Protection Individuelle",
+      "ECHAFAUDAGE": "Échafaudage",
+      "ELECTRIQUE": "Sécurité électrique",
+      "AMIANTE": "Risque amiante"
+    }
+  },
+  "meteo": {
+    "title": "Météo sur le chantier",
+    "loading": "Chargement...",
+    "error": "Météo indisponible",
+    "conditions": {
+      "sunny": "Ensoleillé",
+      "cloudy": "Nuageux",
+      "rainy": "Pluvieux",
+      "snowy": "Neigeux",
+      "stormy": "Orageux"
+    }
   },
   "publicView": {
     "invalidLinkTitle": "Lien invalide ou expiré",

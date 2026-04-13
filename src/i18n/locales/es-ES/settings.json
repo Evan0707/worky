@@ -33,7 +33,10 @@
                    },
     "toasts":  {
                    "saved":  "Ajustes actualizados",
-                   "error":  "Se ha producido un error"
+                   "error":  "Se ha producido un error",
+                   "logoUpdated": "Logo actualizado",
+                   "logoUploadError": "Error al subir el logo",
+                   "logoInvalidFormat": "Formato inválido. Se requiere imagen."
                },
     "plans":  {
                   "title":  "Suscripción y Límites",
@@ -53,6 +56,49 @@
                   "success":  "¡Pago exitoso! Bienvenido al plan PRO.",
                   "canceled":  "Período de prueba activado. Puede cancelar en cualquier momento."
               },
+    "templates": {
+      "title": "Plantillas de proyecto",
+      "description": "Cree plantillas reutilizables con tareas y materiales predefinidos.",
+      "empty": "Sin plantillas. Cree su primera plantilla.",
+      "new": "Nueva plantilla",
+      "newTitle": "Nueva plantilla",
+      "nameLabel": "Nombre de la plantilla",
+      "namePlaceholder": "Ej: Reforma de baño",
+      "descriptionLabel": "Descripción (opcional)",
+      "tasks": "Tareas",
+      "materials": "Materiales",
+      "tags": "Etiquetas",
+      "applyToProject": "Aplicar al proyecto",
+      "applySuccess": "Plantilla aplicada al proyecto",
+      "createFromProject": "Guardar este proyecto como plantilla",
+      "createFromProjectTitle": "Nombre de la plantilla",
+      "createFromProjectSuccess": "Plantilla creada",
+      "deleteConfirm": "¿Eliminar esta plantilla?",
+      "deleteDesc": "Esta acción no se puede deshacer.",
+      "deleteConfirmTitle": "¿Eliminar esta plantilla?",
+      "deleteConfirmDesc": "Esta acción no se puede deshacer. La plantilla se eliminará permanentemente.",
+      "deleteSuccess": "Plantilla eliminada",
+      "createSuccess": "Plantilla creada",
+      "updateSuccess": "Plantilla actualizada",
+      "error": "Error al guardar",
+      "edit": "Editar plantilla",
+      "editWarning": "Las tareas y materiales no se pueden editar aquí. Vuelva a crear la plantilla desde un proyecto para actualizarlas.",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "descriptionPlaceholder": "Descripción del tipo de proyecto...",
+      "itemCount": "{tasks} tareas · {materials} materiales",
+      "stats": {
+        "tasks": "tareas",
+        "materials": "materiales",
+        "tags": "etiquetas"
+      },
+      "selectProject": "Elegir una obra",
+      "noActiveProjects": "No hay obras activas o en curso",
+      "applyDialogTitle": "Aplicar a una obra",
+      "fromProjectSelectLabel": "Obra de origen",
+      "proRequired": "Las plantillas de proyecto son una función del plan PRO.",
+      "proRequiredCta": "Pasarse al plan PRO"
+    },
     "upgrade":  {
                     "dialogTitle":  "Pasarse al plan PRO",
                     "heading":  "Desbloquee todo OpenChantier PRO",

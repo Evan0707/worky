@@ -7,34 +7,40 @@ import {
   OctagonX,
   TriangleAlert,
 } from "lucide-react"
-import { useTheme } from "next-themes"
 import { Toaster as Sonner } from "sonner"
 
 type ToasterProps = React.ComponentProps<typeof Sonner>
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
-
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme="dark"
       className="toaster group"
       icons={{
-        success: <CircleCheck className="h-4 w-4" />,
-        info: <Info className="h-4 w-4" />,
-        warning: <TriangleAlert className="h-4 w-4" />,
-        error: <OctagonX className="h-4 w-4" />,
-        loading: <LoaderCircle className="h-4 w-4 animate-spin" />,
+        success: <CircleCheck className="h-[18px] w-[18px]" />,
+        info: <Info className="h-[18px] w-[18px]" />,
+        warning: <TriangleAlert className="h-[18px] w-[18px]" />,
+        error: <OctagonX className="h-[18px] w-[18px]" />,
+        loading: <LoaderCircle className="h-[18px] w-[18px] animate-spin" />,
       }}
       toastOptions={{
         classNames: {
-          toast:
-            "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg",
-          description: "group-[.toast]:text-muted-foreground",
-          actionButton:
-            "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
-          cancelButton:
-            "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+          toast: [
+            "!bg-[#1c1c1e] !text-white !border-0",
+            "!rounded-2xl !px-4 !py-3.5 !gap-3",
+            "!shadow-[0_8px_30px_rgba(0,0,0,0.35)]",
+            "!font-medium !text-sm !min-w-[280px]",
+          ].join(" "),
+          title: "!text-white !font-medium !text-sm",
+          description: "!text-white/60 !text-xs",
+          icon: "!text-white",
+          success: "!bg-[#1c1c1e] !text-white !border-0",
+          error: "!bg-[#1c1c1e] !text-white !border-0",
+          warning: "!bg-[#1c1c1e] !text-white !border-0",
+          info: "!bg-[#1c1c1e] !text-white !border-0",
+          actionButton: "!bg-white !text-[#1c1c1e] !font-semibold !rounded-lg",
+          cancelButton: "!bg-white/10 !text-white !rounded-lg",
+          closeButton: "!bg-white/10 !text-white !border-0 !rounded-full",
         },
       }}
       {...props}

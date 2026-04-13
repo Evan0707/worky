@@ -34,7 +34,7 @@ export function MaterialsView({ projectId, locale }: { projectId: string; locale
       setPrice("");
       utils.material.listByProject.invalidate({ projectId });
     },
-    onError: (error) => toast.error(error.message),
+    onError: () => toast.error(tCommon("errors.unexpected")),
   });
 
   const deleteMutation = api.material.delete.useMutation({

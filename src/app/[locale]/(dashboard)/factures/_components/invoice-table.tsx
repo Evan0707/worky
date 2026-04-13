@@ -51,7 +51,7 @@ function InvoiceActionsCell({ invoice }: { invoice: InvoiceRow }) {
 
   const sendToPDPMutation = api.invoice.sendToPDP.useMutation({
     onSuccess: () => {
-      toast.success("Facture envoyée avec succès via PDP");
+      toast.success(tInvoices("toasts.sentPDP"));
       utils.invoice.list.invalidate();
       router.refresh();
     },
@@ -82,7 +82,7 @@ function InvoiceActionsCell({ invoice }: { invoice: InvoiceRow }) {
       a.click();
       toast.success(tInvoices("toasts.generated"), { id: "facturx" });
     } catch (e: unknown) {
-      toast.error(e instanceof Error ? e.message : "Erreur", { id: "facturx" });
+      toast.error(e instanceof Error ? e.message : tInvoices("toasts.generateError"), { id: "facturx" });
     }
   };
 

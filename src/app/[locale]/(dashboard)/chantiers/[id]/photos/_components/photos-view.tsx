@@ -188,7 +188,7 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
       return { previousPhotos };
     },
     onError: (err, newInfo, context) => {
-      toast.error("Erreur lors de la mise à jour de la note");
+      toast.error(t("photos.noteUpdateError"));
       if (context?.previousPhotos) {
         utils.photo.listByProject.setData({ projectId }, context.previousPhotos);
         setPhotos(context.previousPhotos);
@@ -218,7 +218,7 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
 
   const toggleDictation = () => {
     if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-      toast.error("Dictée vocale non supportée sur ce navigateur");
+      toast.error(t("photos.dictationUnsupported"));
       return;
     }
 
@@ -261,7 +261,7 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
     recognitionRef.current = recognition;
     recognition.start();
     setIsRecording(true);
-    toast.success("À vous de parler...");
+    toast.success(t("photos.dictationStarted"));
   };
 
   const updateOrder = api.photo.updateOrder.useMutation({
@@ -269,7 +269,7 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
       utils.photo.listByProject.invalidate({ projectId });
     },
     onError: () => {
-      toast.error("Erreur lors de la sauvegarde de l'ordre");
+      toast.error(t("photos.orderSaveError"));
       if (serverPhotos) setPhotos(serverPhotos); // revert on error
     }
   });
@@ -338,7 +338,7 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
         (f) => !f.type.startsWith("image/") || f.size > 8 * 1024 * 1024
       );
       if (invalid.length > 0) {
-        toast.error("Fichiers invalides : images uniquement, max 8 Mo");
+        toast.error(t("photos.invalidFiles"));
         return;
       }
 
@@ -594,12 +594,12 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
             </div>
             <div className="text-center">
               <p className="text-sm font-semibold text-foreground">
-                {dragOver ? "Déposez vos photos ici" : "Glissez vos photos ici"}
+                {dragOver ? t("photos.dropzone.dragOver") : t("photos.dropzone.drop")}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                ou <span className="text-primary font-medium underline underline-offset-2">cliquez pour sélectionner</span>
+                <span className="text-primary font-medium underline underline-offset-2 hover:cursor-pointer">{t("photos.dropzone.orClick")}</span>
               </p>
-              <p className="text-xs text-muted-foreground mt-2">JPG, PNG, WEBP — max 8 Mo par photo — jusqu&apos;à 10 fichiers</p>
+              <p className="text-xs text-muted-foreground mt-2">{t("photos.dropzone.constraints")}</p>
             </div>
           </>
         )}
@@ -678,10 +678,10 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
                 />
               </div>
               <div className="space-y-2 relative">
-              <p className="text-sm font-medium">Légende (dictée vocale disponible)</p>
+              <p className="text-sm font-medium">{t("photos.caption.labelDictation")}</p>
                 <div className="relative">
                   <Input
-                    placeholder="Ex: Fissure dans le mur nord"
+                    placeholder={t("photos.caption.placeholderDictation")}
                     className="pr-12 bg-muted/30 max-h-[80px]"
                     value={editingNote}
                     onChange={(e) => setEditingNote(e.target.value)}
@@ -701,7 +701,7 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
                 </div>
               </div>
               <div className="flex justify-end pt-2">
-                <Button onClick={saveNote}>Enregistrer</Button>
+                <Button onClick={saveNote}>{t("photos.caption.save")}</Button>
               </div>
             </div>
           )}

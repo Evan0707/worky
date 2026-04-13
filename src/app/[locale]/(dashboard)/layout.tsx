@@ -8,9 +8,12 @@ import { SidebarNav } from "./_components/sidebar-nav";
 import { MobileSidebar } from "./_components/mobile-sidebar";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { CommandMenu } from "@/components/command-menu";
+import { NotificationBell } from "@/components/notification-bell";
+import { SessionProvider } from "@/components/session-provider";
 import Link from "next/link";
 import Image from "next/image";
 import { db } from "@/server/db";
+import { getArtisanContext } from "@/server/lib/team-context";
 
 export default async function DashboardLayout({
   children,
@@ -35,6 +38,9 @@ export default async function DashboardLayout({
     redirect(`/${locale}/onboarding`);
   }
 
+  const { role } = await getArtisanContext(session.user.id!, db);
+  const isMember = role === "MEMBER";
+
   const t = await getTranslations({ locale, namespace: "common" });
 
   const navSections = [
@@ -51,11 +57,29 @@ export default async function DashboardLayout({
           label: t("nav.projects"),
           icon: "HardHat" as const,
         },
+        ...(!isMember
+          ? [
+              {
+                href: `/${locale}/factures`,
+                label: t("nav.invoices"),
+                icon: "FileText" as const,
+              },
+            ]
+          : []),
         {
-          href: `/${locale}/factures`,
-          label: t("nav.invoices"),
-          icon: "FileText" as const,
+          href: `/${locale}/planning`,
+          label: t("nav.planning"),
+          icon: "CalendarDays" as const,
         },
+        ...(!isMember
+          ? [
+              {
+                href: `/${locale}/rapports`,
+                label: t("nav.reports"),
+                icon: "TrendingUp" as const,
+              },
+            ]
+          : []),
       ],
     },
     {
@@ -82,15 +106,16 @@ export default async function DashboardLayout({
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Desktop Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col border-r bg-muted/20 lg:flex">
+    <SessionProvider session={session}>
+      <div className="flex min-h-screen bg-background">
+        {/* Desktop Sidebar */}
+        <aside className="fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col border-r bg-muted/20 lg:flex">
         {/* Brand */}
         <div className="flex h-16 items-center border-b px-6">
           <Link href={`/${locale}/dashboard`} className="flex items-center gap-2 font-semibold">
             <Image 
               src="/logo.svg" 
-              alt="Worky" 
+              alt="OpenChantier" 
               width={100} 
               height={32} 
               className="h-8 w-auto object-contain"
@@ -131,8 +156,10 @@ export default async function DashboardLayout({
       <main className="flex-1 lg:ml-[260px] min-h-screen flex flex-col">
         {/* Top bar */}
         <div className="hidden lg:flex h-12 items-center justify-between border-b bg-background/80 backdrop-blur-sm px-6 shrink-0 sticky top-0 z-20">
+          <CommandMenu />
           <div className="flex items-center gap-4">
-            <CommandMenu />
+            
+            <NotificationBell />
             <LocaleSwitcher />
           </div>
         </div>
@@ -144,5 +171,6 @@ export default async function DashboardLayout({
         </div>
       </main>
     </div>
+    </SessionProvider>
   );
 }

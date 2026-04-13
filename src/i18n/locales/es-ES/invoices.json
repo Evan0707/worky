@@ -59,6 +59,8 @@
   },
   "toasts": {
     "deleted": "Documento eliminado",
+    "sentPDP": "Factura enviada correctamente mediante PDP",
+    "generateError": "Error al generar el documento",
     "created": "Documento creado con éxito",
     "generated": "Presupuesto/Factura generado",
     "sent": "Enviado por email",

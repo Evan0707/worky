@@ -9,6 +9,8 @@
     "billing": "Abonnement",
     "invoices": "Rechnungen",
     "analytics": "Analysen",
+    "planning": "Planung",
+    "reports": "Berichte",
     "logout": "Abmelden"
   },
   "buttons": {
@@ -23,7 +25,8 @@
     "close": "Schließen",
     "share": "Teilen",
     "export": "Exportieren",
-    "download": "Herunterladen"
+    "download": "Herunterladen",
+    "ctrlEnter": "Ctrl+Enter zum Senden"
   },
   "status": {
     "loading": "Wird geladen...",
@@ -36,6 +39,10 @@
     "unexpected": "Ein unerwarteter Fehler ist aufgetreten.",
     "unauthorized": "Sie sind nicht berechtigt, diese Aktion durchzuführen.",
     "notFound": "Ressource nicht gefunden.",
+    "required": "Dieses Feld ist erforderlich.",
+    "invalidEmail": "Ungültige E-Mail-Adresse."
+  },
+  "validation": {
     "required": "Dieses Feld ist erforderlich.",
     "invalidEmail": "Ungültige E-Mail-Adresse."
   },
@@ -65,6 +72,70 @@
     "rowsPerPage": "Zeilen pro Seite",
     "pageInfo": "Seite {page} von {total}"
   },
+  "planning": {
+    "title": "Planung",
+    "noEvents": "Keine Ereignisse in diesem Zeitraum.",
+    "projects": "Baustellen",
+    "tasks": "Aufgaben",
+    "timeEntries": "Zeiteinträge",
+    "today": "Heute",
+    "week": "Woche",
+    "month": "Monat",
+    "prev": "Zurück",
+    "next": "Weiter",
+    "overdue": "Überfällig"
+  },
+  "reports": {
+    "title": "Berichte",
+    "projectSummary": "Baustellen-Bericht",
+    "profitability": "Rentabilität",
+    "timeExport": "Zeitexport",
+    "materialExport": "Materialexport",
+    "download": "Herunterladen",
+    "exportCsv": "Als CSV exportieren",
+    "totalHours": "Gesamtstunden",
+    "laborCost": "Arbeitskosten",
+    "materialCost": "Materialkosten",
+    "totalCost": "Gesamtkosten",
+    "totalInvoiced": "In Rechnung gestellt",
+    "totalPaid": "Eingenommen",
+    "margin": "Marge",
+    "noHourlyRate": "Legen Sie Ihren Stundensatz in den Einstellungen fest, um die Rentabilität zu berechnen.",
+    "tasksDone": "{done}/{total} Aufgaben erledigt",
+    "client": "Kunde",
+    "status": "Status"
+  },
+  "tags": {
+    "title": "Etiketten",
+    "empty": "Noch keine Etiketten. Erstellen Sie Ihre erste Etikette.",
+    "add": "Neue Etikette",
+    "namePlaceholder": "z.B. dringend, Elektro...",
+    "createSuccess": "Etikette erstellt",
+    "updateSuccess": "Etikette aktualisiert",
+    "deleteSuccess": "Etikette gelöscht",
+    "deleteConfirm": "Diese Etikette löschen?",
+    "deleteDesc": "Sie wird von allen Projekten entfernt.",
+    "error": "Fehler",
+    "noTags": "Keine Etiketten",
+    "addTag": "Etikette hinzufügen",
+    "searchPlaceholder": "Etiketten suchen..."
+  },
+  "notifications": {
+    "title": "Benachrichtigungen",
+    "empty": "Keine Benachrichtigungen.",
+    "markAllRead": "Alle als gelesen markieren",
+    "viewAll": "Alle anzeigen",
+    "types": {
+      "CLIENT_COMMENT": "Kundenkommentar",
+      "CLIENT_SIGNATURE": "Kundenunterschrift",
+      "TASK_ASSIGNED": "Aufgabe zugewiesen",
+      "TASK_OVERDUE": "Aufgabe überfällig",
+      "INVOICE_PAID": "Rechnung bezahlt",
+      "TEAM_MEMBER_JOINED": "Neues Mitglied",
+      "PHOTO_ADDED": "Foto hinzugefügt",
+      "NOTE_ADDED": "Notiz hinzugefügt"
+    }
+  },
   "subpages": {
     "time": "Zeiterfassung",
     "materials": "Materialien und Einkäufe",
@@ -89,6 +160,9 @@
       "profile": "Mein Profil",
       "billing": "Abonnement & Team"
     }
+  },
+  "validation": {
+    "required": "Erforderlich",
+    "invalidEmail": "Ungültige E-Mail"
   }
 }
-

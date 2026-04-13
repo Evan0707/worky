@@ -9,6 +9,8 @@ import {
   BarChart3,
   CreditCard,
   FileText,
+  CalendarDays,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRef, useLayoutEffect, useState } from "react";
@@ -20,6 +22,8 @@ const icons = {
   BarChart3,
   CreditCard,
   FileText,
+  CalendarDays,
+  TrendingUp,
 } as const;
 
 export interface NavItem {

@@ -39,7 +39,11 @@
     "time": "Zeit",
     "materials": "Materialien",
     "invoice": "Angebot / Rechnung",
-    "team": "Team"
+    "team": "Team",
+    "notes": "Notizen",
+    "tasks": "Aufgaben",
+    "messages": "Nachrichten",
+    "safety": "Sicherheit"
   },
   "team": {
     "title": "Projektzugang",
@@ -84,11 +88,16 @@
     "updated": "Baustelle aktualisiert",
     "deleted": "Baustelle gelöscht",
     "shared": "Link in die Zwischenablage kopiert",
-    "regenerated": "Link erfolgreich neu generiert"
+    "regenerated": "Link erfolgreich neu generiert",
+    "copyError": "Fehler beim Kopieren"
   },
   "new": {
     "title": "Neue Baustelle",
-    "subtitle": "Geben Sie die grundlegenden Informationen ein, um eine neue Baustelle zu starten."
+    "subtitle": "Geben Sie die grundlegenden Informationen ein, um eine neue Baustelle zu starten.",
+    "templateLabel": "Projektvorlage (optional)",
+    "templatePlaceholder": "Vorlage auswählen...",
+    "templateHint": "Die Aufgaben und Materialien der Vorlage werden automatisch hinzugefügt.",
+    "templateNone": "Keine Vorlage"
   },
   "overview": {
     "generalInfo": "Allgemeine Informationen",
@@ -100,6 +109,70 @@
     "view": "Baustelle ansehen",
     "copyId": "ID kopieren",
     "deactivate": "Deaktivieren"
+  },
+  "messages": {
+    "title": "Nachrichten",
+    "empty": "Noch keine Nachrichten. Starten Sie das Gespräch.",
+    "placeholder": "Nachricht schreiben...",
+    "send": "Senden",
+    "deleteConfirm": "Diese Nachricht löschen?",
+    "deleteDesc": "Diese Aktion ist unwiderruflich.",
+    "deleteSuccess": "Nachricht gelöscht",
+    "error": "Fehler beim Senden",
+    "client": "Kunde",
+    "you": "Sie"
+  },
+  "notes": {
+    "title": "Bautagebuch",
+    "empty": "Noch keine Notizen. Fügen Sie Ihre erste Notiz hinzu.",
+    "placeholder": "Notiz schreiben... (z.B. Nordwand fertig, Fliesenlieferung morgen)",
+    "add": "Notiz hinzufügen",
+    "pin": "Anheften",
+    "unpin": "Loslösen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "deleteConfirm": "Diese Notiz löschen?",
+    "deleteDesc": "Diese Aktion ist unwiderruflich.",
+    "pinned": "Angeheftet",
+    "by": "von {name}",
+    "addSuccess": "Notiz hinzugefügt",
+    "updateSuccess": "Notiz aktualisiert",
+    "deleteSuccess": "Notiz gelöscht",
+    "error": "Fehler beim Speichern"
+  },
+  "tasks": {
+    "title": "Aufgaben",
+    "empty": "Noch keine Aufgaben. Erstellen Sie Ihre erste Aufgabe.",
+    "add": "Neue Aufgabe",
+    "addTitle": "Neue Aufgabe",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "z.B. Fliesen verlegen...",
+    "descriptionLabel": "Beschreibung (optional)",
+    "descriptionPlaceholder": "Details...",
+    "dueDateLabel": "Fälligkeitsdatum",
+    "assigneeLabel": "Zuweisen an",
+    "assigneePlaceholder": "Mitglied auswählen",
+    "priorityLabel": "Priorität",
+    "priority": {
+      "0": "Normal",
+      "1": "Dringend",
+      "2": "Kritisch"
+    },
+    "status": {
+      "TODO": "Zu erledigen",
+      "IN_PROGRESS": "In Bearbeitung",
+      "DONE": "Fertig"
+    },
+    "overdue": "Überfällig",
+    "dueOn": "Fällig am {date}",
+    "assignedTo": "Zugewiesen an {name}",
+    "createSuccess": "Aufgabe erstellt",
+    "updateSuccess": "Aufgabe aktualisiert",
+    "deleteSuccess": "Aufgabe gelöscht",
+    "deleteConfirm": "Diese Aufgabe löschen?",
+    "deleteDesc": "Diese Aktion ist unwiderruflich.",
+    "error": "Fehler beim Speichern",
+    "noAssignee": "Nicht zugewiesen"
   },
   "time": {
     "totalHours": "Gesamtstunden",
@@ -130,7 +203,25 @@
     "uploadError": "Upload-Fehler",
     "photoAlt": "Baustellenfoto",
     "empty": "Noch keine Fotos. Laden Sie Bilder oben hoch.",
-    "addedBy": "von {name}"
+    "addedBy": "von {name}",
+    "invalidFiles": "Ungültige Dateien: nur Bilder, max. 8 MB",
+    "noteUpdateError": "Fehler beim Aktualisieren der Beschriftung",
+    "orderSaveError": "Fehler beim Speichern der Reihenfolge",
+    "dictationUnsupported": "Spracheingabe wird in diesem Browser nicht unterstützt",
+    "dictationStarted": "Bitte sprechen...",
+    "dropzone": {
+      "dragOver": "Fotos hier ablegen",
+      "drop": "Ihre Fotos hierher ziehen",
+      "orClick": "oder klicken zur Auswahl",
+      "constraints": "JPG, PNG, WEBP — max. 16 MB pro Foto"
+    },
+    "caption": {
+      "label": "Beschriftung",
+      "placeholder": "Eine Beschriftung hinzufügen...",
+      "save": "Speichern",
+      "labelDictation": "Beschriftung (Sprachdiktat verfügbar)",
+      "placeholderDictation": "Bsp: Riss in der Nordwand"
+    }
   },
   "navigation": {
     "openWith": "Route planen",
@@ -159,6 +250,47 @@
     "title": "Nächste Schritte",
     "placeholder": "Z.B. Fliesen fertigstellen...",
     "saveSuccess": "Liste aktualisiert"
+  },
+  "safety": {
+    "title": "Sicherheitschecklisten",
+    "empty": "Keine Checklisten. Erstellen Sie eine aus einer Vorlage.",
+    "new": "Neue Checkliste",
+    "newTitle": "Neue Sicherheitscheckliste",
+    "chooseTemplate": "Vorlage auswählen",
+    "templateLabel": "Vorlage",
+    "create": "Checkliste erstellen",
+    "createSuccess": "Checkliste erstellt",
+    "deleteConfirm": "Diese Checkliste löschen?",
+    "deleteDesc": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteSuccess": "Checkliste gelöscht",
+    "signedAt": "Unterzeichnet am {date}",
+    "signedBy": "von {name}",
+    "notSigned": "Nicht unterzeichnet",
+    "sign": "Checkliste unterschreiben",
+    "signTitle": "Checkliste unterschreiben",
+    "signDesc": "Unterschreiben Sie, um zu bestätigen, dass alle Prüfungen abgeschlossen wurden.",
+    "signSuccess": "Checkliste unterzeichnet",
+    "alreadySigned": "Diese Checkliste wurde bereits unterzeichnet.",
+    "itemCount": "{count} Punkte",
+    "error": "Fehler beim Speichern",
+    "templates": {
+      "EPI": "Persönliche Schutzausrüstung",
+      "ECHAFAUDAGE": "Gerüst",
+      "ELECTRIQUE": "Elektrische Sicherheit",
+      "AMIANTE": "Asbestgefahr"
+    }
+  },
+  "meteo": {
+    "title": "Wetter auf der Baustelle",
+    "loading": "Wird geladen...",
+    "error": "Wetter nicht verfügbar",
+    "conditions": {
+      "sunny": "Sonnig",
+      "cloudy": "Bewölkt",
+      "rainy": "Regnerisch",
+      "snowy": "Verschneit",
+      "stormy": "Stürmisch"
+    }
   },
   "publicView": {
     "invalidLinkTitle": "Ungültiger oder abgelaufener Link",

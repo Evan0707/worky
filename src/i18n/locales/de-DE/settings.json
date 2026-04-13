@@ -33,7 +33,10 @@
                    },
     "toasts":  {
                    "saved":  "Einstellungen aktualisiert",
-                   "error":  "Ein Fehler ist aufgetreten"
+                   "error":  "Ein Fehler ist aufgetreten",
+                   "logoUpdated": "Logo aktualisiert",
+                   "logoUploadError": "Fehler beim Hochladen des Logos",
+                   "logoInvalidFormat": "Ungültiges Format. Bild erforderlich."
                },
     "plans":  {
                   "title":  "Abonnement \u0026 Limits",
@@ -53,6 +56,49 @@
                   "success":  "Zahlung erfolgreich! Willkommen beim PRO-Plan.",
                   "canceled":  "Testzeitraum aktiviert. Sie können jederzeit kündigen."
               },
+    "templates": {
+      "title": "Projektvorlagen",
+      "description": "Erstellen Sie wiederverwendbare Vorlagen mit vordefinierten Aufgaben und Materialien.",
+      "empty": "Keine Vorlagen. Erstellen Sie Ihre erste Vorlage.",
+      "new": "Neue Vorlage",
+      "newTitle": "Neue Vorlage",
+      "nameLabel": "Vorlagenname",
+      "namePlaceholder": "z.B. Badsanierung",
+      "descriptionLabel": "Beschreibung (optional)",
+      "tasks": "Aufgaben",
+      "materials": "Materialien",
+      "tags": "Tags",
+      "applyToProject": "Auf Projekt anwenden",
+      "applySuccess": "Vorlage auf Projekt angewendet",
+      "createFromProject": "Dieses Projekt als Vorlage speichern",
+      "createFromProjectTitle": "Vorlagenname",
+      "createFromProjectSuccess": "Vorlage erstellt",
+      "deleteConfirm": "Diese Vorlage löschen?",
+      "deleteDesc": "Diese Aktion kann nicht rückgängig gemacht werden.",
+      "deleteConfirmTitle": "Diese Vorlage löschen?",
+      "deleteConfirmDesc": "Diese Aktion kann nicht rückgängig gemacht werden. Die Vorlage wird dauerhaft gelöscht.",
+      "deleteSuccess": "Vorlage gelöscht",
+      "createSuccess": "Vorlage erstellt",
+      "updateSuccess": "Vorlage aktualisiert",
+      "error": "Fehler beim Speichern",
+      "edit": "Vorlage bearbeiten",
+      "editWarning": "Aufgaben und Materialien können hier nicht bearbeitet werden. Erstellen Sie die Vorlage aus einem Projekt neu, um sie zu aktualisieren.",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "descriptionPlaceholder": "Beschreibung des Projekttyps...",
+      "itemCount": "{tasks} Aufgaben · {materials} Materialien",
+      "stats": {
+        "tasks": "Aufgaben",
+        "materials": "Materialien",
+        "tags": "Tags"
+      },
+      "selectProject": "Baustelle auswählen",
+      "noActiveProjects": "Keine aktiven oder laufenden Baustellen",
+      "applyDialogTitle": "Auf eine Baustelle anwenden",
+      "fromProjectSelectLabel": "Quellbaustelle",
+      "proRequired": "Projektvorlagen sind eine PRO-Plan-Funktion.",
+      "proRequiredCta": "Auf PRO upgraden"
+    },
     "upgrade":  {
                     "dialogTitle":  "Auf PRO upgraden",
                     "heading":  "Alle OpenChantier PRO-Funktionen freischalten",

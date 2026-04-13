@@ -71,7 +71,10 @@ export async function POST(req: NextRequest) {
 
     const response = await fetch(microserviceUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-secret": process.env.FACTURX_API_SECRET ?? "",
+      },
       body: JSON.stringify(payload),
     });
 

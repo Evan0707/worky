@@ -9,6 +9,8 @@
     "billing": "Suscripción",
     "invoices": "Facturas",
     "analytics": "Analíticas",
+    "planning": "Planificación",
+    "reports": "Informes",
     "logout": "Cerrar sesión"
   },
   "buttons": {
@@ -23,7 +25,8 @@
     "close": "Cerrar",
     "share": "Compartir",
     "export": "Exportar",
-    "download": "Descargar"
+    "download": "Descargar",
+    "ctrlEnter": "Ctrl+Enter para enviar"
   },
   "status": {
     "loading": "Cargando...",
@@ -36,6 +39,10 @@
     "unexpected": "Se ha producido un error inesperado.",
     "unauthorized": "No está autorizado para realizar esta acción.",
     "notFound": "Recurso no encontrado.",
+    "required": "Este campo es obligatorio.",
+    "invalidEmail": "Dirección de correo electrónico no válida."
+  },
+  "validation": {
     "required": "Este campo es obligatorio.",
     "invalidEmail": "Dirección de correo electrónico no válida."
   },
@@ -65,6 +72,70 @@
     "rowsPerPage": "Filas por página",
     "pageInfo": "Página {page} de {total}"
   },
+  "planning": {
+    "title": "Planificación",
+    "noEvents": "Sin eventos en este período.",
+    "projects": "Obras",
+    "tasks": "Tareas",
+    "timeEntries": "Registros de tiempo",
+    "today": "Hoy",
+    "week": "Semana",
+    "month": "Mes",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "overdue": "Atrasada"
+  },
+  "reports": {
+    "title": "Informes",
+    "projectSummary": "Informe de obra",
+    "profitability": "Rentabilidad",
+    "timeExport": "Exportar horas",
+    "materialExport": "Exportar materiales",
+    "download": "Descargar",
+    "exportCsv": "Exportar como CSV",
+    "totalHours": "Horas totales",
+    "laborCost": "Coste mano de obra",
+    "materialCost": "Coste materiales",
+    "totalCost": "Coste total",
+    "totalInvoiced": "Facturado",
+    "totalPaid": "Cobrado",
+    "margin": "Margen",
+    "noHourlyRate": "Define tu tarifa horaria en ajustes para calcular la rentabilidad.",
+    "tasksDone": "{done}/{total} tareas completadas",
+    "client": "Cliente",
+    "status": "Estado"
+  },
+  "tags": {
+    "title": "Etiquetas",
+    "empty": "Sin etiquetas. Cree su primera etiqueta.",
+    "add": "Nueva etiqueta",
+    "namePlaceholder": "Ej: urgente, electricidad...",
+    "createSuccess": "Etiqueta creada",
+    "updateSuccess": "Etiqueta actualizada",
+    "deleteSuccess": "Etiqueta eliminada",
+    "deleteConfirm": "¿Eliminar esta etiqueta?",
+    "deleteDesc": "Se eliminará de todos los proyectos.",
+    "error": "Error",
+    "noTags": "Sin etiquetas",
+    "addTag": "Añadir etiqueta",
+    "searchPlaceholder": "Buscar etiquetas..."
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "empty": "Sin notificaciones.",
+    "markAllRead": "Marcar todo como leído",
+    "viewAll": "Ver todo",
+    "types": {
+      "CLIENT_COMMENT": "Comentario del cliente",
+      "CLIENT_SIGNATURE": "Firma del cliente",
+      "TASK_ASSIGNED": "Tarea asignada",
+      "TASK_OVERDUE": "Tarea atrasada",
+      "INVOICE_PAID": "Factura pagada",
+      "TEAM_MEMBER_JOINED": "Nuevo miembro",
+      "PHOTO_ADDED": "Foto añadida",
+      "NOTE_ADDED": "Nota añadida"
+    }
+  },
   "subpages": {
     "time": "Seguimiento de horas",
     "materials": "Materiales y Compras",
@@ -89,6 +160,9 @@
       "profile": "Mi Perfil",
       "billing": "Suscripción & Equipo"
     }
+  },
+  "validation": {
+    "required": "Requerido",
+    "invalidEmail": "Correo electrónico inválido"
   }
 }
-

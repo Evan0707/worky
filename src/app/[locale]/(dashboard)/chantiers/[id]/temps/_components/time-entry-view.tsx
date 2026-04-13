@@ -29,7 +29,7 @@ export function TimeEntryView({ projectId, locale }: { projectId: string; locale
       setDesc("");
       utils.timeEntry.listByProject.invalidate({ projectId });
     },
-    onError: (error) => toast.error(error.message),
+    onError: () => toast.error(tCommon("errors.unexpected")),
   });
 
   const deleteMutation = api.timeEntry.delete.useMutation({

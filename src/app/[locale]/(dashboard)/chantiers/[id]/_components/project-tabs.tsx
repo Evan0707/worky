@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Camera, Clock, Package, Users } from "lucide-react";
+import { LayoutDashboard, Camera, Clock, Package, Users, StickyNote, CheckSquare, MessageCircle, ShieldCheck } from "lucide-react";
 
 interface ProjectTabsProps {
   locale: string;
@@ -20,9 +20,13 @@ export function ProjectTabs({ locale, projectId, showTeamTab = false }: ProjectT
 
   const tabs = [
     { name: t("overview"), href: baseUrl, exactMatch: true, icon: LayoutDashboard },
+    { name: t("notes"), href: `${baseUrl}/notes`, exactMatch: false, icon: StickyNote },
+    { name: t("tasks"), href: `${baseUrl}/taches`, exactMatch: false, icon: CheckSquare },
     { name: t("photos"), href: `${baseUrl}/photos`, exactMatch: false, icon: Camera },
     { name: t("time"), href: `${baseUrl}/temps`, exactMatch: false, icon: Clock },
     { name: t("materials"), href: `${baseUrl}/materiaux`, exactMatch: false, icon: Package },
+    { name: t("messages"), href: `${baseUrl}/messages`, exactMatch: false, icon: MessageCircle },
+    { name: t("safety"), href: `${baseUrl}/securite`, exactMatch: false, icon: ShieldCheck },
     ...(showTeamTab ? [{ name: t("team"), href: `${baseUrl}/equipe`, exactMatch: false, icon: Users }] : []),
   ];
 

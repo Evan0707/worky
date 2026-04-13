@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -16,6 +17,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -24,13 +33,18 @@ export function CreateProjectForm({ locale }: { locale: string }) {
   const tCommon = useTranslations("common");
   const router = useRouter();
 
-  // On valide uniquement les champs minimums (pas de date de fin par défaut)
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
+
   const formSchema = z.object({
-    name: z.string().min(1, "Requis").max(200),
-    address: z.string().min(1, "Requis").max(500),
-    clientName: z.string().min(1, "Requis").max(200),
+    name: z.string().min(1, tCommon("validation.required")).max(200),
+    address: z.string().min(1, tCommon("validation.required")).max(500),
+    clientName: z.string().min(1, tCommon("validation.required")).max(200),
     clientPhone: z.string().optional(),
-    clientEmail: z.string().email("Email invalide").optional().or(z.literal("")),
+    clientEmail: z
+      .string()
+      .email(tCommon("validation.invalidEmail"))
+      .optional()
+      .or(z.literal("")),
     description: z.string().max(2000).optional(),
   });
 
@@ -47,25 +61,45 @@ export function CreateProjectForm({ locale }: { locale: string }) {
   });
 
   const utils = api.useUtils();
+
+  // Load templates silently — FORBIDDEN (FREE plan) is handled gracefully
+  const { data: templates = [] } = api.projectTemplate.list.useQuery(undefined, {
+    retry: false,
+  });
+
+  const applyMutation = api.projectTemplate.applyToProject.useMutation();
+
   const createMutation = api.project.create.useMutation({
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      // Apply template in background before redirecting
+      if (selectedTemplateId) {
+        try {
+          await applyMutation.mutateAsync({
+            templateId: selectedTemplateId,
+            projectId: data.id,
+          });
+        } catch {
+          // Template apply failed — project still created, show non-blocking error
+          toast.error(tCommon("errors.generic"));
+        }
+      }
       toast.success(t("toasts.created"));
-      utils.project.list.invalidate();
+      void utils.project.list.invalidate();
       router.push(`/${locale}/chantiers/${data.id}`);
     },
     onError: (error) => {
-      // Afficher l'erreur tRPC si on dépasse la limite FREE par exemple
       toast.error(error.message || tCommon("errors.unexpected"));
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Si l'email est vide, ne pas envoyer de string vide pour passer la validation backend
     createMutation.mutate({
       ...values,
       clientEmail: values.clientEmail || undefined,
     });
   }
+
+  const isPending = createMutation.isPending || applyMutation.isPending;
 
   return (
     <Form {...form}>
@@ -77,7 +111,11 @@ export function CreateProjectForm({ locale }: { locale: string }) {
             <FormItem>
               <FormLabel className="text-foreground">{t("fields.name")}</FormLabel>
               <FormControl>
-                <Input placeholder={t("placeholders.name")} {...field} className="bg-muted/30 focus-visible:bg-background h-10" />
+                <Input
+                  placeholder={t("placeholders.name")}
+                  {...field}
+                  className="bg-muted/30 focus-visible:bg-background h-10"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -90,7 +128,11 @@ export function CreateProjectForm({ locale }: { locale: string }) {
             <FormItem>
               <FormLabel className="text-foreground">{t("fields.address")}</FormLabel>
               <FormControl>
-                <Input placeholder={t("placeholders.address")} {...field} className="bg-muted/30 focus-visible:bg-background h-10" />
+                <Input
+                  placeholder={t("placeholders.address")}
+                  {...field}
+                  className="bg-muted/30 focus-visible:bg-background h-10"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -105,7 +147,11 @@ export function CreateProjectForm({ locale }: { locale: string }) {
               <FormItem>
                 <FormLabel className="text-foreground">{t("fields.clientName")}</FormLabel>
                 <FormControl>
-                  <Input placeholder={t("placeholders.clientName")} {...field} className="bg-muted/30 focus-visible:bg-background h-10" />
+                  <Input
+                    placeholder={t("placeholders.clientName")}
+                    {...field}
+                    className="bg-muted/30 focus-visible:bg-background h-10"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -118,7 +164,11 @@ export function CreateProjectForm({ locale }: { locale: string }) {
               <FormItem>
                 <FormLabel className="text-foreground">{t("fields.clientPhone")}</FormLabel>
                 <FormControl>
-                  <Input placeholder={t("placeholders.clientPhone")} {...field} className="bg-muted/30 focus-visible:bg-background h-10" />
+                  <Input
+                    placeholder={t("placeholders.clientPhone")}
+                    {...field}
+                    className="bg-muted/30 focus-visible:bg-background h-10"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -133,20 +183,46 @@ export function CreateProjectForm({ locale }: { locale: string }) {
             <FormItem>
               <FormLabel className="text-foreground">{t("fields.clientEmail")}</FormLabel>
               <FormControl>
-                <Input type="email" placeholder={t("placeholders.clientEmail")} {...field} className="bg-muted/30 focus-visible:bg-background h-10" />
+                <Input
+                  type="email"
+                  placeholder={t("placeholders.clientEmail")}
+                  {...field}
+                  className="bg-muted/30 focus-visible:bg-background h-10"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
+        {/* Template selector — only shown when user has PRO templates */}
+        {templates.length > 0 && (
+          <div className="space-y-2 pt-1">
+            <Label className="text-foreground">{t("new.templateLabel")}</Label>
+            <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId}>
+              <SelectTrigger className="bg-muted/30 focus:bg-background h-10">
+                <SelectValue placeholder={t("new.templatePlaceholder")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">{t("new.templateNone")}</SelectItem>
+                {templates.map((tpl) => (
+                  <SelectItem key={tpl.id} value={tpl.id}>
+                    {tpl.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">{t("new.templateHint")}</p>
+          </div>
+        )}
+
         <div className="pt-4 flex justify-end">
-          <Button 
-            type="submit" 
-            disabled={createMutation.isPending}
+          <Button
+            type="submit"
+            disabled={isPending}
             className="w-full sm:w-auto"
           >
-            {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {t("new.title")}
           </Button>
         </div>

@@ -30,6 +30,7 @@ import {
   Clock,
   ChevronDown,
 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { type TeamRole } from "@prisma/client";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -477,8 +478,36 @@ export function TeamView({ currentUserId, userPlan }: { currentUserId: string; u
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div className="space-y-6">
+        {/* Team header skeleton */}
+        <div className="rounded-lg border bg-card overflow-hidden">
+          <div className="bg-muted/40 px-6 py-5 flex items-center gap-4">
+            <Skeleton className="h-12 w-12 rounded-2xl" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="h-6 w-40" />
+            </div>
+            <Skeleton className="h-6 w-20 rounded-full" />
+          </div>
+        </div>
+        {/* Members card skeleton */}
+        <div className="rounded-lg border bg-card">
+          <div className="px-6 py-4 border-b">
+            <Skeleton className="h-5 w-24" />
+          </div>
+          <div className="divide-y">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center gap-3 px-6 py-3">
+                <Skeleton className="h-9 w-9 rounded-full" />
+                <div className="flex-1 space-y-1.5">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-44" />
+                </div>
+                <Skeleton className="h-6 w-20 rounded-full" />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

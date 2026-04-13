@@ -1,0 +1,652 @@
+================================================================================
+  OPENCHANTIER — RAPPORT D'AUDIT COMPLET
+  Date : 2026-04-13 (mis à jour)
+  Scope : Features Phase 1-3, Securite, UI/UX, Deletes, Coherence
+================================================================================
+
+
+================================================================================
+  1. ETAT D'IMPLEMENTATION DES FEATURES
+================================================================================
+
+  PHASE 1 — Notes, Tags, Tasks, Notifications
+  -------------------------------------------
+  [OK] Notes de chantier — router + UI + i18n
+  [OK] Systeme de Tags — router + UI (settings + projet)
+  [OK] Taches / Todo — router + UI
+  [OK] Notifications in-app — router + bell component + popover
+
+  PHASE 2 — Messagerie, Planning, Rapports
+  ------------------------------------------
+  [OK] Messagerie interne — router (list/send/delete) + UI chat bulles
+  [OK] Planning calendrier — router (getEvents) + UI custom (pas de lib externe)
+  [OK] Rapports / Export — router (projectSummary/timeExport/materialExport/profitability) + UI
+
+  PHASE 3 — Templates, Checklists, Meteo
+  ----------------------------------------
+  [OK] Schema Prisma — ProjectTemplate + SafetyChecklist models crees et valides
+  [OK] Router project-template — list/create/createFromProject/update/delete/applyToProject
+  [OK] Router safety-checklist — listByProject/create/updateItems/sign/delete/getTemplates
+  [OK] Routeurs enregistres dans root.ts
+  [OK] Templates UI — Settings > Templates (page + TemplatesView component)
+  [OK] Safety Checklist UI — onglet Securite dans chantier/[id]/securite
+  [OK] Meteo widget — WeatherWidget component + Open-Meteo + Nominatim geocoding
+  [OK] Onglet Securite dans ProjectTabs (ShieldCheck icon)
+  [OK] Lien Templates dans settings-nav (LayoutTemplate icon)
+  [OK] Cles i18n ajoutees dans les 4 locales
+
+
+================================================================================
+  2. PROBLEMES DE SECURITE
+================================================================================
+
+  2.1. ABSENCE DE VERIFICATION PRO PLAN (CRITIQUE)
+  -------------------------------------------------
+  Per FEATURES-IDEAS.txt et CLAUDE.md rule #4 ("PRO plan check ALWAYS server-side"):
+
+  - src/server/api/routers/project-template.ts : AUCUNE verification PRO
+    -> list, create, createFromProject, update, delete, applyToProject
+    -> Le roadmap dit "PRO uniquement"
+
+  - src/server/api/routers/safety-checklist.ts : AUCUNE verification PRO
+    -> Le roadmap dit "PRO uniquement"
+
+  - src/server/api/routers/planning.ts : AUCUNE verification PRO
+    -> Le roadmap dit "PRO uniquement"
+
+  - src/server/api/routers/report.ts : AUCUNE verification PRO
+    -> projectSummary accessible a tous, timeExport/materialExport/profitability
+       ont requireRole mais pas de check PRO
+    -> Le roadmap dit "PRO uniquement"
+
+  RECOMMANDATION : Ajouter `getEffectivePlan` + throw FORBIDDEN si FREE
+  dans chaque procedure des routers ci-dessus.
+
+
+  2.2. ISOLATION artisanId (OK globalement)
+  ------------------------------------------
+  [OK] project.ts — artisanId filter sur list/getById/create/update/delete
+  [OK] photo.ts — artisanId filter
+  [OK] time-entry.ts — artisanId filter
+  [OK] material.ts — artisanId filter
+  [OK] invoice.ts — artisanId filter
+  [OK] task.ts — artisanId filter
+  [OK] project-note.ts — artisanId filter
+  [OK] tag.ts — artisanId filter
+  [OK] message.ts — artisanId filter
+  [OK] notification.ts — userId filter (pas artisanId, correct)
+  [OK] project-template.ts — artisanId filter
+  [OK] safety-checklist.ts — artisanId via project relation
+  [OK] planning.ts — artisanId filter
+  [OK] report.ts — artisanId filter
+
+
+  2.3. MEMBER Restriction (OK)
+  ----------------------------
+  Les MEMBERs sont correctement filtres par assignment dans :
+  - project.list, project.getById
+  - photo.listByProject, photo.save
+  - time-entry.listByProject, time-entry.create
+  - material.listByProject, material.create
+  - task.listByProject, task.create
+  - project-note.listByProject, project-note.create
+  - message.list, message.send
+  - safety-checklist.listByProject, safety-checklist.create
+
+  [OK] Pas de fuite de donnees pour MEMBER sur des projets non-assignes.
+
+
+  2.4. Donnees Sensibles
+  ----------------------
+  [OK] user.getProfile — ne retourne pas stripeCustomerId/stripeSubscriptionId
+  [OK] project.getByToken (magic link) — select explicite, pas d'artisanId expose
+
+  [NOTE] invoice.getById retourne project.artisanId via include —
+    Pas un probleme direct car seuls OWNER/ADMIN y accedent,
+    mais devrait utiliser un select explicite par proprete.
+
+  [NOTE] invoice.sendToPDP (ligne 448) lit `ctx.session.user` et cast en
+    `{ siret, companyName }` — ces champs n'existent pas dans la session
+    NextAuth par defaut. Ce code ne marche probablement pas en production.
+
+
+  2.5. MEMBER Bypass — Procedures sans filtre assignment (CRITIQUE)
+  -----------------------------------------------------------------
+  Plusieurs procedures verifient l'artisanId mais PAS l'assignment
+  du MEMBER au projet. Un MEMBER peut acceder a des donnees de projets
+  auxquels il n'est pas assigne :
+
+  [BUG] project.getDashboardStats (project.ts:39-56)
+    → MEMBER voit totalProjects, activeProjects, totalPhotos, totalHours
+      de TOUS les projets de l'artisan
+
+  [BUG] planning.getEvents (planning.ts:6-105)
+    → MEMBER voit TOUS les projets, taches et time entries
+
+  [BUG] report.projectSummary (report.ts:8-104)
+    → MEMBER peut lire le rapport complet (photos, temps, materiaux,
+      factures, profit) de N'IMPORTE quel projet
+
+  [BUG] task.update (task.ts:89-143)
+    → MEMBER peut changer le statut d'une tache sur un projet non-assigne
+
+  [BUG] task.delete (task.ts:145-163)
+    → MEMBER peut supprimer ses propres taches sur des projets non-assignes
+
+  [BUG] team.activity (team.ts:465-581)
+    → MEMBER voit l'activite de TOUS les projets (noms, details, photos)
+
+  [BUG] safety-checklist.updateItems/sign (safety-checklist.ts:116-167)
+    → MEMBER peut modifier/signer des checklists sur des projets non-assignes
+
+
+  2.6. task.create — Pas de validation assigneeId (HIGH)
+  -------------------------------------------------------
+  src/server/api/routers/task.ts:57 : Le champ assigneeId est accepte
+  sans verification que l'utilisateur cible est bien un membre de l'equipe.
+  Un MEMBER pourrait assigner une tache a n'importe quel userId arbitraire.
+
+
+  2.7. Magic Link getByToken expose trop de donnees (HIGH)
+  --------------------------------------------------------
+  src/server/api/routers/project.ts:168-219
+
+  Per CLAUDE.md regle #3, getByToken() ne doit retourner QUE :
+  id, name, status, artisanCompanyName, artisanLogoUrl,
+  photos (url, note, takenAt), clientActions
+
+  Le code actuel expose EN PLUS :
+  - description, address, startDate, endDate (lignes 177-180)
+  - nextSteps (ligne 181)
+  - clientName (ligne 182)
+  - invoices avec totalTTC, status, dueAt (lignes 188-193)
+    → Donnees financieres via magic link = fuite de donnees
+
+  RECOMMANDATION : Retirer invoices et nextSteps du select.
+  description/address/dates sont discutables (utiles pour le client)
+  mais violent strictement le CDC.
+
+
+  2.8. Delete Authorization
+  -------------------------
+  [OK] project.delete — OWNER seulement (et fait un soft-delete DONE, pas un vrai delete)
+  [OK] photo.delete — OWNER/ADMIN
+  [OK] time-entry.delete — OWNER/ADMIN
+  [OK] material.delete — OWNER/ADMIN
+  [OK] invoice.delete — OWNER seulement
+  [OK] task.delete — createur OU OWNER/ADMIN
+  [OK] project-note.delete — createur OU OWNER/ADMIN
+  [OK] message.delete — auteur OU OWNER/ADMIN
+  [OK] tag.delete — OWNER/ADMIN
+  [OK] project-template.delete — OWNER/ADMIN
+  [OK] safety-checklist.delete — OWNER/ADMIN
+  [OK] team.delete — OWNER seulement (cascade supprime members + invitations)
+  [OK] team.removeMember — OWNER ou ADMIN (ADMIN ne peut pas retirer d'autre ADMIN)
+
+
+================================================================================
+  3. COMPORTEMENT DES DELETES / CASCADE
+================================================================================
+
+  3.1. Cascade Prisma
+  -------------------
+  User → Account, Session       : onDelete Cascade  [OK]
+  User → Project                : onDelete Cascade  [OK]
+  User → Team (ownedTeam)       : onDelete Cascade  [OK]
+  User → TeamMember             : onDelete Cascade  [OK]
+  Team → TeamMember, Invitation : onDelete Cascade  [OK]
+  Project → Photo, TimeEntry, Material, Invoice, Task, Note, Message,
+            SafetyChecklist, ClientAction, ProjectAssignment, ProjectTag
+                                : onDelete Cascade  [OK]
+  Tag → ProjectTag, PhotoTag    : onDelete Cascade  [OK]
+  Photo → PhotoTag              : onDelete Cascade  [OK]
+
+  [OK] Supprimer un projet supprime bien toutes ses donnees associees.
+  [OK] Supprimer un tag supprime les associations projet-tag et photo-tag.
+
+
+  3.2. PROJET "DELETE" = Soft Delete
+  ----------------------------------
+  IMPORTANT : project.delete ne fait PAS de suppression reelle.
+  Il fait : `data: { status: "DONE" }` (project.ts:160)
+
+  Ca veut dire :
+  - Les donnees du projet (photos, temps, materiaux, factures) restent intactes
+  - Le projet passe juste en statut "Termine"
+  - Il n'y a AUCUN moyen via l'API de supprimer reellement un projet
+  - Seule la suppression du User (cascade) supprimerait les projets
+
+  C'est un choix delibere (pas de perte de donnees accidentelle),
+  mais l'UI affiche "Supprimer le chantier" avec un message "irreversible"
+  ce qui est trompeur — c'est en fait un archivage.
+
+
+  3.3. Quand un User Rejoint une Team
+  ------------------------------------
+  Quand un user accepte une invitation (team.acceptInvite) :
+
+  1. La procedure verifie qu'il n'est pas deja dans une team
+  2. Elle verifie qu'il ne possede pas deja une team
+  3. Elle cree un TeamMember et marque l'invitation comme acceptee
+
+  CONSEQUENCE : Le user qui rejoint une team garde ses propres donnees
+  (projets, photos, etc. sous son propre artisanId). MAIS :
+
+  - getArtisanContext() va maintenant retourner l'artisanId du OWNER de la team
+  - Donc le user ne verra PLUS ses anciens projets (filtre artisanId != lui)
+  - Ses anciens projets deviennent des donnees orphelines invisibles
+  - Si il quitte la team, il retrouvera ses anciens projets
+
+  [BUG] Il n'y a aucun avertissement dans l'UI ni dans l'API
+  que rejoindre une team "cache" les projets personnels existants.
+
+  RECOMMANDATION :
+  - Soit transferer les projets au nouveau artisanId lors du join
+  - Soit empecher de rejoindre si le user a des projets existants
+  - Soit afficher un warning explicite
+
+
+  3.4. Quand un Member Quitte la Team
+  ------------------------------------
+  team.leave (ligne 404) : Supprime le TeamMember.
+  - Les donnees creees par ce member (photos, temps, materiaux) RESTENT
+    car elles sont liees au Project (pas au User directement)
+  - Le champ createdById des records pointe toujours vers le user
+  - Les taches assignees au member restent assignees (assigneeId)
+
+  [OK] Pas de perte de donnees, mais les references createdBy/assignee
+  pointent vers un user qui n'a plus acces — cosmétique seulement.
+
+  3.5. team.removeMember
+  ----------------------
+  Meme comportement que leave — supprime le TeamMember.
+  Les ProjectAssignment du member NE SONT PAS supprimees automatiquement
+  (pas de cascade TeamMember → ProjectAssignment car pas de relation directe).
+
+  [BUG MINEUR] Apres retrait d'un membre, ses ProjectAssignment persistent
+  en base. Ce n'est pas un probleme de securite (getArtisanContext empechera
+  l'acces) mais c'est de la donnee orpheline.
+
+  RECOMMANDATION : Ajouter un deleteMany ProjectAssignment dans removeMember/leave.
+
+
+================================================================================
+  4. COHERENCE UI/UX
+================================================================================
+
+  4.1. Pattern de Page
+  --------------------
+  Les pages sous chantiers/[id]/ suivent le pattern :
+    page.tsx (server) → h2 titre + <ClientComponent projectId={id} />
+
+  [OK] messages/page.tsx, notes, taches, photos, temps, materiaux, securite
+  [OK] Templates page dans settings suit le pattern settings standard
+  [OK] Tous les composants client utilisent api.useUtils() + invalidate
+
+  [BUG PATTERN] chantiers/[id]/equipe/page.tsx (ligne 9) :
+    → Retourne directement <TeamAssignmentView /> sans wrapper div ni h2
+    → TOUTES les autres sous-pages ont : <div className="..."><h2>...</h2><Component /></div>
+    → L'onglet Equipe n'a pas de titre visible, contrairement aux autres onglets
+
+
+  4.2. Loading States
+  -------------------
+  [OK] Tous les composants principaux utilisent <Loader2 className="animate-spin" />
+  [OK] Pattern coherent : isLoading → spinner centré, puis contenu
+
+
+  4.3. Error Handling / Toasts
+  ----------------------------
+  [OK] Pattern coherent : onSuccess → toast.success(t("...Success")),
+                           onError → toast.error(t("error"))
+  [OK] ConfirmDialog utilise partout pour les suppressions
+
+  [BUG] time-entry-view.tsx:32 et materials-view.tsx:37 :
+    → onError: (error) => toast.error(error.message)
+    → Expose le message d'erreur interne tRPC a l'utilisateur
+    → Devrait utiliser t("error") comme les autres composants
+
+  [NOTE] Certaines mutations n'ont pas de onError handler :
+    → Les mutations create de time-entry et materials n'ont que onSuccess
+    → En cas d'erreur silencieuse, l'utilisateur ne voit rien
+
+
+  4.4. Navigation
+  ---------------
+  [OK] Sidebar nav : Dashboard, Chantiers, Factures, Planning, Rapports, Settings, Billing
+  [OK] ProjectTabs : Overview, Notes, Taches, Photos, Temps, Materiaux, Messages, Securite, (Equipe)
+  [OK] Settings nav : Profil, Facturation, Equipe, Modeles
+
+  [NOTE] Planning et Rapports ne sont visibles que pour non-MEMBER
+  (layout.tsx:59-80), ce qui est correct.
+
+
+  4.5. Responsive / Mobile
+  -------------------------
+  [OK] MessagesView : max-w-2xl avec h-[calc(100vh-280px)]
+  [OK] SafetyChecklistView : max-w-2xl
+  [OK] Sidebar : hidden lg:flex + MobileSidebar
+  [OK] ProjectTabs : overflow-x-auto pour scroll horizontal mobile
+
+
+  4.6. Inconsistances de Layout
+  ------------------------------
+  [MINEUR] Logo alt text incohérent :
+    → layout.tsx:118 : alt="Worky" (sidebar desktop)
+    → mobile-sidebar.tsx:38 : alt="OpenChantier" (sidebar mobile)
+    → Devrait etre cohérent ("Worky" ou "OpenChantier")
+
+  [MINEUR] Titres h1 inconsistants :
+    → Certaines pages utilisent font-bold (chantiers/page.tsx)
+    → D'autres utilisent font-semibold (settings/page.tsx, rapports)
+    → Pas de classe standardisee pour les titres de page
+
+  [MINEUR] Espacement inconsistant :
+    → space-y-5, space-y-6, space-y-8 tous utilises dans les forms
+    → Pas de convention etablie pour l'espacement vertical
+
+
+================================================================================
+  5. PROBLEMES i18n (STRINGS HARDCODEES)
+================================================================================
+
+  [CORRIGE] "Ctrl+Enter pour envoyer" dans messages-view.tsx:111
+            et notes-view.tsx:114 → remplace par tCommon("ctrlEnter")
+
+  [CORRIGE] "Annuler" dans safety-checklist-view.tsx:167
+            → remplace par tCommon("cancel")
+
+  [RESTANT] Strings hardcodees encore presentes :
+
+  5.1. src/app/[locale]/(dashboard)/chantiers/[id]/_components/share-project-button.tsx:46
+       → toast.error("Erreur de copie")
+
+  5.2. src/server/api/routers/invoice.ts:237
+       → entry.description ?? "Main d'œuvre"
+       (Serveur-side, mais visible dans la facture — devrait utiliser un label
+       traduit selon artisan.locale)
+
+  5.3. src/server/api/routers/invoice.ts:375-379
+       → Les templates de subject email sont hardcodes dans le code
+       → Correct en pratique (serveur-side avec locale detection) mais
+         devrait etre dans les fichiers i18n emails.json
+
+  5.4. src/server/api/routers/project.ts:106
+       → "Plan FREE limité à ${FREE_PLAN_PROJECT_LIMIT} chantiers actifs"
+       (Serveur-side error message, acceptable per CLAUDE.md rule)
+
+  5.5. team-view.tsx:506,509
+       → utilise `{ fallback: "..." }` pour des cles manquantes
+       → Indique des cles i18n non definies dans team.json
+
+  5.6. src/app/[locale]/(dashboard)/chantiers/[id]/photos/_components/photos-view.tsx
+       → Ligne 597 : "Déposez vos photos ici" / "Glissez vos photos ici" (hardcodes)
+       → Ligne 600 : "ou cliquez pour sélectionner" (hardcode)
+       → Ligne 602 : "JPG, PNG, WEBP — max 8 Mo par photo — jusqu'à 10 fichiers" (hardcode)
+       → Ligne 675 : alt="Photo preview" (hardcode EN)
+       → Ligne 681 : "Légende (dictée vocale disponible)" (hardcode)
+       → Ligne 684 : placeholder="Ex: Fissure dans le mur nord" (hardcode)
+       → Ligne 378 : throw new Error("Upload échoué") (hardcode FR)
+       → Ligne 394 : "Erreur d'upload" (hardcode FR)
+       TOTAL : 8 strings hardcodees dans photos-view.tsx
+
+  5.7. src/app/[locale]/(dashboard)/rapports/_components/rapports-view.tsx
+       → Ligne 40 : "Client", "Statut" comme entetes CSV (hardcodes EN/FR)
+       → Les autres entetes utilisent t("...") mais pas ces deux-la
+
+  5.8. src/app/[locale]/(dashboard)/settings/_components/profile-form.tsx
+       → Ligne 127 : throw new Error("Upload échoué") (hardcode)
+       → Ligne 161 : alt="Logo" (hardcode)
+
+  5.9. src/components/ui/confirm-dialog.tsx:36-37
+       → confirmLabel = "Confirmer" (défaut hardcode FR)
+       → cancelLabel = "Annuler" (défaut hardcode FR)
+       IMPACT CRITIQUE : Ce composant est utilise dans TOUTES les suppressions.
+       Quand un caller ne fournit pas confirmLabel/cancelLabel explicitement,
+       les boutons s'affichent en francais dans toutes les locales.
+       → Devrait utiliser useTranslations("common.buttons") en interne
+         ou ne PAS avoir de defauts (forcer le caller a fournir les labels)
+
+  5.10. src/app/[locale]/(dashboard)/chantiers/new/_components/create-project-form.tsx
+        → Ligne 29 : z.string().min(1, "Requis") — x3 champs
+        → Ligne 33 : z.string().email("Email invalide")
+        Ces messages Zod s'affichent dans le formulaire de creation
+        de projet et sont hardcodes en francais.
+
+
+  5.11. Cles i18n manquantes dans weather widget
+  [CORRIGE] Le widget utilise `projects.meteo.*` mais les cles etaient
+            nommees `projects.weather.*` → corrige vers `meteo` dans 4 locales
+            + ajoute `conditions.sunny/cloudy/rainy/snowy/stormy`
+
+  5.12. Cles i18n manquantes dans templates view
+  [CORRIGE] Le composant TemplatesView utilise des cles non definies :
+            stats.tasks, stats.materials, stats.tags, createSuccess,
+            updateSuccess, deleteConfirmTitle, deleteConfirmDesc, edit,
+            editWarning, cancel, save, descriptionPlaceholder
+            → ajoutees dans les 4 locales
+
+
+================================================================================
+  6. BUGS ET PROBLEMES TECHNIQUES
+================================================================================
+
+  6.1. getEffectivePlan retourne "FREE" | "PRO" seulement
+  --------------------------------------------------------
+  La fonction (team-context.ts:47-59) cast vers "FREE" | "PRO" mais
+  l'enum Plan dans schema.prisma a : FREE, PRO, PRO_EQUIPE, PRO_PLUS
+
+  → PRO_EQUIPE et PRO_PLUS seront castes en "PRO" par defaut,
+    ce qui est probablement voulu mais devrait etre explicite.
+
+
+  6.2. Invoice number collision (race condition)
+  -----------------------------------------------
+  invoice.ts:113-138 : Le compteur `count + 1` pour generer le numero
+  de facture a une race condition. Deux requetes simultanees peuvent
+  obtenir le meme count et entrer en conflit.
+
+  Le code a un retry (5 tentatives) sur P2002, ce qui atténue le probleme.
+  [ACCEPTABLE] en pratique pour un artisan solo/petite equipe.
+
+
+  6.3. Checklist signedBy sans verification de role
+  --------------------------------------------------
+  safety-checklist.ts:sign (ligne 148) : N'importe quel utilisateur
+  avec acces au projet peut signer la checklist (pas de requireRole).
+
+  C'est peut-etre voulu (un MEMBER sur le chantier signe), mais ca
+  devrait etre documente. Un MEMBER pourrait signer sans autorisation.
+
+
+  6.4. project.delete = soft delete trompeur
+  -------------------------------------------
+  Decrit en section 3.2 — l'UI dit "supprimer" mais c'est un passage
+  en DONE. L'utilisateur ne peut pas reellement supprimer un projet.
+
+  6.5. planning.ts : MEMBER voit tous les evenements
+  ---------------------------------------------------
+  Le router planning.getEvents ne filtre pas par assignment pour les MEMBER.
+  Un MEMBER voit les projets, taches et time entries de TOUS les projets
+  de l'artisan, pas seulement ceux auxquels il est assigne.
+
+  [BUG SECURITE] Violation de l'isolation MEMBER.
+
+
+  6.6. report.projectSummary : pas de requireRole
+  ------------------------------------------------
+  N'importe quel role (y compris MEMBER) peut acceder au rapport complet
+  d'un projet, incluant des donnees financieres (invoices, profit, costs).
+
+  [BUG SECURITE] Les MEMBER ne devraient pas voir les donnees financieres.
+
+
+  6.7. team.create verifie plan depuis session, pas DB
+  ---------------------------------------------------
+  team.ts:100-101 : `ctx.session.user.plan !== "PRO"`
+  Per CLAUDE.md rule #4 : "PRO plan check ALWAYS server-side in tRPC.
+  Never read from React prop or client state."
+
+  La session peut etre stale. Devrait utiliser getEffectivePlan()
+  ou lire depuis la DB directement.
+
+
+================================================================================
+  7. RESUME DES ACTIONS CORRECTIVES EFFECTUEES
+================================================================================
+
+  [FAIT] Enregistrement des routers projectTemplate et safetyChecklist dans root.ts
+  [FAIT] Ajout de l'onglet "Securite" dans ProjectTabs (ShieldCheck icon)
+  [FAIT] Ajout du lien "Templates" dans settings-nav (LayoutTemplate icon)
+  [FAIT] Correction cles i18n : meteo (pas weather) dans les 4 locales
+  [FAIT] Ajout des cles conditions.* pour le widget meteo
+  [FAIT] Ajout des cles manquantes pour TemplatesView dans les 4 locales
+  [FAIT] Remplacement "Annuler" hardcode → tCommon("cancel") dans safety-checklist-view
+  [FAIT] Remplacement "Ctrl+Enter pour envoyer" → tCommon("ctrlEnter") dans messages et notes
+  [FAIT] Ajout de la cle ctrlEnter dans common.json des 4 locales
+
+  [FAIT] Correction bug TemplateDialog : state non synchronise lors du changement
+          de template → utilisation de key={editingTemplate?.id ?? "new"} pour
+          forcer le remount du composant avec un etat propre
+  [FAIT] Ajout UI createFromProject : bouton "Sauvegarder comme modele" dans
+          TemplatesView + dialog avec selecteur de chantier source et nom du modele
+  [FAIT] Ajout UI applyToProject : bouton "Appliquer au chantier" sur chaque
+          carte de modele + dialog avec selecteur de chantier cible
+  [FAIT] Gestion plan FREE : error.data.code === "FORBIDDEN" → affiche prompt
+          de mise a niveau au lieu de rester en skeleton indefiniment
+  [FAIT] Ajout de 6 nouvelles cles i18n dans les 4 locales :
+          selectProject, noActiveProjects, applyDialogTitle,
+          fromProjectSelectLabel, proRequired, proRequiredCta
+
+
+================================================================================
+  8. PROBLEMES SCHEMA / INTEGRITE DES DONNEES
+================================================================================
+
+  8.1. BLOQUANT : ProjectNote.createdById et Task.createdById non-nullable
+       sans onDelete (CRITIQUE)
+  -----------------------------------------------------------------------
+  - ProjectNote.createdById (schema.prisma:279) est `String` (non nullable)
+    et n'a pas de `onDelete` → Prisma default = Restrict
+  - Task.createdById (schema.prisma:329) est `String` (non nullable)
+    et n'a pas de `onDelete` → Prisma default = Restrict
+
+  CONSEQUENCE : Si un User est supprime (au niveau DB), la suppression
+  va ECHOUER avec une erreur FK constraint si ce user a cree des notes
+  ou des taches. Toutes les autres relations createdBy (Photo, TimeEntry,
+  Material, Invoice, Message) sont nullable (String?) donc SetNull par defaut.
+
+  RECOMMANDATION : Changer en `String?` pour coherence, ou ajouter
+  `onDelete: SetNull` dans la relation.
+
+  8.2. Pas d'endpoint de suppression de compte User
+  --------------------------------------------------
+  La page legale (legal.json) mentionne le droit de suppression de compte,
+  mais aucun endpoint n'existe dans userRouter. Quand ce sera implemente,
+  le probleme 8.1 bloquera la suppression.
+
+  8.3. Pas de cleanup UploadThing sur cascade
+  --------------------------------------------
+  Quand les photos sont supprimees en cascade (User → Project → Photo),
+  les fichiers dans UploadThing ne sont PAS nettoyes. Photo.key existe
+  pour ca mais aucun hook de suppression ne l'utilise.
+
+  RECOMMANDATION : Ajouter un webhook ou middleware Prisma pour appeler
+  UploadThing deleteFiles() quand des photos sont supprimees.
+
+
+================================================================================
+  9. ACTIONS RECOMMANDEES (NON EFFECTUEES)
+================================================================================
+
+  PRIORITE CRITIQUE (Schema / Data) :
+  ------------------------------------
+  [ ] Rendre ProjectNote.createdById nullable (String?) ou ajouter onDelete: SetNull
+  [ ] Rendre Task.createdById nullable (String?) ou ajouter onDelete: SetNull
+  [ ] Implementer un endpoint de suppression de compte User (RGPD)
+
+  PRIORITE HAUTE (Securite) :
+  ---------------------------
+  [ ] Ajouter verification PRO dans project-template.ts, safety-checklist.ts,
+      planning.ts, report.ts
+  [ ] Filtrer par assignment dans planning.getEvents pour les MEMBER
+  [ ] Ajouter requireRole OWNER/ADMIN dans report.projectSummary
+  [ ] Corriger team.create pour verifier le plan depuis la DB, pas la session
+  [ ] Nettoyer les ProjectAssignment orphelines lors de removeMember/leave
+
+  PRIORITE MOYENNE (UX / i18n / Data) :
+  ----------------------------------------
+  [ ] Avertir les users avant de rejoindre une team que leurs projets
+      perso seront "caches" (pas supprimes, mais invisibles)
+  [ ] Clarifier dans l'UI que "Supprimer" un projet = passage en DONE
+      (soft delete), pas une suppression reelle
+  [ ] Corriger toast.error("Erreur de copie") dans share-project-button.tsx
+  [ ] Corriger "Main d'oeuvre" hardcode dans invoice.ts (utiliser locale)
+  [ ] Ajouter cleanup UploadThing (deleteFiles) lors de suppression de photos
+
+  [ ] Corriger ConfirmDialog (confirm-dialog.tsx:36-37) :
+      confirmLabel/cancelLabel ne doivent pas avoir de defaults FR
+      → Ou utiliser useTranslations() en interne pour les defaults
+  [ ] Corriger photos-view.tsx : remplacer les 8 strings hardcodees (section 5.6)
+      par des cles projects.photos.* appropriees dans les 4 locales
+  [ ] Corriger rapports-view.tsx : "Client", "Statut" → cles i18n
+  [ ] Corriger create-project-form.tsx : messages Zod "Requis" / "Email invalide"
+      → Passer par t() ou utiliser superRefine avec messages traduits
+  [ ] Corriger equipe/page.tsx : ajouter wrapper div + h2 comme toutes les autres
+      sous-pages (pattern : <div><h2>{t("team.title")}</h2><TeamAssignmentView /></div>)
+  [ ] Corriger time-entry-view.tsx:32 et materials-view.tsx:37 :
+      onError: (error) => toast.error(error.message)
+      → Remplacer par toast.error(t("error"))
+  [ ] Corriger alt text du logo : harmoniser "Worky" dans layout.tsx ET
+      mobile-sidebar.tsx (actuellement "Worky" desktop vs "OpenChantier" mobile)
+
+  PRIORITE BASSE (Qualite) :
+  ----------------------------
+  [ ] invoice.sendToPDP : le cast de session.user vers { siret, companyName }
+      ne marche pas — ces champs ne sont pas dans la session NextAuth
+  [ ] Les fallback dans team-view.tsx indiquent des cles i18n manquantes
+      dans team.json — les ajouter
+  [ ] Documenter que la signature de checklist est ouverte a tous les roles
+  [ ] Standardiser les classes CSS des titres h1 de pages (font-bold vs font-semibold)
+  [ ] Standardiser l'espacement vertical des formulaires (space-y-5/6/8 → choisir une valeur)
+
+
+================================================================================
+  10. MATRICE DES PERMISSIONS PAR ROUTER
+================================================================================
+
+  Router              | OWNER  | ADMIN  | MEMBER | Notes
+  --------------------|--------|--------|--------|----------------------------------
+  project.list        |   OK   |   OK   | Filtre | assignment filter
+  project.create      |   OK   |   OK   |   X    | requireRole
+  project.update      |   OK   |   OK   |   X    | requireRole
+  project.delete      |   OK   |   X    |   X    | OWNER only (soft delete)
+  photo.save          |   OK   |   OK   |   OK   | tous, filtre assignment
+  photo.delete        |   OK   |   OK   |   X    | requireRole
+  timeEntry.create    |   OK   |   OK   |   OK   | tous, filtre assignment
+  timeEntry.delete    |   OK   |   OK   |   X    | requireRole
+  material.create     |   OK   |   OK   |   OK   | tous, filtre assignment
+  material.delete     |   OK   |   OK   |   X    | requireRole
+  invoice.*           |   OK   |   OK   |   X    | requireRole (markPaid: OWNER only)
+  task.create         |   OK   |   OK   |   OK   | tous, filtre assignment
+  task.update         |   OK   |   OK   | Partiel| MEMBER: status only, own task
+  task.delete         |   OK   |   OK   | Createur| createur ou OWNER/ADMIN
+  note.create         |   OK   |   OK   |   OK   | tous, filtre assignment
+  note.delete         |   OK   |   OK   | Createur| createur ou OWNER/ADMIN
+  message.send        |   OK   |   OK   |   OK   | tous, filtre assignment
+  message.delete      |   OK   |   OK   | Auteur | auteur ou OWNER/ADMIN
+  tag.*               |   OK   |   OK   |   X    | requireRole
+  template.*          |   OK   |   OK   |   X    | requireRole
+  checklist.create    |   OK   |   OK   |   OK   | tous, filtre assignment
+  checklist.updateItems|  OK   |   OK   |   OK   | tous (pas de role check)
+  checklist.sign      |   OK   |   OK   |   OK   | tous (pas de role check)
+  checklist.delete    |   OK   |   OK   |   X    | requireRole
+  planning.getEvents  |   OK   |   OK   |  BUG   | MEMBER voit tout
+  report.projectSummary| OK   |   OK   |  BUG   | MEMBER voit finances
+  report.export       |   OK   |   OK   |   X    | requireRole
+  notification.*      |   OK   |   OK   |   OK   | filtre userId
+  team.*              | Varies |  Varies|  Limit | Voir detail dans team.ts
+
+================================================================================
+  FIN DU RAPPORT
+================================================================================

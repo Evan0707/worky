@@ -24,6 +24,7 @@ export const env = createEnv({
     CLOUDINARY_API_SECRET: z.string().optional(),
 
     FACTURX_API_URL: z.string().url().optional(),
+    FACTURX_API_SECRET: z.string().optional(),
     TIIME_WEBHOOK_SECRET: z.string().optional(),
 
     RESEND_API_KEY: z.string().optional(),

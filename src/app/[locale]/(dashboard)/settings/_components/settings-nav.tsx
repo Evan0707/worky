@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { UserCircle, CreditCard, Users } from "lucide-react";
+import { UserCircle, CreditCard, Users, LayoutTemplate } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export function SettingsNav() {
@@ -30,6 +30,11 @@ export function SettingsNav() {
       href: `/${locale}/settings/team`,
       label: tTeam("title"),
       icon: Users,
+    },
+    {
+      href: `/${locale}/settings/templates`,
+      label: t("templates.title"),
+      icon: LayoutTemplate,
     },
   ];
 

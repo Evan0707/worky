@@ -64,6 +64,8 @@
     "sent": "Sent by email",
     "markedPaid": "Marked as paid",
     "deleted": "Document deleted",
+    "sentPDP": "Invoice sent successfully via PDP",
+    "generateError": "Error generating document",
     "created": "Document created successfully"
   },
   "empty": {

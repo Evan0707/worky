@@ -80,6 +80,14 @@ model User {
   timeEntriesCreated   TimeEntry[]        @relation("TimeEntryCreator")
   materialsCreated     Material[]         @relation("MaterialCreator")
   invoicesCreated      Invoice[]          @relation("InvoiceCreator")
+  notesCreated         ProjectNote[]      @relation("NoteCreator")
+  tags                 Tag[]              @relation("UserTags")
+  tasksCreated         Task[]             @relation("TaskCreator")
+  tasksAssigned        Task[]             @relation("TaskAssignee")
+  notifications        Notification[]
+  messages             Message[]          @relation("MessageAuthor")
+  templates            ProjectTemplate[]  @relation("UserTemplates")
+  safetyChecklists     SafetyChecklist[]  @relation("ChecklistSigner")
 }
 
 model Team {
@@ -151,6 +159,11 @@ model Project {
   photos             Photo[]
   artisan            User                 @relation(fields: [artisanId], references: [id], onDelete: Cascade)
   timeEntries        TimeEntry[]
+  notes              ProjectNote[]
+  tags               ProjectTag[]
+  tasks              Task[]
+  messages           Message[]
+  safetyChecklists   SafetyChecklist[]
 
   @@index([artisanId])
   @@index([shareToken])
@@ -170,18 +183,19 @@ model ProjectAssignment {
 }
 
 model Photo {
-  id          String   @id @default(cuid())
+  id          String     @id @default(cuid())
   projectId   String
   url         String
-  key         String   @unique
+  key         String     @unique
   note        String?
   lat         Float?
   lng         Float?
-  takenAt     DateTime @default(now())
-  order       Int      @default(0)
+  takenAt     DateTime   @default(now())
+  order       Int        @default(0)
   createdById String?
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  createdBy   User?    @relation("PhotoCreator", fields: [createdById], references: [id])
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy   User?      @relation("PhotoCreator", fields: [createdById], references: [id])
+  photoTags   PhotoTag[]
 
   @@index([projectId])
   @@index([createdById])
@@ -254,6 +268,157 @@ model ClientAction {
   project   Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@index([projectId])
+}
+
+model ProjectNote {
+  id          String   @id @default(cuid())
+  projectId   String
+  content     String   @db.Text
+  isPinned    Boolean  @default(false)
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy   User?    @relation("NoteCreator", fields: [createdById], references: [id])
+
+  @@index([projectId])
+  @@index([createdById])
+}
+
+model Tag {
+  id          String       @id @default(cuid())
+  name        String
+  color       String       @default("#6366f1")
+  artisanId   String
+  createdAt   DateTime     @default(now())
+  artisan     User         @relation("UserTags", fields: [artisanId], references: [id], onDelete: Cascade)
+  projectTags ProjectTag[]
+  photoTags   PhotoTag[]
+
+  @@unique([artisanId, name])
+  @@index([artisanId])
+}
+
+model ProjectTag {
+  projectId String
+  tagId     String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, tagId])
+}
+
+model PhotoTag {
+  photoId String
+  tagId   String
+  photo   Photo  @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  tag     Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([photoId, tagId])
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  projectId   String
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  priority    Int        @default(0)
+  dueDate     DateTime?
+  assigneeId  String?
+  createdById String?
+  completedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  createdBy   User?      @relation("TaskCreator", fields: [createdById], references: [id])
+
+  @@index([projectId])
+  @@index([assigneeId])
+  @@index([createdById])
+  @@index([status])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String?
+  link      String?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+}
+
+model Message {
+  id           String   @id @default(cuid())
+  projectId    String
+  content      String   @db.Text
+  authorId     String?
+  authorName   String?
+  photoUrl     String?
+  isFromClient Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author       User?    @relation("MessageAuthor", fields: [authorId], references: [id])
+
+  @@index([projectId])
+  @@index([authorId])
+  @@index([projectId, createdAt])
+}
+
+model ProjectTemplate {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  tasks       Json     // [{ title, priority, order }]
+  materials   Json     // [{ label, quantity, unitPrice, unit }]
+  tags        String[]
+  artisanId   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  artisan     User     @relation("UserTemplates", fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@index([artisanId])
+}
+
+model SafetyChecklist {
+  id          String    @id @default(cuid())
+  projectId   String
+  template    String    // "EPI", "ECHAFAUDAGE", "ELECTRIQUE", "AMIANTE"
+  items       Json      // [{ id, label, checked, checkedAt, checkedBy }]
+  signedAt    DateTime?
+  signedById  String?
+  signatureUrl String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  signedBy    User?     @relation("ChecklistSigner", fields: [signedById], references: [id])
+
+  @@index([projectId])
+  @@index([signedById])
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum NotificationType {
+  CLIENT_COMMENT
+  CLIENT_SIGNATURE
+  TASK_ASSIGNED
+  TASK_OVERDUE
+  INVOICE_PAID
+  TEAM_MEMBER_JOINED
+  PHOTO_ADDED
+  NOTE_ADDED
 }
 
 enum Plan {

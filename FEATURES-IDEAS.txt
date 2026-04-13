@@ -1,0 +1,534 @@
+================================================================================
+  OPENCHANTIER - IDEES DE FEATURES
+  Communication, productivite, completude du logiciel
+  Date: 2026-04-09
+================================================================================
+
+
+================================================================================
+1. NOTES DE CHANTIER (Journal de bord)
+================================================================================
+
+Quoi :
+  Un fil de notes par projet, type journal de chantier. Chaque note a un texte,
+  un auteur, une date, et peut inclure des photos attachees. L'artisan ou les
+  membres d'equipe ajoutent des notes au fil de la journee ("mur nord termine",
+  "attente livraison carrelage", "probleme humidite detecte"). Le client peut
+  les voir via le magic link (lecture seule).
+
+Pourquoi :
+  Aujourd'hui les artisans utilisent WhatsApp ou des carnets papier. Un journal
+  structure par projet remplace ca. C'est aussi une preuve en cas de litige.
+
+Schema Prisma :
+
+  model ProjectNote {
+    id          String   @id @default(cuid())
+    projectId   String
+    content     String   @db.Text
+    photoIds    String[] // references vers Photo.id existantes
+    isPinned    Boolean  @default(false)
+    createdById String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    createdBy   User     @relation("NoteCreator", fields: [createdById], references: [id])
+
+    @@index([projectId])
+    @@index([createdById])
+  }
+
+Implementation :
+  - Router tRPC : src/server/api/routers/project-note.ts
+    - list(projectId)   -> filtre artisanId + assignment MEMBER
+    - create(projectId, content, photoIds?)
+    - update(id, content, isPinned)
+    - delete(id)        -> seulement son propre note ou OWNER/ADMIN
+  - Composant : src/app/[locale]/(dashboard)/chantiers/[id]/notes/page.tsx
+    - Liste chronologique inversee (plus recent en haut)
+    - Input en bas style chat avec bouton photo
+    - Badge "epingle" pour les notes importantes
+  - Magic link : ajouter les notes dans la vue /c/[token] (lecture seule)
+  - Pusher : broadcast "note:created" pour temps reel entre membres
+
+Plan : FREE (limite 10 notes/projet) | PRO (illimite)
+
+
+================================================================================
+2. SYSTEME DE TAGS / ETIQUETTES
+================================================================================
+
+Quoi :
+  Des tags colores personnalisables a attacher sur les projets, photos,
+  materiaux et notes. Ex : "urgent", "en attente client", "a facturer",
+  "electricite", "plomberie", "facade", "interieur"...
+
+Pourquoi :
+  Permet de filtrer rapidement ("montre-moi toutes les photos tagguees
+  'avant-travaux'"), de categoriser les chantiers par corps de metier,
+  et de creer des vues transversales.
+
+Schema Prisma :
+
+  model Tag {
+    id         String    @id @default(cuid())
+    name       String
+    color      String    @default("#6366f1") // hex color
+    artisanId  String
+    createdAt  DateTime  @default(now())
+    artisan    User      @relation("UserTags", fields: [artisanId], references: [id], onDelete: Cascade)
+
+    projectTags  ProjectTag[]
+    photoTags    PhotoTag[]
+
+    @@unique([artisanId, name])
+    @@index([artisanId])
+  }
+
+  model ProjectTag {
+    projectId String
+    tagId     String
+    project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+    @@id([projectId, tagId])
+  }
+
+  model PhotoTag {
+    photoId String
+    tagId   String
+    photo   Photo @relation(fields: [photoId], references: [id], onDelete: Cascade)
+    tag     Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+    @@id([photoId, tagId])
+  }
+
+Implementation :
+  - Router tRPC : src/server/api/routers/tag.ts
+    - list()             -> tous les tags de l'artisan
+    - create(name, color)
+    - update(id, name?, color?)
+    - delete(id)
+    - attachToProject(tagId, projectId)
+    - detachFromProject(tagId, projectId)
+    - attachToPhoto(tagId, photoId)
+    - detachFromPhoto(tagId, photoId)
+  - UI :
+    - Settings > Tags : gestion CRUD des tags (nom + color picker)
+    - Sur chaque projet : multi-select de tags en haut de page
+    - Sur chaque photo : tags visibles en overlay, ajout via popover
+    - Liste projets : filtre par tag dans la barre de recherche
+  - Composant reutilisable : src/components/tag-badge.tsx
+    - Petit badge colore avec le nom, click pour filtrer
+  - Composant reutilisable : src/components/tag-picker.tsx
+    - Combobox multi-select avec les tags existants + "creer nouveau"
+
+Plan : FREE (5 tags max) | PRO (illimite)
+
+
+================================================================================
+3. TACHES / TODO PAR PROJET
+================================================================================
+
+Quoi :
+  Une checklist de taches par projet. Chaque tache a un titre, un statut
+  (a faire / en cours / fait), une date echeance optionnelle, et peut etre
+  assignee a un membre. Visible dans le projet et dans un dashboard global
+  "Mes taches".
+
+Pourquoi :
+  nextSteps (Json) existe deja dans Project mais c'est limite (pas d'assignation,
+  pas de dates, pas de suivi global). Un vrai systeme de taches remplace le
+  carnet et le tableau blanc du bureau.
+
+Schema Prisma :
+
+  model Task {
+    id          String     @id @default(cuid())
+    projectId   String
+    title       String
+    description String?
+    status      TaskStatus @default(TODO)
+    priority    Int        @default(0) // 0=normal, 1=urgent, 2=critique
+    dueDate     DateTime?
+    assigneeId  String?
+    createdById String
+    completedAt DateTime?
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+    project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id])
+    createdBy   User       @relation("TaskCreator", fields: [createdById], references: [id])
+
+    @@index([projectId])
+    @@index([assigneeId])
+    @@index([createdById])
+    @@index([status])
+  }
+
+  enum TaskStatus {
+    TODO
+    IN_PROGRESS
+    DONE
+  }
+
+Implementation :
+  - Router tRPC : src/server/api/routers/task.ts
+    - listByProject(projectId)    -> filtre artisanId + assignment MEMBER
+    - listMyTasks()               -> toutes mes taches assignees, tous projets
+    - create(projectId, title, dueDate?, assigneeId?, priority?)
+    - update(id, title?, status?, dueDate?, assigneeId?, priority?)
+    - delete(id)                  -> seulement createur ou OWNER/ADMIN
+    - reorder(projectId, ids[])   -> drag & drop
+  - Pages :
+    - Onglet "Taches" dans le projet : src/app/[locale]/(dashboard)/chantiers/[id]/taches/
+      Vue kanban (3 colonnes : A faire | En cours | Fait) avec drag & drop (@dnd-kit)
+    - Dashboard global : widget "Mes taches" avec les taches en retard en rouge
+  - Notifications : email Resend si une tache est assignee ou en retard (cron job)
+  - Pusher : broadcast "task:updated" pour synchro temps reel
+
+Plan : FREE (10 taches/projet) | PRO (illimite + assignation + dates)
+
+
+================================================================================
+4. MESSAGERIE INTERNE / COMMENTAIRES PAR PROJET
+================================================================================
+
+Quoi :
+  Un fil de discussion par projet, style chat simple. Les membres de l'equipe
+  echangent dans le contexte du chantier. Possibilite de mentionner @membre
+  et d'envoyer des photos inline. Le client peut aussi commenter via magic link
+  (deja partiellement fait via ClientAction COMMENT).
+
+Pourquoi :
+  Evite les groupes WhatsApp par chantier. Tout reste dans le contexte du
+  projet, consultable des mois plus tard. Utile aussi pour la relation client.
+
+Schema Prisma :
+
+  model Message {
+    id           String   @id @default(cuid())
+    projectId    String
+    content      String   @db.Text
+    authorId     String?  // null = message client (via magic link)
+    authorName   String?  // pour les messages client sans compte
+    photoUrl     String?
+    isFromClient Boolean  @default(false)
+    createdAt    DateTime @default(now())
+    project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    author       User?    @relation("MessageAuthor", fields: [authorId], references: [id])
+
+    @@index([projectId])
+    @@index([authorId])
+    @@index([projectId, createdAt])
+  }
+
+Implementation :
+  - Router tRPC : src/server/api/routers/message.ts
+    - list(projectId, cursor?)  -> pagination infinie, filtre artisanId + assignment
+    - send(projectId, content, photoUrl?)
+    - delete(id)                -> seulement son propre message ou OWNER/ADMIN
+  - Route API publique pour les clients : src/app/api/client/[token]/message/route.ts
+    - POST : le client envoie un message via magic link (pas d'auth, token valide)
+  - Page : onglet "Messages" dans le projet
+    - UI style chat : bulles a droite (moi) / gauche (autres)
+    - Scroll infini vers le haut
+    - Input en bas avec upload photo (UploadThing)
+    - Badge non-lu dans le menu du projet
+  - Pusher :
+    - Channel : "project-{projectId}"
+    - Events : "message:new", "message:deleted"
+    - Notification son/badge en temps reel
+  - Mentions :
+    - Syntaxe @nom dans le texte
+    - Email notification via Resend quand mentionne
+
+Plan : FREE (lecture seule du chat client) | PRO (chat equipe illimite + mentions)
+
+
+================================================================================
+5. NOTIFICATIONS IN-APP
+================================================================================
+
+Quoi :
+  Un centre de notifications dans l'app (icone cloche dans la top bar).
+  Notifications pour : nouveau commentaire client, tache assignee, tache en
+  retard, facture payee, nouveau membre qui rejoint l'equipe, photo ajoutee
+  par un membre.
+
+Pourquoi :
+  Actuellement aucune notification in-app. L'utilisateur ne sait pas que son
+  client a commente ou qu'un membre a ajoute des photos sans aller verifier
+  manuellement chaque projet.
+
+Schema Prisma :
+
+  model Notification {
+    id          String           @id @default(cuid())
+    userId      String
+    type        NotificationType
+    title       String
+    body        String?
+    link        String?          // lien relatif, ex: "/fr-FR/chantiers/clxyz/photos"
+    isRead      Boolean          @default(false)
+    createdAt   DateTime         @default(now())
+    user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId, isRead])
+    @@index([userId, createdAt])
+  }
+
+  enum NotificationType {
+    CLIENT_COMMENT
+    CLIENT_SIGNATURE
+    TASK_ASSIGNED
+    TASK_OVERDUE
+    INVOICE_PAID
+    TEAM_MEMBER_JOINED
+    PHOTO_ADDED
+    NOTE_ADDED
+    MESSAGE_RECEIVED
+  }
+
+Implementation :
+  - Lib : src/server/lib/notify.ts
+    - createNotification(userId, type, title, body?, link?)
+    - Appeler depuis les routers concernes (client-action, task, invoice, team, photo, message)
+  - Router tRPC : src/server/api/routers/notification.ts
+    - list(cursor?)       -> pagination, userId filtre
+    - markAsRead(id)
+    - markAllAsRead()
+    - unreadCount()       -> pour le badge
+  - UI :
+    - Icone cloche dans la top bar : src/components/notification-bell.tsx
+      - Badge rouge avec le nombre de non-lues
+      - Popover avec la liste des 20 dernieres
+      - Click -> marquer comme lu + naviguer vers le lien
+    - Page complete : src/app/[locale]/(dashboard)/notifications/page.tsx
+  - Pusher :
+    - Channel prive : "user-{userId}"
+    - Event : "notification:new"
+    - Mise a jour temps reel du badge sans refresh
+  - Cron optionnel : digest email quotidien des notifications non lues (Resend)
+
+Plan : FREE (basiques) | PRO (toutes + digest email)
+
+
+================================================================================
+6. MODELES DE PROJET / TEMPLATES
+================================================================================
+
+Quoi :
+  Sauvegarder un projet comme template reutilisable. Un template contient :
+  les taches types, les materiaux habituels, la description, les tags. Quand
+  on cree un nouveau projet on peut partir d'un template au lieu de zero.
+  Ex : "Renovation salle de bain", "Extension veranda", "Ravalement facade".
+
+Pourquoi :
+  Un artisan fait souvent les memes types de chantiers. Evite de re-saisir
+  les memes taches et materiaux a chaque fois.
+
+Schema Prisma :
+
+  model ProjectTemplate {
+    id          String   @id @default(cuid())
+    name        String
+    description String?
+    tasks       Json     // [{ title, priority, order }]
+    materials   Json     // [{ label, quantity, unitPrice, unit }]
+    tags        String[] // noms de tags a attacher
+    artisanId   String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    artisan     User     @relation("UserTemplates", fields: [artisanId], references: [id], onDelete: Cascade)
+
+    @@index([artisanId])
+  }
+
+Implementation :
+  - Router tRPC : src/server/api/routers/project-template.ts
+    - list()
+    - create(name, tasks, materials, tags)
+    - createFromProject(projectId) -> copie les taches/materiaux/tags du projet
+    - update(id, ...)
+    - delete(id)
+    - applyToProject(templateId, projectId) -> ajoute taches + materiaux
+  - UI :
+    - Page : Settings > Templates
+    - Modal "Nouveau projet" : ajouter un select "A partir d'un template"
+    - Sur un projet : bouton "Sauvegarder comme template"
+
+Plan : PRO uniquement
+
+
+================================================================================
+7. PLANNING / CALENDRIER
+================================================================================
+
+Quoi :
+  Vue calendrier montrant : les chantiers (par startDate/endDate), les taches
+  avec date echeance, les entrees de temps. Vue semaine et mois. Possibilite
+  de drag & drop pour deplacer une tache.
+
+Pourquoi :
+  Un artisan a besoin de voir sa semaine d'un coup d'oeil : quel chantier
+  quel jour, quelles taches sont en retard.
+
+Implementation :
+  - Pas de nouveau model Prisma : on utilise Project.startDate/endDate,
+    Task.dueDate, TimeEntry.date
+  - Page : src/app/[locale]/(dashboard)/planning/page.tsx
+  - Lib UI : @schedule-x/react (leger, moderne) ou react-big-calendar
+  - Router tRPC :
+    - planning.getEvents(startDate, endDate) -> agrege projets + taches + time entries
+  - Vue semaine : barres horizontales pour les projets, points pour les taches
+  - Vue mois : resume par jour
+  - Couleurs : par projet ou par tag
+  - Ajouter "Planning" dans la sidebar nav (entre Chantiers et Factures)
+
+Plan : PRO uniquement
+
+
+================================================================================
+8. RAPPORTS / EXPORT
+================================================================================
+
+Quoi :
+  Generer des rapports PDF ou CSV :
+  - Rapport de chantier : photos + notes + temps + materiaux (pour le client)
+  - Export temps : CSV des heures par projet/periode (pour la comptabilite)
+  - Export materiaux : CSV de tous les materiaux avec couts
+  - Rapport rentabilite : cout (heures * taux + materiaux) vs montant facture
+
+Pourquoi :
+  L'artisan a besoin de documents a remettre au client ou au comptable.
+  La rentabilite par chantier est la question n.1 des artisans.
+
+Implementation :
+  - Lib : @react-pdf/renderer pour les PDF, papaparse pour le CSV
+  - Router tRPC :
+    - report.projectSummary(projectId) -> agrege toutes les donnees
+    - report.timeExport(dateRange, projectIds?)
+    - report.materialExport(projectIds?)
+    - report.profitability(projectIds?)
+  - Page : src/app/[locale]/(dashboard)/chantiers/[id]/rapport/page.tsx
+  - Bouton "Telecharger rapport" sur chaque projet
+  - Page globale rapports dans le dashboard analytics
+
+Plan : PRO uniquement
+
+
+================================================================================
+9. CHECKLIST SECURITE CHANTIER
+================================================================================
+
+Quoi :
+  Checklists pre-definies de securite/conformite (EPI, echafaudage, electrique,
+  amiante...). L'artisan coche les points avant de demarrer le chantier.
+  Genere un PV de securite en PDF signe.
+
+Pourquoi :
+  Obligation legale pour beaucoup de chantiers. Actuellement fait sur papier.
+  Valeur juridique en cas d'accident.
+
+Implementation :
+  - Model Prisma :
+    model SafetyChecklist {
+      id          String   @id @default(cuid())
+      projectId   String
+      template    String   // "EPI", "ECHAFAUDAGE", "ELECTRIQUE"...
+      items       Json     // [{ label, checked, checkedAt, checkedBy }]
+      signedAt    DateTime?
+      signedById  String?
+      createdAt   DateTime @default(now())
+      project     Project  @relation(...)
+      signedBy    User?    @relation(...)
+    }
+  - Checklists pre-remplies par template (JSON statique dans le code)
+  - Onglet "Securite" dans le projet
+  - Bouton "Signer la checklist" -> capture signature (canvas existant)
+  - Export PDF du PV signe
+
+Plan : PRO uniquement
+
+
+================================================================================
+10. SUIVI METEO
+================================================================================
+
+Quoi :
+  Afficher la meteo du jour sur le chantier (basee sur l'adresse du projet).
+  Historique meteo lie aux entrees de temps. Utile pour justifier des retards
+  ou des jours non travailles.
+
+Pourquoi :
+  "Il a plu toute la semaine" est une justification frequente. Avoir la preuve
+  meteo automatique est un vrai plus.
+
+Implementation :
+  - API externe : Open-Meteo (gratuit, pas de cle API)
+  - Geocoding : adresse du projet -> lat/lng via Nominatim (gratuit)
+  - Ajouter weatherCode et temperature aux TimeEntry (optionnel, rempli auto)
+  - Widget meteo sur la page projet (petit encart)
+  - Dans les rapports : colonne meteo a cote des entrees de temps
+
+Plan : FREE (meteo du jour) | PRO (historique)
+
+
+================================================================================
+  PRIORITES SUGGEREES
+================================================================================
+
+Phase 1 (impact immediat, implementation simple) :
+  - Notes de chantier (#1)
+  - Taches / Todo (#3)
+  - Tags (#2)
+  - Notifications in-app (#5)
+
+Phase 2 (valeur PRO, differenciation) :
+  - Messagerie (#4)
+  - Planning calendrier (#7)
+  - Rapports / Export (#8)
+
+Phase 3 (niche, valeur ajoutee) :
+  - Templates (#6)
+  - Checklists securite (#9)
+  - Suivi meteo (#10)
+
+
+================================================================================
+  NOTES D'ARCHITECTURE COMMUNES
+================================================================================
+
+Pour chaque feature :
+
+1. Router tRPC :
+   - Toujours utiliser getArtisanContext() pour l'isolation des donnees
+   - Toujours appliquer requireRole() pour les permissions
+   - MEMBER : filtre par ProjectAssignment
+   - Operations financieres/admin : OWNER + ADMIN seulement
+
+2. i18n :
+   - Ajouter les cles dans chaque locale (fr-FR, en-GB, de-DE, es-ES)
+   - Namespace dedie par feature (notes.json, tasks.json, tags.json...)
+   - Zero string hardcodee dans le JSX
+
+3. Temps reel (Pusher) :
+   - Channel par projet : "project-{projectId}"
+   - Channel par user : "user-{userId}" (notifications)
+   - Toujours broadcaster apres mutation
+
+4. Mobile (PWA) :
+   - Tous les composants doivent etre responsive (mobile-first)
+   - Touch targets >= 44px
+   - Offline : envisager un service worker pour les notes en mode hors-ligne
+
+5. Magic link (/c/[token]) :
+   - Exposer les notes et messages (lecture seule) au client
+   - JAMAIS exposer : donnees financieres, artisanId, infos perso
+
+6. Tests :
+   - Integration test pour chaque router (verifie l'isolation artisanId)
+   - Test MEMBER ne peut pas acceder aux donnees d'un projet non-assigne
+
+================================================================================

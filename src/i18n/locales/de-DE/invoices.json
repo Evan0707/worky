@@ -59,6 +59,8 @@
   },
   "toasts": {
     "deleted": "Dokument gelöscht",
+    "sentPDP": "Rechnung erfolgreich über PDP versendet",
+    "generateError": "Fehler beim Generieren des Dokuments",
     "created": "Dokument erfolgreich erstellt",
     "generated": "Angebot/Rechnung generiert",
     "sent": "Per E-Mail gesendet",

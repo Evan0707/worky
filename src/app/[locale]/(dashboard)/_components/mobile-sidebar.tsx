@@ -6,6 +6,7 @@ import { Menu } from "lucide-react";
 import { SidebarNav, type NavSection } from "./sidebar-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { CommandMenu } from "@/components/command-menu";
+import { NotificationBell } from "@/components/notification-bell";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
@@ -43,8 +44,13 @@ export function MobileSidebar({ sections, user }: MobileSidebarProps) {
         </SheetHeader>
 
         {/* Navigation */}
-        <div className="px-5 pt-5 pb-2">
-          <CommandMenu />
+        <div className="px-5 pt-5 pb-2 flex gap-2">
+          <div className="flex-1">
+            <CommandMenu />
+          </div>
+          <div className="shrink-0 flex items-center">
+            <NotificationBell />
+          </div>
         </div>
         <nav className="flex-1 overflow-y-auto px-3 py-3">
           <SidebarNav sections={sections} onClick={() => setOpen(false)} />

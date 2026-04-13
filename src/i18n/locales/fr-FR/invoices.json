@@ -62,7 +62,9 @@
     "sent": "Envoyé par email",
     "markedPaid": "Marqué comme payé",
     "deleted": "Document supprimé",
-    "created": "Document créé avec succès"
+    "created": "Document créé avec succès",
+    "sentPDP": "Facture envoyée avec succès via PDP",
+    "generateError": "Erreur lors de la génération"
   },
   "empty": {
     "title": "Aucune facture",

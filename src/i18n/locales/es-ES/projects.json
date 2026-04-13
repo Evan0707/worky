@@ -39,7 +39,11 @@
     "time": "Horas",
     "materials": "Materiales",
     "invoice": "Presupuesto / Factura",
-    "team": "Equipo"
+    "team": "Equipo",
+    "notes": "Notas",
+    "tasks": "Tareas",
+    "messages": "Mensajes",
+    "safety": "Seguridad"
   },
   "team": {
     "title": "Acceso al proyecto",
@@ -84,11 +88,16 @@
     "updated": "Obra actualizada",
     "deleted": "Obra eliminada",
     "shared": "Enlace copiado al portapapeles",
-    "regenerated": "Enlace regenerado correctamente"
+    "regenerated": "Enlace regenerado correctamente",
+    "copyError": "Error al copiar"
   },
   "new": {
     "title": "Nueva obra",
-    "subtitle": "Introduzca los datos básicos para iniciar una nueva obra."
+    "subtitle": "Introduzca los datos básicos para iniciar una nueva obra.",
+    "templateLabel": "Plantilla de obra (opcional)",
+    "templatePlaceholder": "Elegir una plantilla...",
+    "templateHint": "Las tareas y materiales de la plantilla se añadirán automáticamente.",
+    "templateNone": "Sin plantilla"
   },
   "overview": {
     "generalInfo": "Información general",
@@ -100,6 +109,70 @@
     "view": "Ver obra",
     "copyId": "Copiar ID",
     "deactivate": "Desactivar"
+  },
+  "messages": {
+    "title": "Mensajes",
+    "empty": "Sin mensajes. Empiece la conversación.",
+    "placeholder": "Escribe un mensaje...",
+    "send": "Enviar",
+    "deleteConfirm": "¿Eliminar este mensaje?",
+    "deleteDesc": "Esta acción es irreversible.",
+    "deleteSuccess": "Mensaje eliminado",
+    "error": "Error al enviar",
+    "client": "Cliente",
+    "you": "Tú"
+  },
+  "notes": {
+    "title": "Diario de obra",
+    "empty": "Sin notas. Añada su primera nota.",
+    "placeholder": "Escriba una nota... (ej: pared norte terminada, entrega mañana)",
+    "add": "Añadir nota",
+    "pin": "Fijar",
+    "unpin": "Desfijar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "deleteConfirm": "¿Eliminar esta nota?",
+    "deleteDesc": "Esta acción es irreversible.",
+    "pinned": "Fijada",
+    "by": "por {name}",
+    "addSuccess": "Nota añadida",
+    "updateSuccess": "Nota actualizada",
+    "deleteSuccess": "Nota eliminada",
+    "error": "Error al guardar"
+  },
+  "tasks": {
+    "title": "Tareas",
+    "empty": "Sin tareas. Cree su primera tarea.",
+    "add": "Nueva tarea",
+    "addTitle": "Nueva tarea",
+    "titleLabel": "Título",
+    "titlePlaceholder": "Ej: Colocar los azulejos...",
+    "descriptionLabel": "Descripción (opcional)",
+    "descriptionPlaceholder": "Detalles...",
+    "dueDateLabel": "Fecha límite",
+    "assigneeLabel": "Asignar a",
+    "assigneePlaceholder": "Elegir miembro",
+    "priorityLabel": "Prioridad",
+    "priority": {
+      "0": "Normal",
+      "1": "Urgente",
+      "2": "Crítico"
+    },
+    "status": {
+      "TODO": "Por hacer",
+      "IN_PROGRESS": "En curso",
+      "DONE": "Hecho"
+    },
+    "overdue": "Atrasada",
+    "dueOn": "Para el {date}",
+    "assignedTo": "Asignado a {name}",
+    "createSuccess": "Tarea creada",
+    "updateSuccess": "Tarea actualizada",
+    "deleteSuccess": "Tarea eliminada",
+    "deleteConfirm": "¿Eliminar esta tarea?",
+    "deleteDesc": "Esta acción es irreversible.",
+    "error": "Error al guardar",
+    "noAssignee": "Sin asignar"
   },
   "time": {
     "totalHours": "Total de horas",
@@ -130,7 +203,25 @@
     "uploadError": "Error al subir",
     "photoAlt": "Foto de la obra",
     "empty": "Sin fotos por el momento. Suba imágenes arriba.",
-    "addedBy": "por {name}"
+    "addedBy": "por {name}",
+    "invalidFiles": "Archivos inválidos: solo imágenes, máx. 8 MB",
+    "noteUpdateError": "Error al actualizar la leyenda",
+    "orderSaveError": "Error al guardar el orden",
+    "dictationUnsupported": "Dictado de voz no compatible con este navegador",
+    "dictationStarted": "Adelante, hable...",
+    "dropzone": {
+      "dragOver": "Suelta tus fotos aquí",
+      "drop": "Arrastra tus fotos aquí",
+      "orClick": "o haz clic para seleccionar",
+      "constraints": "JPG, PNG, WEBP — máx. 16 MB por foto"
+    },
+    "caption": {
+      "label": "Leyenda",
+      "placeholder": "Añadir una leyenda...",
+      "save": "Guardar",
+      "labelDictation": "Leyenda (dictado por voz disponible)",
+      "placeholderDictation": "Ej: Grieta en la pared norte"
+    }
   },
   "navigation": {
     "openWith": "Cómo llegar",
@@ -159,6 +250,47 @@
     "title": "Próximos pasos",
     "placeholder": "Ej: Terminar baldosas...",
     "saveSuccess": "Lista actualizada"
+  },
+  "safety": {
+    "title": "Listas de verificación de seguridad",
+    "empty": "Sin listas. Cree una desde una plantilla.",
+    "new": "Nueva lista",
+    "newTitle": "Nueva lista de seguridad",
+    "chooseTemplate": "Elegir una plantilla",
+    "templateLabel": "Plantilla",
+    "create": "Crear lista",
+    "createSuccess": "Lista creada",
+    "deleteConfirm": "¿Eliminar esta lista?",
+    "deleteDesc": "Esta acción no se puede deshacer.",
+    "deleteSuccess": "Lista eliminada",
+    "signedAt": "Firmado el {date}",
+    "signedBy": "por {name}",
+    "notSigned": "No firmado",
+    "sign": "Firmar la lista",
+    "signTitle": "Firma de la lista",
+    "signDesc": "Firme para confirmar que todas las verificaciones se han completado.",
+    "signSuccess": "Lista firmada",
+    "alreadySigned": "Esta lista ya ha sido firmada.",
+    "itemCount": "{count} puntos",
+    "error": "Error al guardar",
+    "templates": {
+      "EPI": "Equipos de Protección Individual",
+      "ECHAFAUDAGE": "Andamios",
+      "ELECTRIQUE": "Seguridad eléctrica",
+      "AMIANTE": "Riesgo de amianto"
+    }
+  },
+  "meteo": {
+    "title": "Tiempo en la obra",
+    "loading": "Cargando...",
+    "error": "Tiempo no disponible",
+    "conditions": {
+      "sunny": "Soleado",
+      "cloudy": "Nublado",
+      "rainy": "Lluvioso",
+      "snowy": "Nevado",
+      "stormy": "Tormentoso"
+    }
   },
   "publicView": {
     "invalidLinkTitle": "Enlace inválido o caducado",

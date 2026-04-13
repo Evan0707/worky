@@ -1,0 +1,269 @@
+
+=============================================================================
+  TOAST USAGE AUDIT — Sonner (toast.success / toast.error / toast.info / toast.loading)
+  Généré le 2026-04-11
+=============================================================================
+
+Le composant <Toaster /> de Sonner (src/components/ui/sonner.tsx) est déjà  
+monté dans le layout, mais jamais visible car il n'est peut-être pas stylé  
+ou positionné correctement. Voici TOUTES les utilisations de toast() :
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ CHANTIERS — Création
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(dashboard)\chantiers\new\_components\create-project-form.tsx
+  L52:  toast.success  →  t("toasts.created")
+  L58:  toast.error    →  error.message || tCommon("errors.unexpected")
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ CHANTIERS — Équipe (assignation)
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(dashboard)\chantiers\[id]\equipe\_components\team-assignment-view.tsx
+  L43:  toast.success  →  t("assignSuccess")
+  L46:  toast.error    →  t("error")
+  L51:  toast.success  →  t("unassignSuccess")
+  L54:  toast.error    →  t("error")
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ CHANTIERS — Matériaux
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(dashboard)\chantiers\[id]\materiaux\_components\materials-view.tsx
+  L30:  toast.success  →  t("toasts.created")
+  L37:  toast.error    →  error.message
+  L42:  toast.success  →  t("toasts.deleted")
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ CHANTIERS — Messages
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(dashboard)\chantiers\[id]\messages\_components\messages-view.tsx
+  L42:  toast.error    →  t("error")
+  L48:  toast.success  →  t("deleteSuccess")
+  L51:  toast.error    →  t("error")
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ CHANTIERS — Notes
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(dashboard)\chantiers\[id]\notes\_components\notes-view.tsx
+  L40:  toast.success  →  t("addSuccess")
+  L43:  toast.error    →  t("error")
+  L49:  toast.success  →  t("updateSuccess")
+  L52:  toast.error    →  t("error")
+  L58:  toast.success  →  t("deleteSuccess")
+  L61:  toast.error    →  t("error")
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ CHANTIERS — Photos
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(dashboard)\chantiers\[id]\photos\_components\photos-view.tsx
+  L191: toast.error    →  "Erreur lors de la mise à jour de la note"          ⚠ HARDCODÉ
+  L221: toast.error    →  "Dictée vocale non supportée sur ce navigateur"     ⚠ HARDCODÉ
+  L264: toast.success  →  "À vous de parler..."                              ⚠ HARDCODÉ
+  L272: toast.error    →  "Erreur lors de la sauvegarde de l'ordre"           ⚠ HARDCODÉ
+  L285: toast.success  →  t("toasts.deleted")
+  L341: toast.error    →  "Fichiers invalides : images uniquement, max 8 Mo"  ⚠ HARDCODÉ
+  L392: toast.success  →  t("photos.uploadSuccess", { count })
+  L395: toast.error    →  message (variable)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ CHANTIERS — Sécurité (Checklists)
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(dashboard)\chantiers\[id]\securite\_components\safety-checklist-view.tsx
+  L66:  toast.success  →  t("createSuccess")
+  L69:  toast.error    →  t("error")
+  L73:  toast.error    →  t("error")
+  L82:  toast.success  →  t("signSuccess")
+  L85:  toast.error    →  t("error")
+  L91:  toast.success  →  t("deleteSuccess")
+  L94:  toast.error    →  t("error")
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ CHANTIERS — Tâches
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(dashboard)\chantiers\[id]\taches\_components\tasks-view.tsx
+  L61:  toast.error    →  t("error")
+  L67:  toast.success  →  t("deleteSuccess")
+  L70:  toast.error    →  t("error")
+  L276: toast.success  →  t("createSuccess")
+  L283: toast.error    →  t("error")
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ CHANTIERS — Temps
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(dashboard)\chantiers\[id]\temps\_components\time-entry-view.tsx
+  L28:  toast.success  →  t("toasts.created")
+  L32:  toast.error    →  error.message
+  L37:  toast.success  →  t("toasts.deleted")
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ CHANTIERS — Client / Partage
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(dashboard)\chantiers\[id]\_components\client-signature-dialog.tsx
+  L39:  toast.success  →  t("signatureDialog.successWithClose")
+  L41:  toast.success  →  t("signatureDialog.success")
+  L47:  toast.error    →  err.message || t("signatureDialog.errorGen")
+  L57:  toast.error    →  t("signatureDialog.errorEmpty")
+
+src\app\[locale]\(dashboard)\chantiers\[id]\_components\next-steps-editor.tsx
+  L43:  toast.success  →  translations.saveSuccess
+  L48:  toast.error    →  err.message
+
+src\app\[locale]\(dashboard)\chantiers\[id]\_components\share-project-button.tsx
+  L33:  toast.success  →  tToasts("regenerated")
+  L43:  toast.success  →  tToasts("shared")
+  L46:  toast.error    →  tToasts("copyError")
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ FACTURES
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(dashboard)\factures\_components\invoice-form.tsx
+  L74:  toast.success  →  t("toasts.created")
+  L79:  toast.error    →  err.message
+
+src\app\[locale]\(dashboard)\factures\_components\invoice-table.tsx
+  L45:  toast.success  →  tInvoices("toasts.deleted")
+  L49:  toast.error    →  err.message
+  L54:  toast.success  →  "Facture envoyée avec succès via PDP"               ⚠ HARDCODÉ
+  L58:  toast.error    →  err.message
+  L62:  toast.success  →  tInvoices("reminder.sent")
+  L63:  toast.error    →  err.message
+  L67:  toast.loading  →  t("status.loading"), { id: "facturx" }
+  L83:  toast.success  →  tInvoices("toasts.generated"), { id: "facturx" }
+  L85:  toast.error    →  e.message || "Erreur", { id: "facturx" }            ⚠ HARDCODÉ (fallback)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ SETTINGS — Templates
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(dashboard)\settings\templates\_components\templates-view.tsx
+  L33:  toast.success  →  t("createSuccess")
+  L36:  toast.error    →  t("error")
+  L42:  toast.success  →  t("updateSuccess")
+  L45:  toast.error    →  t("error")
+  L51:  toast.success  →  t("deleteSuccess")
+  L54:  toast.error    →  t("error")
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ SETTINGS — Profil
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(dashboard)\settings\_components\profile-form.tsx
+  L93:  toast.success  →  t("toasts.saved")
+  L100: toast.error    →  err.message ?? t("toasts.error")
+  L113: toast.error    →  "Format invalide. Image requise."                   ⚠ HARDCODÉ
+  L132: toast.success  →  "Logo mis à jour"                                   ⚠ HARDCODÉ
+  L135: toast.error    →  "Erreur lors de l'upload"                            ⚠ HARDCODÉ
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ SETTINGS — Facturation
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(dashboard)\settings\_components\billing-form.tsx
+  L68:  toast.success  →  t("toasts.saved")
+  L73:  toast.error    →  err.message ?? t("toasts.error")
+
+src\app\[locale]\(dashboard)\settings\_components\billing-view.tsx
+  L52:  toast.success  →  t("plans.success")
+  L65:  toast.success  →  t("plans.cancelDate", { date })
+  L69:  toast.error    →  err.message
+  L74:  toast.success  →  t("plans.resume")
+  L78:  toast.error    →  err.message
+  L95:  toast.success  →  t("plans.success")
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ SETTINGS — Équipe
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(dashboard)\settings\_components\team-activity.tsx
+  L124: toast.info     →  t("activity.toasts.photo", { member, project, count })
+  L131: toast.info     →  t("activity.toasts.time", { member, project, hours })
+  L138: toast.info     →  t("activity.toasts.material", { member, project, label })
+
+src\app\[locale]\(dashboard)\settings\_components\team-view.tsx
+  L91:  toast.success  →  t("toasts.created")
+  L94:  toast.error    →  err.message
+  L130: toast.success  →  t("invite.sent", { email })
+  L134: toast.error    →  err.message
+  L208: toast.success  →  t("toasts.removed")
+  L212: toast.error    →  err.message
+  L217: toast.success  →  t("toasts.roleUpdated")
+  L220: toast.error    →  err.message
+  L319: toast.success  →  t("toasts.revoked")
+  L322: toast.error    →  err.message
+  L377: toast.success  →  t("inviteSuccess", { team })
+  L382: toast.error    →  err.message
+  L441: toast.success  →  t("toasts.left")
+  L445: toast.error    →  err.message
+  L450: toast.success  →  t("toasts.deleted")
+  L454: toast.error    →  err.message
+  L464: toast.success  →  t("inviteSuccess", { team })
+  L468: toast.error    →  t(key)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ ONBOARDING
+═══════════════════════════════════════════════════════════════════════════════
+
+src\app\[locale]\(onboarding)\onboarding\_components\onboarding-form.tsx
+  L77:  toast.success  →  t("success")
+  L81:  toast.error    →  err.message
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ COMPOSANTS PARTAGÉS
+═══════════════════════════════════════════════════════════════════════════════
+
+src\components\tag-picker.tsx
+  L93:  toast.error    →  t("error")
+  L98:  toast.error    →  t("error")
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ RÉSUMÉ PAR VARIANTE
+═══════════════════════════════════════════════════════════════════════════════
+
+  toast.success   →  38 occurrences
+  toast.error     →  37 occurrences
+  toast.info      →   3 occurrences  (team-activity uniquement)
+  toast.loading   →   1 occurrence   (facturx PDF uniquement)
+  toast.warning   →   0 occurrences
+  toast.promise   →   0 occurrences
+
+  TOTAL           →  79 appels de toast
+
+
+═══════════════════════════════════════════════════════════════════════════════
+ STRINGS HARDCODÉES (⚠ non-i18n)
+═══════════════════════════════════════════════════════════════════════════════
+
+  photos-view.tsx       →  5 strings hardcodées en français
+  profile-form.tsx      →  3 strings hardcodées en français
+  invoice-table.tsx     →  2 strings hardcodées en français
+
+  TOTAL                 →  10 strings à migrer vers les fichiers i18n
+

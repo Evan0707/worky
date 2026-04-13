@@ -9,6 +9,8 @@
     "billing": "Billing",
     "invoices": "Invoices",
     "analytics": "Analytics",
+    "planning": "Planning",
+    "reports": "Reports",
     "logout": "Sign out"
   },
   "buttons": {
@@ -23,7 +25,8 @@
     "close": "Close",
     "share": "Share",
     "export": "Export",
-    "download": "Download"
+    "download": "Download",
+    "ctrlEnter": "Ctrl+Enter to send"
   },
   "status": {
     "loading": "Loading...",
@@ -36,6 +39,10 @@
     "unexpected": "An unexpected error occurred.",
     "unauthorized": "You are not authorised to perform this action.",
     "notFound": "Resource not found.",
+    "required": "This field is required.",
+    "invalidEmail": "Invalid email address."
+  },
+  "validation": {
     "required": "This field is required.",
     "invalidEmail": "Invalid email address."
   },
@@ -65,6 +72,70 @@
     "rowsPerPage": "Rows per page",
     "pageInfo": "Page {page} of {total}"
   },
+  "planning": {
+    "title": "Planning",
+    "noEvents": "No events in this period.",
+    "projects": "Projects",
+    "tasks": "Tasks",
+    "timeEntries": "Time entries",
+    "today": "Today",
+    "week": "Week",
+    "month": "Month",
+    "prev": "Previous",
+    "next": "Next",
+    "overdue": "Overdue"
+  },
+  "reports": {
+    "title": "Reports",
+    "projectSummary": "Project report",
+    "profitability": "Profitability",
+    "timeExport": "Time export",
+    "materialExport": "Materials export",
+    "download": "Download",
+    "exportCsv": "Export as CSV",
+    "totalHours": "Total hours",
+    "laborCost": "Labour cost",
+    "materialCost": "Materials cost",
+    "totalCost": "Total cost",
+    "totalInvoiced": "Invoiced",
+    "totalPaid": "Collected",
+    "margin": "Margin",
+    "noHourlyRate": "Set your hourly rate in settings to calculate profitability.",
+    "tasksDone": "{done}/{total} tasks done",
+    "client": "Client",
+    "status": "Status"
+  },
+  "tags": {
+    "title": "Tags",
+    "empty": "No tags yet. Create your first tag.",
+    "add": "New tag",
+    "namePlaceholder": "E.g. urgent, electrical...",
+    "createSuccess": "Tag created",
+    "updateSuccess": "Tag updated",
+    "deleteSuccess": "Tag deleted",
+    "deleteConfirm": "Delete this tag?",
+    "deleteDesc": "It will be removed from all projects.",
+    "error": "Error",
+    "noTags": "No tags",
+    "addTag": "Add tag",
+    "searchPlaceholder": "Search tags..."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications.",
+    "markAllRead": "Mark all as read",
+    "viewAll": "View all",
+    "types": {
+      "CLIENT_COMMENT": "Client comment",
+      "CLIENT_SIGNATURE": "Client signature",
+      "TASK_ASSIGNED": "Task assigned",
+      "TASK_OVERDUE": "Task overdue",
+      "INVOICE_PAID": "Invoice paid",
+      "TEAM_MEMBER_JOINED": "New team member",
+      "PHOTO_ADDED": "Photo added",
+      "NOTE_ADDED": "Note added"
+    }
+  },
   "subpages": {
     "time": "Time tracking",
     "materials": "Materials & Purchases",
@@ -89,6 +160,9 @@
       "profile": "My Profile",
       "billing": "Subscription & Team"
     }
+  },
+  "validation": {
+    "required": "Required",
+    "invalidEmail": "Invalid email"
   }
 }
-

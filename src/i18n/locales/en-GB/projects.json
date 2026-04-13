@@ -39,7 +39,11 @@
     "time": "Time",
     "materials": "Materials",
     "invoice": "Quote / Invoice",
-    "team": "Team"
+    "team": "Team",
+    "notes": "Notes",
+    "tasks": "Tasks",
+    "messages": "Messages",
+    "safety": "Safety"
   },
   "team": {
     "title": "Project Access",
@@ -84,11 +88,16 @@
     "updated": "Project updated",
     "deleted": "Project deleted",
     "shared": "Link copied to clipboard",
-    "regenerated": "Link regenerated successfully"
+    "regenerated": "Link regenerated successfully",
+    "copyError": "Error copying to clipboard"
   },
   "new": {
     "title": "New project",
-    "subtitle": "Enter the basic details to start a new project."
+    "subtitle": "Enter the basic details to start a new project.",
+    "templateLabel": "Project template (optional)",
+    "templatePlaceholder": "Choose a template...",
+    "templateHint": "The template's tasks and materials will be added automatically.",
+    "templateNone": "No template"
   },
   "overview": {
     "generalInfo": "General information",
@@ -100,6 +109,70 @@
     "view": "View project",
     "copyId": "Copy ID",
     "deactivate": "Deactivate"
+  },
+  "messages": {
+    "title": "Messages",
+    "empty": "No messages. Start the conversation.",
+    "placeholder": "Write a message...",
+    "send": "Send",
+    "deleteConfirm": "Delete this message?",
+    "deleteDesc": "This action is irreversible.",
+    "deleteSuccess": "Message deleted",
+    "error": "Error sending message",
+    "client": "Client",
+    "you": "You"
+  },
+  "notes": {
+    "title": "Site Journal",
+    "empty": "No notes yet. Add your first note.",
+    "placeholder": "Write a note... (e.g. north wall done, tiles delivery tomorrow)",
+    "add": "Add note",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Delete this note?",
+    "deleteDesc": "This action is irreversible.",
+    "pinned": "Pinned",
+    "by": "by {name}",
+    "addSuccess": "Note added",
+    "updateSuccess": "Note updated",
+    "deleteSuccess": "Note deleted",
+    "error": "Error saving note"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "empty": "No tasks yet. Create your first task.",
+    "add": "New task",
+    "addTitle": "New task",
+    "titleLabel": "Title",
+    "titlePlaceholder": "E.g. Lay the tiles...",
+    "descriptionLabel": "Description (optional)",
+    "descriptionPlaceholder": "Details...",
+    "dueDateLabel": "Due date",
+    "assigneeLabel": "Assign to",
+    "assigneePlaceholder": "Choose a member",
+    "priorityLabel": "Priority",
+    "priority": {
+      "0": "Normal",
+      "1": "Urgent",
+      "2": "Critical"
+    },
+    "status": {
+      "TODO": "To do",
+      "IN_PROGRESS": "In progress",
+      "DONE": "Done"
+    },
+    "overdue": "Overdue",
+    "dueOn": "Due {date}",
+    "assignedTo": "Assigned to {name}",
+    "createSuccess": "Task created",
+    "updateSuccess": "Task updated",
+    "deleteSuccess": "Task deleted",
+    "deleteConfirm": "Delete this task?",
+    "deleteDesc": "This action is irreversible.",
+    "error": "Error saving task",
+    "noAssignee": "Unassigned"
   },
   "time": {
     "totalHours": "Total hours",
@@ -130,7 +203,25 @@
     "uploadError": "Upload error",
     "photoAlt": "Site photo",
     "empty": "No photos yet. Upload images above.",
-    "addedBy": "by {name}"
+    "addedBy": "by {name}",
+    "invalidFiles": "Invalid files: images only, max 8 MB",
+    "noteUpdateError": "Error updating caption",
+    "orderSaveError": "Error saving order",
+    "dictationUnsupported": "Voice dictation not supported on this browser",
+    "dictationStarted": "Go ahead and speak...",
+    "dropzone": {
+      "dragOver": "Drop your photos here",
+      "drop": "Drag your photos here",
+      "orClick": "or click to select",
+      "constraints": "JPG, PNG, WEBP — max 16 MB per photo"
+    },
+    "caption": {
+      "label": "Caption",
+      "placeholder": "Add a caption...",
+      "save": "Save",
+      "labelDictation": "Caption (voice dictation available)",
+      "placeholderDictation": "Ex: Crack in the north wall"
+    }
   },
   "navigation": {
     "openWith": "Get Directions",
@@ -159,6 +250,47 @@
     "title": "Next Steps",
     "placeholder": "E.g. Finish tiling...",
     "saveSuccess": "List updated"
+  },
+  "safety": {
+    "title": "Safety Checklists",
+    "empty": "No checklists yet. Create one from a template.",
+    "new": "New checklist",
+    "newTitle": "New Safety Checklist",
+    "chooseTemplate": "Choose a template",
+    "templateLabel": "Template",
+    "create": "Create checklist",
+    "createSuccess": "Checklist created",
+    "deleteConfirm": "Delete this checklist?",
+    "deleteDesc": "This action cannot be undone.",
+    "deleteSuccess": "Checklist deleted",
+    "signedAt": "Signed on {date}",
+    "signedBy": "by {name}",
+    "notSigned": "Not signed",
+    "sign": "Sign checklist",
+    "signTitle": "Sign checklist",
+    "signDesc": "Sign to confirm all checks have been completed.",
+    "signSuccess": "Checklist signed",
+    "alreadySigned": "This checklist has already been signed.",
+    "itemCount": "{count} items",
+    "error": "Error saving",
+    "templates": {
+      "EPI": "Personal Protective Equipment",
+      "ECHAFAUDAGE": "Scaffolding",
+      "ELECTRIQUE": "Electrical Safety",
+      "AMIANTE": "Asbestos Risk"
+    }
+  },
+  "meteo": {
+    "title": "Weather on site",
+    "loading": "Loading...",
+    "error": "Weather unavailable",
+    "conditions": {
+      "sunny": "Sunny",
+      "cloudy": "Cloudy",
+      "rainy": "Rainy",
+      "snowy": "Snowy",
+      "stormy": "Stormy"
+    }
   },
   "publicView": {
     "invalidLinkTitle": "Invalid or expired link",

@@ -16,6 +16,7 @@ import { ShareProjectButton } from "./_components/share-project-button";
 import { AddressNavigationButton } from "./_components/address-navigation-button";
 import { ClientSignatureDialog } from "./_components/client-signature-dialog";
 import { NextStepsEditor } from "./_components/next-steps-editor";
+import { WeatherWidget } from "./_components/weather-widget";
 
 export default async function ProjectOverviewPage({
   params,
@@ -90,6 +91,7 @@ export default async function ProjectOverviewPage({
 
         {/* Right sidebar (1/3) */}
         <div className="space-y-4">
+          <WeatherWidget address={project.address} />
 
           {/* Client */}
           <div className="rounded-xl border bg-card p-4">

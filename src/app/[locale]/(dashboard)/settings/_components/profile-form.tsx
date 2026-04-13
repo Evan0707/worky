@@ -110,7 +110,7 @@ export function ProfileForm({
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      toast.error("Format invalide. Image requise.");
+      toast.error(t("toasts.logoInvalidFormat"));
       return;
     }
 
@@ -124,15 +124,15 @@ export function ProfileForm({
         body: formData,
       });
 
-      if (!res.ok) throw new Error("Upload échoué");
+      if (!res.ok) throw new Error("upload_failed");
 
       const { files: uploaded } = await res.json();
       if (uploaded && uploaded[0]) {
         form.setValue("logoUrl", uploaded[0].url, { shouldDirty: true });
-        toast.success("Logo mis à jour");
+        toast.success(t("toasts.logoUpdated"));
       }
     } catch {
-      toast.error("Erreur lors de l'upload");
+      toast.error(t("toasts.logoUploadError"));
     } finally {
       setUploadingLogo(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -158,7 +158,7 @@ export function ProfileForm({
                   {form.watch("logoUrl") ? (
                     <>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={form.watch("logoUrl")!} alt="Logo" className="w-full h-full object-cover" />
+                      <img src={form.watch("logoUrl")!} alt={form.watch("companyName") || t("profile.companyName")} className="w-full h-full object-cover" />
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <span className="text-xs text-white font-medium">Modifier</span>
                       </div>

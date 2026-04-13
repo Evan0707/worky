@@ -178,17 +178,10 @@ export const projectRouter = createTRPCRouter({
           address: true,
           startDate: true,
           endDate: true,
-          nextSteps: true,
-          clientName: true,
           shareExpiresAt: true,
           photos: {
             select: { id: true, url: true, note: true, takenAt: true },
             orderBy: { takenAt: "desc" },
-          },
-          invoices: {
-            where: { status: { in: ["SENT", "PAID"] } },
-            select: { id: true, number: true, totalTTC: true, status: true, dueAt: true, createdAt: true },
-            orderBy: { createdAt: "desc" },
           },
           clientActions: {
             select: { id: true, type: true, payload: true, createdAt: true },
