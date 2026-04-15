@@ -176,3 +176,4 @@ export const taskRouter = createTRPCRouter({
       return ctx.db.task.delete({ where: { id: input.id } });
     }),
 });
+
