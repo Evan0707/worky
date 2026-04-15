@@ -181,17 +181,22 @@ export const projectRouter = createTRPCRouter({
           id: true,
           name: true,
           status: true,
+          description: true,
+          address: true,
+          startDate: true,
+          endDate: true,
           shareExpiresAt: true,
           photos: {
-            select: { url: true, note: true, takenAt: true },
+            select: { id: true, url: true, note: true, takenAt: true },
             orderBy: { takenAt: "desc" },
           },
           clientActions: {
-            select: { type: true, payload: true, createdAt: true },
+            select: { id: true, type: true, payload: true, createdAt: true },
             orderBy: { createdAt: "desc" },
           },
+          _count: { select: { photos: true } },
           artisan: {
-            select: { companyName: true, logoUrl: true },
+            select: { name: true, companyName: true, image: true, logoUrl: true },
           },
         },
       });
