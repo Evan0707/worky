@@ -26,38 +26,38 @@ XML_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
     </ram:GuidelineSpecifiedDocumentContextParameter>
   </rsm:ExchangedDocumentContext>
   <rsm:ExchangedDocument>
-    <ram:ID>{{ invoice.number }}</ram:ID>
+    <ram:ID>{{ invoice.number | e }}</ram:ID>
     <ram:TypeCode>380</ram:TypeCode>
     <ram:IssueDateTime>
-      <udt:DateTimeString format="102">{{ invoice.date_str }}</udt:DateTimeString>
+      <udt:DateTimeString format="102">{{ invoice.date_str | e }}</udt:DateTimeString>
     </ram:IssueDateTime>
   </rsm:ExchangedDocument>
   <rsm:SupplyChainTradeTransaction>
     <ram:ApplicableHeaderTradeAgreement>
       <ram:SellerTradeParty>
-        <ram:Name>{{ seller.name }}</ram:Name>
+        <ram:Name>{{ seller.name | e }}</ram:Name>
         <ram:SpecifiedLegalOrganization>
-          <ram:ID schemeID="0002">{{ seller.siret }}</ram:ID>
+          <ram:ID schemeID="0002">{{ seller.siret | e }}</ram:ID>
         </ram:SpecifiedLegalOrganization>
         <ram:PostalTradeAddress>
-          <ram:CountryID>{{ seller.country }}</ram:CountryID>
+          <ram:CountryID>{{ seller.country | e }}</ram:CountryID>
         </ram:PostalTradeAddress>
         <ram:SpecifiedTaxRegistration>
-          <ram:ID schemeID="VA">{{ seller.vat }}</ram:ID>
+          <ram:ID schemeID="VA">{{ seller.vat | e }}</ram:ID>
         </ram:SpecifiedTaxRegistration>
       </ram:SellerTradeParty>
       <ram:BuyerTradeParty>
-        <ram:Name>{{ buyer.name }}</ram:Name>
+        <ram:Name>{{ buyer.name | e }}</ram:Name>
       </ram:BuyerTradeParty>
     </ram:ApplicableHeaderTradeAgreement>
     <ram:ApplicableHeaderTradeDelivery/>
     <ram:ApplicableHeaderTradeSettlement>
-      <ram:InvoiceCurrencyCode>{{ invoice.currency }}</ram:InvoiceCurrencyCode>
+      <ram:InvoiceCurrencyCode>{{ invoice.currency | e }}</ram:InvoiceCurrencyCode>
       <ram:SpecifiedTradeSettlementHeaderMonetarySummation>
-        <ram:TaxBasisTotalAmount>{{ invoice.total_ht }}</ram:TaxBasisTotalAmount>
-        <ram:TaxTotalAmount currencyID="{{ invoice.currency }}">{{ invoice.total_vat }}</ram:TaxTotalAmount>
-        <ram:GrandTotalAmount>{{ invoice.total_ttc }}</ram:GrandTotalAmount>
-        <ram:DuePayableAmount>{{ invoice.total_ttc }}</ram:DuePayableAmount>
+        <ram:TaxBasisTotalAmount>{{ invoice.total_ht | e }}</ram:TaxBasisTotalAmount>
+        <ram:TaxTotalAmount currencyID="{{ invoice.currency | e }}">{{ invoice.total_vat | e }}</ram:TaxTotalAmount>
+        <ram:GrandTotalAmount>{{ invoice.total_ttc | e }}</ram:GrandTotalAmount>
+        <ram:DuePayableAmount>{{ invoice.total_ttc | e }}</ram:DuePayableAmount>
       </ram:SpecifiedTradeSettlementHeaderMonetarySummation>
     </ram:ApplicableHeaderTradeSettlement>
   </rsm:SupplyChainTradeTransaction>
