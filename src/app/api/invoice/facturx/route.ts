@@ -73,9 +73,11 @@ export async function POST(req: NextRequest) {
       country: artisan?.country || "FR",
     };
 
-    // 3. Call Python Microservice
-    // The Python service runs on port 8000. In production, this URL should be an env var pointing to Fly.io
-    const microserviceUrl = process.env.FACTURX_API_URL || "http://localhost:8000/generate";
+    // Ensure the URL targets the /generate endpoint even if omitted in environment variables
+    let microserviceUrl = process.env.FACTURX_API_URL || "http://localhost:8000/generate";
+    if (!microserviceUrl.endsWith("/generate")) {
+      microserviceUrl = microserviceUrl.replace(/\/$/, "") + "/generate";
+    }
 
     const response = await fetch(microserviceUrl, {
       method: "POST",
