@@ -44,18 +44,18 @@ model VerificationToken {
 }
 
 model User {
-  id                   String      @id @default(cuid())
+  id                   String              @id @default(cuid())
   name                 String?
-  email                String?     @unique
+  email                String?             @unique
   emailVerified        DateTime?
   image                String?
-  plan                 Plan        @default(FREE)
-  stripeCustomerId     String?     @unique
-  stripeSubscriptionId String?     @unique
-  locale               String      @default("fr-FR")
-  country              String      @default("FR")
-  currency             String      @default("EUR")
-  vatScheme            VatScheme   @default(STANDARD)
+  plan                 Plan                @default(FREE)
+  stripeCustomerId     String?             @unique
+  stripeSubscriptionId String?             @unique
+  locale               String              @default("fr-FR")
+  country              String              @default("FR")
+  currency             String              @default("EUR")
+  vatScheme            VatScheme           @default(STANDARD)
   vatNumber            String?
   siret                String?
   steuernummer         String?
@@ -64,32 +64,32 @@ model User {
   companyAddress       String?
   logoUrl              String?
   logoKey              String?
-  hourlyRate           Decimal?    @db.Decimal(10, 2)
+  hourlyRate           Decimal?            @db.Decimal(10, 2)
   iban                 String?
-  createdAt            DateTime    @default(now())
-  updatedAt            DateTime    @updatedAt
-  proTrialUsed         Boolean     @default(false)
-  maxTeamMembers       Int         @default(0)
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  proTrialUsed         Boolean             @default(false)
+  maxTeamMembers       Int                 @default(0)
   industry             String?
-  setupComplete        Boolean     @default(false)
+  setupComplete        Boolean             @default(false)
   accounts             Account[]
   projects             Project[]
   sessions             Session[]
-  ownedTeam            Team?              @relation("TeamOwner")
+  ownedTeam            Team?               @relation("TeamOwner")
   teamMember           TeamMember?
   assignments          ProjectAssignment[]
-  photosCreated        Photo[]            @relation("PhotoCreator")
-  timeEntriesCreated   TimeEntry[]        @relation("TimeEntryCreator")
-  materialsCreated     Material[]         @relation("MaterialCreator")
-  invoicesCreated      Invoice[]          @relation("InvoiceCreator")
-  notesCreated         ProjectNote[]      @relation("NoteCreator")
-  tags                 Tag[]              @relation("UserTags")
-  tasksCreated         Task[]             @relation("TaskCreator")
-  tasksAssigned        Task[]             @relation("TaskAssignee")
+  photosCreated        Photo[]             @relation("PhotoCreator")
+  timeEntriesCreated   TimeEntry[]         @relation("TimeEntryCreator")
+  materialsCreated     Material[]          @relation("MaterialCreator")
+  invoicesCreated      Invoice[]           @relation("InvoiceCreator")
+  notesCreated         ProjectNote[]       @relation("NoteCreator")
+  tags                 Tag[]               @relation("UserTags")
+  tasksCreated         Task[]              @relation("TaskCreator")
+  tasksAssigned        Task[]              @relation("TaskAssignee")
   notifications        Notification[]
-  messages             Message[]          @relation("MessageAuthor")
-  templates            ProjectTemplate[]  @relation("UserTemplates")
-  safetyChecklists     SafetyChecklist[]  @relation("ChecklistSigner")
+  messages             Message[]           @relation("MessageAuthor")
+  templates            ProjectTemplate[]   @relation("UserTemplates")
+  safetyChecklists     SafetyChecklist[]   @relation("ChecklistSigner")
 }
 
 model Team {
@@ -134,10 +134,10 @@ model TeamInvitation {
 }
 
 model Project {
-  id                 String               @id @default(cuid())
+  id                 String              @id @default(cuid())
   name               String
   address            String
-  status             ProjectStatus        @default(ACTIVE)
+  status             ProjectStatus       @default(ACTIVE)
   clientName         String
   clientPhone        String?
   clientEmail        String?
@@ -145,21 +145,21 @@ model Project {
   description        String?
   startDate          DateTime?
   endDate            DateTime?
-  shareToken         String               @unique @default(uuid())
+  shareToken         String              @unique @default(uuid())
   shareExpiresAt     DateTime?
   artisanId          String
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
   clientLastViewedAt DateTime?
   budget             Int?
-  progress           Int                  @default(0)
+  progress           Int                 @default(0)
   nextSteps          Json?
   assignments        ProjectAssignment[]
   clientActions      ClientAction[]
   invoices           Invoice[]
   materials          Material[]
   photos             Photo[]
-  artisan            User                 @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  artisan            User                @relation(fields: [artisanId], references: [id], onDelete: Cascade)
   timeEntries        TimeEntry[]
   notes              ProjectNote[]
   tags               ProjectTag[]
@@ -378,8 +378,8 @@ model ProjectTemplate {
   id          String   @id @default(cuid())
   name        String
   description String?
-  tasks       Json     // [{ title, priority, order }]
-  materials   Json     // [{ label, quantity, unitPrice, unit }]
+  tasks       Json // [{ title, priority, order }]
+  materials   Json // [{ label, quantity, unitPrice, unit }]
   tags        String[]
   artisanId   String
   createdAt   DateTime @default(now())
@@ -390,17 +390,17 @@ model ProjectTemplate {
 }
 
 model SafetyChecklist {
-  id          String    @id @default(cuid())
-  projectId   String
-  template    String    // "EPI", "ECHAFAUDAGE", "ELECTRIQUE", "AMIANTE"
-  items       Json      // [{ id, label, checked, checkedAt, checkedBy }]
-  signedAt    DateTime?
-  signedById  String?
+  id           String    @id @default(cuid())
+  projectId    String
+  template     String // "EPI", "ECHAFAUDAGE", "ELECTRIQUE", "AMIANTE"
+  items        Json // [{ id, label, checked, checkedAt, checkedBy }]
+  signedAt     DateTime?
+  signedById   String?
   signatureUrl String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  signedBy    User?     @relation("ChecklistSigner", fields: [signedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  project      Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  signedBy     User?     @relation("ChecklistSigner", fields: [signedById], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([signedById])
