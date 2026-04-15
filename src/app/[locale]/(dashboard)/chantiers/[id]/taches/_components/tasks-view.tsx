@@ -34,11 +34,6 @@ import { cn } from "@/lib/utils";
 type Task = RouterOutputs["task"]["listByProject"][number];
 type TaskStatus = "TODO" | "IN_PROGRESS" | "DONE";
 
-const PRIORITY_COLORS = {
-  0: "text-muted-foreground",
-  1: "text-amber-600",
-  2: "text-red-600",
-} as const;
 
 const STATUS_COLUMNS: TaskStatus[] = ["TODO", "IN_PROGRESS", "DONE"];
 
@@ -183,7 +178,7 @@ function TaskCard({
   task,
   locale,
   onStatusToggle,
-  onStatusChange,
+  onStatusChange: _onStatusChange, // eslint-disable-line @typescript-eslint/no-unused-vars
   onDeleteRequest,
   isUpdating,
   t,

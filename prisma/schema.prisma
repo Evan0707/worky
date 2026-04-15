@@ -3,7 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 model Account {
@@ -194,7 +196,7 @@ model Photo {
   order       Int        @default(0)
   createdById String?
   project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  createdBy   User?      @relation("PhotoCreator", fields: [createdById], references: [id])
+  createdBy   User?      @relation("PhotoCreator", fields: [createdById], references: [id], onDelete: SetNull)
   photoTags   PhotoTag[]
 
   @@index([projectId])
@@ -209,7 +211,7 @@ model TimeEntry {
   description String?
   createdById String?
   project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  createdBy   User?    @relation("TimeEntryCreator", fields: [createdById], references: [id])
+  createdBy   User?    @relation("TimeEntryCreator", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([createdById])
@@ -224,7 +226,7 @@ model Material {
   unit        String  @default("u")
   createdById String?
   project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  createdBy   User?   @relation("MaterialCreator", fields: [createdById], references: [id])
+  createdBy   User?   @relation("MaterialCreator", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([createdById])
@@ -252,7 +254,7 @@ model Invoice {
   updatedAt       DateTime      @updatedAt
   createdById     String?
   project         Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  createdBy       User?         @relation("InvoiceCreator", fields: [createdById], references: [id])
+  createdBy       User?         @relation("InvoiceCreator", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([projectId, status])
@@ -279,7 +281,7 @@ model ProjectNote {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  createdBy   User?    @relation("NoteCreator", fields: [createdById], references: [id])
+  createdBy   User?    @relation("NoteCreator", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([createdById])
@@ -331,8 +333,8 @@ model Task {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id])
-  createdBy   User?      @relation("TaskCreator", fields: [createdById], references: [id])
+  assignee    User?      @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  createdBy   User?      @relation("TaskCreator", fields: [createdById], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([assigneeId])
@@ -365,7 +367,7 @@ model Message {
   isFromClient Boolean  @default(false)
   createdAt    DateTime @default(now())
   project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  author       User?    @relation("MessageAuthor", fields: [authorId], references: [id])
+  author       User?    @relation("MessageAuthor", fields: [authorId], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([authorId])
@@ -398,7 +400,7 @@ model SafetyChecklist {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  signedBy    User?     @relation("ChecklistSigner", fields: [signedById], references: [id])
+  signedBy    User?     @relation("ChecklistSigner", fields: [signedById], references: [id], onDelete: SetNull)
 
   @@index([projectId])
   @@index([signedById])

@@ -14,7 +14,7 @@ export const env = createEnv({
     AUTH_GOOGLE_ID: z.string().optional(),
     AUTH_GOOGLE_SECRET: z.string().optional(),
     AUTH_RESEND_KEY: z.string().optional(),
-    AUTH_EMAIL_FROM: z.string().email().default("noreply@chantierpro.fr"),
+    AUTH_EMAIL_FROM: z.string().email().default("noreply@openchantier.com"),
 
     DATABASE_URL: z.string().url(),
     DATABASE_URL_UNPOOLED: z.string().url().optional(),
@@ -76,6 +76,7 @@ export const env = createEnv({
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
 
     FACTURX_API_URL: process.env.FACTURX_API_URL,
+    FACTURX_API_SECRET: process.env.FACTURX_API_SECRET,
     TIIME_WEBHOOK_SECRET: process.env.TIIME_WEBHOOK_SECRET,
 
     RESEND_API_KEY: process.env.RESEND_API_KEY,

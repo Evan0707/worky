@@ -476,10 +476,11 @@ export const teamRouter = createTRPCRouter({
   activity: protectedProcedure.query(async ({ ctx }) => {
     const userId = ctx.session.user.id!;
 
-    // Resolve team
+    // Resolve team and role
     const ownedTeam = await ctx.db.team.findUnique({ where: { ownerId: userId } });
     let artisanId: string;
     let teamId: string | null = null;
+    let isMember = false;
 
     if (ownedTeam) {
       artisanId = userId;
@@ -487,18 +488,34 @@ export const teamRouter = createTRPCRouter({
     } else {
       const membership = await ctx.db.teamMember.findUnique({
         where: { userId },
-        select: { teamId: true, team: { select: { ownerId: true } } },
+        select: { teamId: true, role: true, team: { select: { ownerId: true } } },
       });
       if (!membership) throw new TRPCError({ code: "FORBIDDEN", message: "Not in a team" });
       artisanId = membership.team.ownerId;
       teamId = membership.teamId;
+      isMember = membership.role === "MEMBER";
     }
+
+    // MEMBER: restrict to projects they are assigned to
+    let projectIdFilter: { in: string[] } | undefined;
+    if (isMember) {
+      const assignments = await ctx.db.projectAssignment.findMany({
+        where: { userId },
+        select: { projectId: true },
+      });
+      projectIdFilter = { in: assignments.map((a) => a.projectId) };
+    }
+
+    // Build project filter — MEMBER sees only assigned projects
+    const projectFilter = isMember && projectIdFilter
+      ? { artisanId, id: projectIdFilter }
+      : { artisanId };
 
     const creatorSelect = { select: { id: true, name: true, image: true } } as const;
 
     const [photos, timeEntries, materials, invoices] = await Promise.all([
       ctx.db.photo.findMany({
-        where: { project: { artisanId }, createdById: { not: null } },
+        where: { project: projectFilter, createdById: { not: null } },
         orderBy: { takenAt: "desc" },
         take: 50,
         select: {
@@ -511,7 +528,7 @@ export const teamRouter = createTRPCRouter({
         },
       }),
       ctx.db.timeEntry.findMany({
-        where: { project: { artisanId }, createdById: { not: null } },
+        where: { project: projectFilter, createdById: { not: null } },
         orderBy: { date: "desc" },
         take: 50,
         select: {
@@ -524,7 +541,7 @@ export const teamRouter = createTRPCRouter({
         },
       }),
       ctx.db.material.findMany({
-        where: { project: { artisanId }, createdById: { not: null } },
+        where: { project: projectFilter, createdById: { not: null } },
         orderBy: { id: "desc" },
         take: 50,
         select: {
@@ -537,7 +554,7 @@ export const teamRouter = createTRPCRouter({
         },
       }),
       ctx.db.invoice.findMany({
-        where: { project: { artisanId }, createdById: { not: null } },
+        where: { project: projectFilter, createdById: { not: null } },
         orderBy: { createdAt: "desc" },
         take: 50,
         select: {
@@ -591,5 +608,3 @@ export const teamRouter = createTRPCRouter({
     return { events, teamId };
   }),
 });
-
-

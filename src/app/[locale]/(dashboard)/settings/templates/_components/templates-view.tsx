@@ -266,7 +266,6 @@ export function TemplatesView() {
           }
         }}
         loading={applyMutation.isPending}
-        t={t}
         tCommon={tCommon}
       />
 
@@ -386,7 +385,6 @@ function ProjectPickerDialog({
   projects,
   onConfirm,
   loading,
-  t,
   tCommon,
 }: {
   open: boolean;
@@ -397,7 +395,6 @@ function ProjectPickerDialog({
   projects: Project[];
   onConfirm: (projectId: string) => void;
   loading: boolean;
-  t: TFn;
   tCommon: TCommonFn;
 }) {
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");

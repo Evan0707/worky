@@ -132,6 +132,9 @@ export const safetyChecklistRouter = createTRPCRouter({
       const userId = ctx.session.user.id!;
       const { artisanId, role } = await getArtisanContext(userId, ctx.db);
 
+      const plan = await getEffectivePlan(userId, ctx.db);
+      if (plan === "FREE") throw new TRPCError({ code: "FORBIDDEN", message: "PRO plan required" });
+
       const checklist = await ctx.db.safetyChecklist.findUnique({
         where: { id: input.id },
         include: { project: { select: { artisanId: true, id: true } } },
@@ -166,6 +169,9 @@ export const safetyChecklistRouter = createTRPCRouter({
       const userId = ctx.session.user.id!;
       const { artisanId, role } = await getArtisanContext(userId, ctx.db);
 
+      const plan = await getEffectivePlan(userId, ctx.db);
+      if (plan === "FREE") throw new TRPCError({ code: "FORBIDDEN", message: "PRO plan required" });
+
       const checklist = await ctx.db.safetyChecklist.findUnique({
         where: { id: input.id },
         include: { project: { select: { artisanId: true, id: true } } },
@@ -197,6 +203,9 @@ export const safetyChecklistRouter = createTRPCRouter({
       const userId = ctx.session.user.id!;
       const { artisanId, role } = await getArtisanContext(userId, ctx.db);
       requireRole(role, ["OWNER", "ADMIN"]);
+
+      const plan = await getEffectivePlan(userId, ctx.db);
+      if (plan === "FREE") throw new TRPCError({ code: "FORBIDDEN", message: "PRO plan required" });
 
       const checklist = await ctx.db.safetyChecklist.findUnique({
         where: { id: input.id },

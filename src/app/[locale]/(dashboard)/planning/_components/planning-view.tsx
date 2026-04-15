@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
 import { api } from "@/trpc/react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+
 import { Card } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, CalendarDays, AlertCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -175,8 +175,6 @@ export function PlanningView() {
           {days.map((day) => {
             const { projects, tasks, hours } = eventsForDay(day);
             const isToday = isSameDay(day, today);
-            const hasEvents = projects.length + tasks.length > 0;
-
             return (
               <Card
                 key={day.toISOString()}

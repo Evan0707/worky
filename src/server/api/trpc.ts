@@ -57,20 +57,6 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 
 /**
- * Helper to enforce PRO plan access
- */
-export const requirePro = (ctx: {
-  session: { user: { plan: string } };
-}) => {
-  if (ctx.session.user.plan !== "PRO") {
-    throw new TRPCError({
-      code: "FORBIDDEN",
-      message: "Cette fonctionnalité nécessite un abonnement PRO.",
-    });
-  }
-};
-
-/**
  * Enforce team role access for mutations.
  *
  * Role hierarchy: OWNER > ADMIN > MEMBER

@@ -10,7 +10,7 @@ const intlMiddleware = createMiddleware(routing);
 const { auth } = NextAuth(authConfig);
 
 // URL paths that require authentication (no route-group parentheses)
-const PROTECTED_PATHS = ["/dashboard", "/chantiers", "/factures", "/settings", "/onboarding"];
+const PROTECTED_PATHS = ["/dashboard", "/chantiers", "/factures", "/settings", "/onboarding", "/planning", "/rapports"];
 
 function isProtectedPath(pathname: string): boolean {
   const localePattern = /^\/(fr-FR|en-GB|de-DE|es-ES)/;

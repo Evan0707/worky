@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Users, Shield, User, Check } from "lucide-react";
+import { Users, Shield, User, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";

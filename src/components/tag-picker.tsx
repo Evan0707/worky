@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { TagBadge } from "@/components/tag-badge";
-import { Tag, Plus, Check } from "lucide-react";
+import { Tag, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TagPickerProps {
@@ -19,7 +19,8 @@ interface TagPickerProps {
   onDetach: (tagId: string) => void;
 }
 
-export function TagPicker({ projectId, attachedTagIds, onAttach, onDetach }: TagPickerProps) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function TagPicker({ projectId: _projectId, attachedTagIds, onAttach, onDetach }: TagPickerProps) {
   const t = useTranslations("common.tags");
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -86,7 +87,6 @@ export function ProjectTagsRow({ projectId }: { projectId: string }) {
   const utils = api.useUtils();
 
   const { data: projectTags = [] } = api.tag.listByProject.useQuery({ projectId });
-  const { data: allTags = [] } = api.tag.list.useQuery();
 
   const attachMutation = api.tag.attachToProject.useMutation({
     onSuccess: () => void utils.tag.listByProject.invalidate({ projectId }),

@@ -37,15 +37,22 @@ export const projectRouter = createTRPCRouter({
   }),
 
   getDashboardStats: protectedProcedure.query(async ({ ctx }) => {
-    const { artisanId } = await getArtisanContext(ctx.session.user.id!, ctx.db);
+    const userId = ctx.session.user.id!;
+    const { artisanId, role } = await getArtisanContext(userId, ctx.db);
+
+    // MEMBER: only count projects they are assigned to
+    const projectWhere =
+      role === "MEMBER"
+        ? { artisanId, assignments: { some: { userId } } }
+        : { artisanId };
 
     const [totalProjects, activeProjects, totalPhotos, timeAggregation] =
       await Promise.all([
-        ctx.db.project.count({ where: { artisanId } }),
-        ctx.db.project.count({ where: { artisanId, status: "ACTIVE" } }),
-        ctx.db.photo.count({ where: { project: { artisanId } } }),
+        ctx.db.project.count({ where: projectWhere }),
+        ctx.db.project.count({ where: { ...projectWhere, status: "ACTIVE" } }),
+        ctx.db.photo.count({ where: { project: projectWhere } }),
         ctx.db.timeEntry.aggregate({
-          where: { project: { artisanId } },
+          where: { project: projectWhere },
           _sum: { hours: true },
         }),
       ]);
@@ -174,22 +181,17 @@ export const projectRouter = createTRPCRouter({
           id: true,
           name: true,
           status: true,
-          description: true,
-          address: true,
-          startDate: true,
-          endDate: true,
           shareExpiresAt: true,
           photos: {
-            select: { id: true, url: true, note: true, takenAt: true },
+            select: { url: true, note: true, takenAt: true },
             orderBy: { takenAt: "desc" },
           },
           clientActions: {
-            select: { id: true, type: true, payload: true, createdAt: true },
+            select: { type: true, payload: true, createdAt: true },
             orderBy: { createdAt: "desc" },
           },
-          _count: { select: { photos: true } },
           artisan: {
-            select: { name: true, companyName: true, image: true, logoUrl: true },
+            select: { companyName: true, logoUrl: true },
           },
         },
       });

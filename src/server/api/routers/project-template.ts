@@ -140,6 +140,9 @@ export const projectTemplateRouter = createTRPCRouter({
       const { artisanId, role } = await getArtisanContext(userId, ctx.db);
       requireRole(role, ["OWNER", "ADMIN"]);
 
+      const plan = await getEffectivePlan(userId, ctx.db);
+      if (plan === "FREE") throw new TRPCError({ code: "FORBIDDEN", message: "PRO plan required" });
+
       const tpl = await ctx.db.projectTemplate.findUnique({ where: { id: input.id } });
       if (!tpl || tpl.artisanId !== artisanId) throw new TRPCError({ code: "NOT_FOUND" });
 
@@ -152,6 +155,9 @@ export const projectTemplateRouter = createTRPCRouter({
       const userId = ctx.session.user.id!;
       const { artisanId, role } = await getArtisanContext(userId, ctx.db);
       requireRole(role, ["OWNER", "ADMIN"]);
+
+      const plan = await getEffectivePlan(userId, ctx.db);
+      if (plan === "FREE") throw new TRPCError({ code: "FORBIDDEN", message: "PRO plan required" });
 
       const [tpl, project] = await Promise.all([
         ctx.db.projectTemplate.findUnique({ where: { id: input.templateId } }),

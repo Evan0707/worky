@@ -2,18 +2,26 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/server/auth";
 import { db } from "@/server/db";
 import { renderInvoiceHtml, type InvoiceData } from "@/server/api/invoice-template";
+import { getArtisanContext, getEffectivePlan } from "@/server/lib/team-context";
 
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
-    if (!session || !session.user) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Require PRO plan for Factur-X generation
-    if (session.user.plan !== "PRO") {
+    const userId = session.user.id;
+
+    // Require PRO plan — checked against DB, not stale JWT session
+    // Also supports team members: getEffectivePlan resolves the team owner's plan
+    const plan = await getEffectivePlan(userId, db);
+    if (plan === "FREE") {
       return NextResponse.json({ error: "Forbidden - PRO plan required" }, { status: 403 });
     }
+
+    // Resolve artisanId: team members use the team owner's artisanId
+    const { artisanId } = await getArtisanContext(userId, db);
 
     const { invoiceId } = await req.json();
 
@@ -26,12 +34,12 @@ export async function POST(req: NextRequest) {
       include: { project: true },
     });
 
-    if (!invoice || invoice.project.artisanId !== session.user.id) {
+    if (!invoice || invoice.project.artisanId !== artisanId) {
       return NextResponse.json({ error: "Not found or forbidden" }, { status: 404 });
     }
 
     const artisan = await db.user.findUnique({
-      where: { id: session.user.id },
+      where: { id: artisanId },
     });
 
     // 1. Generate HTML
