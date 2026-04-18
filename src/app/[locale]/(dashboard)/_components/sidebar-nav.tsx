@@ -94,6 +94,7 @@ function NavSection({ section, onItemClick }: { section: NavSection; onItemClick
               <Link
                 href={item.href}
                 data-active={isActive ? "true" : "false"}
+                aria-current={isActive ? "page" : undefined}
                 onClick={onItemClick}
                 className={cn(
                   "relative flex w-full items-center gap-3 rounded-md px-3 h-10 text-sm font-medium",

@@ -14,6 +14,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bell, BellDot } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function NotificationBell() {
   const t = useTranslations("common.notifications");
@@ -79,7 +80,15 @@ export function NotificationBell() {
 
         <ScrollArea className="max-h-80">
           {isLoading ? (
-            <div className="py-8 text-center text-sm text-muted-foreground">...</div>
+            <div className="divide-y">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="px-4 py-3 space-y-1.5">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                  <Skeleton className="h-3 w-1/4" />
+                </div>
+              ))}
+            </div>
           ) : !data?.items.length ? (
             <div className="py-8 text-center text-sm text-muted-foreground">{t("empty")}</div>
           ) : (

@@ -177,6 +177,7 @@ export function InvoiceTable({ data, locale, fullHeight = false, actionButton }:
     },
     {
       accessorKey: "type",
+      meta: { className: "hidden md:table-cell" },
       header: tInvoices("fields.type"),
       cell: ({ row }) => {
         const type = row.getValue("type") as string;
@@ -220,6 +221,7 @@ export function InvoiceTable({ data, locale, fullHeight = false, actionButton }:
     },
     {
       accessorKey: "createdAt",
+      meta: { className: "hidden lg:table-cell" },
       header: tInvoices("fields.issuedAt"),
       cell: ({ row }) => {
         const date = row.getValue("createdAt") as Date;

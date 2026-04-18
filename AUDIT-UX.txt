@@ -1,0 +1,236 @@
+================================================================================
+  OPENCHANTIER — AUDIT UX / NAVIGATION / QUALITE
+  Date : 2026-04-18
+  Scope : Navigation, Loading, Erreurs, Accessibilite, Mobile, Performance
+================================================================================
+
+
+================================================================================
+  1. ERREURS & ETATS MANQUANTS (CRITIQUE / HIGH)
+================================================================================
+
+  1.1. Aucun error.tsx dans l'app (CRITIQUE)
+  -------------------------------------------
+  Aucun fichier error.tsx n'existe a aucun niveau de l'arborescence.
+  Si une page ou un composant throw une erreur, l'utilisateur voit
+  un ecran blanc ou le crash browser par defaut.
+
+  CORRECTIF : Creer des error boundaries a 3 niveaux cles :
+    [ ] src/app/[locale]/(dashboard)/error.tsx
+    [ ] src/app/[locale]/(dashboard)/chantiers/[id]/error.tsx
+    [ ] src/app/[locale]/(dashboard)/settings/error.tsx
+
+  1.2. loading.tsx manquants (HIGH)
+  ---------------------------------
+  Seules les pages dashboard et chantiers ont un loading.tsx.
+  Toutes les autres pages chargent les donnees cote client sans
+  skeleton loader, causant du layout shift et un flash de contenu.
+
+  Pages sans loading.tsx :
+    [ ] src/app/[locale]/(dashboard)/factures/
+    [ ] src/app/[locale]/(dashboard)/planning/
+    [ ] src/app/[locale]/(dashboard)/rapports/
+    [ ] src/app/[locale]/(dashboard)/settings/
+    [ ] Toutes les sous-pages /chantiers/[id]/* (notes, photos, temps,
+        materiaux, messages, securite, equipe, taches)
+
+  1.3. Empty states incomplets (HIGH)
+  ------------------------------------
+  Les etats vides affichent juste t("empty") sans hierarchie visuelle
+  ni bouton d'action. L'utilisateur ne sait pas s'il doit agir ou
+  si c'est un bug.
+
+  Fichiers concernes :
+    [ ] notes-view.tsx (ligne ~144)
+    [ ] messages-view.tsx (ligne ~104)
+    [ ] time-entry-view.tsx
+    [ ] materials-view.tsx
+
+  CORRECTIF : Utiliser un pattern uniforme :
+    <Icon className="h-12 w-12 text-muted-foreground/40 mb-4" />
+    <p className="font-medium">{t("empty.title")}</p>
+    <p className="text-sm text-muted-foreground">{t("empty.desc")}</p>
+    <Button className="mt-6">{t("add")}</Button>
+
+
+================================================================================
+  2. NAVIGATION (HIGH / MEDIUM)
+================================================================================
+
+  2.1. Onglets projet — pas de conservation du scroll (HIGH)
+  -----------------------------------------------------------
+  Fichier : project-tabs.tsx
+  Cliquer entre les onglets (Overview -> Notes -> Tasks) remet le
+  scroll en haut. L'utilisateur perd son contexte, surtout sur les
+  pages longues (photos, messages).
+
+  2.2. Onglets projet — overflow mobile non signale (MEDIUM)
+  -----------------------------------------------------------
+  Fichier : project-tabs.tsx (ligne 34)
+  Le conteneur a overflow-x-auto mais aucun indicateur visuel
+  que d'autres onglets sont disponibles a droite.
+  Les onglets Securite et Equipe sont caches sur petit ecran.
+
+  CORRECTIF :
+    [ ] Ajouter un gradient fade a droite quand scrollable
+    [ ] Ajouter scroll-snap-type pour un defilement plus fluide
+    [ ] Raccourcir les noms d'onglets sur mobile
+
+  2.3. Breadcrumb projet — pas de bouton retour mobile (MEDIUM)
+  --------------------------------------------------------------
+  Fichier : chantiers/[id]/layout.tsx (lignes 54-61)
+  Le breadcrumb "Projets > Nom du projet" wrap mal sur mobile.
+  Pas de bouton retour alternatif.
+
+  CORRECTIF :
+    [ ] Ajouter un bouton retour mobile avec ChevronLeft
+    [ ] Visible uniquement sur lg:hidden
+
+
+================================================================================
+  3. ACCESSIBILITE (MEDIUM)
+================================================================================
+
+  3.1. Sidebar — pas de aria-current="page" (MEDIUM)
+  ----------------------------------------------------
+  Fichier : sidebar-nav.tsx
+  Les liens de navigation n'ont pas aria-current="page" sur le
+  lien actif. Les lecteurs d'ecran ne savent pas quelle page
+  est active.
+
+  CORRECTIF :
+    <Link href={item.href} aria-current={isActive ? "page" : undefined}>
+
+  3.2. Onglets projet — pas de role="tab" (MEDIUM)
+  --------------------------------------------------
+  Fichier : project-tabs.tsx
+  Les liens d'onglets n'utilisent pas les roles ARIA tab/tabpanel.
+
+  CORRECTIF :
+    <Link href={tab.href} role="tab" aria-selected={isActive}>
+
+  3.3. Mobile sidebar — SheetTitle non descriptif (MEDIUM)
+  ---------------------------------------------------------
+  Fichier : mobile-sidebar.tsx (ligne 34)
+  Le SheetHeader contient le logo mais pas de titre descriptif
+  pour les lecteurs d'ecran.
+
+  CORRECTIF :
+    <SheetTitle className="sr-only">Menu de navigation</SheetTitle>
+
+
+================================================================================
+  4. MOBILE & RESPONSIVE (HIGH / MEDIUM)
+================================================================================
+
+  4.1. Bouton burger mobile — z-index potentiellement masque (HIGH)
+  -----------------------------------------------------------------
+  Fichier : mobile-sidebar.tsx (ligne 28)
+  Le bouton burger est fixed left-4 top-4 z-40, mais pourrait etre
+  cache derriere les modals ou overlays qui utilisent z-50.
+
+  CORRECTIF : Augmenter a z-50 ou s'assurer que les modals ne
+  bloquent pas l'acces au menu.
+
+  4.2. Grille photos — skeleton ne match pas le layout final (LOW)
+  -----------------------------------------------------------------
+  Fichier : photos-view.tsx (ligne ~610)
+  Le skeleton grid utilise grid-cols-2 mais le layout final est
+  grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5.
+  Cause un layout shift au chargement.
+
+
+================================================================================
+  5. PERFORMANCE (MEDIUM)
+================================================================================
+
+  5.1. force-dynamic sur le layout dashboard (MEDIUM)
+  -----------------------------------------------------
+  Fichier : layout.tsx (ligne 1)
+  export const dynamic = "force-dynamic" desactive le cache/ISR
+  pour tout le layout dashboard, y compris la sidebar qui change
+  rarement.
+
+  CORRECTIF : Retirer force-dynamic et utiliser revalidate = 0
+  uniquement dans les fonctions de data fetching qui en ont besoin.
+
+  5.2. Notification bell — loading state minimal (MEDIUM)
+  --------------------------------------------------------
+  Fichier : notification-bell.tsx (ligne ~81)
+  Le popover de notifications affiche juste "..." pendant le
+  chargement. Devrait afficher des skeleton loaders.
+
+  5.3. Upload photos — layout shift (MEDIUM)
+  --------------------------------------------
+  Fichier : photos-view.tsx (lignes 446-451)
+  La barre de progression d'upload apparait/disparait sans
+  espace reserve, causant du CLS (Cumulative Layout Shift).
+
+
+================================================================================
+  6. UX DIVERS (LOW)
+================================================================================
+
+  6.1. Settings — pas de redirect logique
+  -----------------------------------------
+  /settings affiche le profil. La page la plus utile (facturation)
+  est sous /settings/billing. Structure potentiellement confuse.
+
+  6.2. Projet non trouve vs acces interdit
+  -------------------------------------------
+  Fichier : chantiers/[id]/layout.tsx (lignes 29-34)
+  Le layout appelle notFound() si le projet n'est pas trouve,
+  mais ne distingue pas "pas trouve" de "pas autorise".
+  Un utilisateur sans acces voit "Not Found" au lieu de "Acces refuse".
+
+  6.3. Sidebar active indicator — useLayoutEffect
+  --------------------------------------------------
+  Fichier : sidebar-nav.tsx (lignes 45-63)
+  useLayoutEffect avec getBoundingClientRect() s'execute de maniere
+  synchrone. Sur un grand sidebar, pourrait causer du layout thrashing.
+
+
+================================================================================
+  7. PLAN D'ACTIONS PAR PRIORITE
+================================================================================
+
+  SEMAINE 1 — CRITIQUE / HIGH :
+  --------------------------------
+  [ ] Creer error.tsx (3 fichiers)
+  [ ] Creer loading.tsx pour les 8+ pages manquantes
+  [ ] Ameliorer les empty states (4 composants)
+  [ ] Fixer z-index bouton burger mobile
+
+  SEMAINE 2 — MEDIUM :
+  ----------------------
+  [ ] Ajouter aria-current, role="tab", aria-selected
+  [ ] Ajouter SheetTitle sr-only dans mobile-sidebar
+  [ ] Ajouter indicateur scroll horizontal sur les onglets
+  [ ] Ajouter bouton retour mobile dans breadcrumb projet
+  [ ] Remplacer force-dynamic par revalidate selectif
+  [ ] Ameliorer skeleton notification-bell
+
+  SEMAINE 3 — LOW / POLISH :
+  ----------------------------
+  [ ] Aligner skeleton grille photos avec layout final
+  [ ] Reserver espace pour la barre de progression upload
+  [ ] Differencier 404 vs 403 dans layout projet
+  [ ] Envisager redirect /settings -> /settings/billing
+
+
+================================================================================
+  RESUME
+================================================================================
+
+  CRITIQUE    : 1 (error boundaries manquants)
+  HIGH        : 4 (loading states, empty states, scroll tabs, z-index mobile)
+  MEDIUM      : 7 (accessibilite, navigation mobile, performance)
+  LOW         : 4 (polish, layout shift, UX settings)
+
+  L'app est bien structuree avec de solides fondamentaux (T3, shadcn, tRPC).
+  Les corrections sont principalement additives (nouveaux fichiers, attributs,
+  composants) et ne necessitent pas de refactoring majeur.
+
+================================================================================
+  FIN DU RAPPORT
+================================================================================

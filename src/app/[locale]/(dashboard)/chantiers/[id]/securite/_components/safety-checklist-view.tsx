@@ -25,7 +25,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Plus, Trash2, PenLine, CheckCircle2, Circle } from "lucide-react";
+import { Loader2, Plus, Trash2, PenLine, CheckCircle2, Circle, ShieldCheck } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
@@ -153,7 +154,11 @@ export function SafetyChecklistView({ projectId }: SafetyChecklistViewProps) {
       </div>
 
       {checklists.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-10">{t("empty")}</p>
+        <EmptyState
+          icon={ShieldCheck}
+          title={t("emptyTitle")}
+          description={t("empty")}
+        />
       ) : (
         checklists.map((checklist) => (
           <ChecklistCard

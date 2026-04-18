@@ -50,7 +50,7 @@ export function TimeEntryView({ projectId, locale }: { projectId: string; locale
   };
 
   return (
-    <div className="grid gap-5 md:grid-cols-3">
+    <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
       {/* Left — Form */}
       <div className="md:col-span-1">
         <div className="rounded-xl border bg-card p-5 space-y-4">
@@ -189,7 +189,7 @@ export function TimeEntryView({ projectId, locale }: { projectId: string; locale
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2 py-12 text-center">
-                <Clock className="h-8 w-8 text-muted-foreground/40" />
+                <Clock className="h-10 w-10 text-muted-foreground/40" />
                 <p className="text-sm font-medium">{t("time.empty")}</p>
                 <p className="text-xs text-muted-foreground">{tCommon("subpages.timeHint")}</p>
               </div>

@@ -164,5 +164,16 @@
   "validation": {
     "required": "Required",
     "invalidEmail": "Invalid email"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "An error occurred. Please try again.",
+    "retry": "Try again",
+    "backToList": "Back to list"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "backHome": "Back to home"
   }
 }

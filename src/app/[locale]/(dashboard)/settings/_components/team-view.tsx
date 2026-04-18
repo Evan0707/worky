@@ -254,7 +254,7 @@ function MembersCard({
         {members.map((m) => (
           <div
             key={m.id}
-            className="flex items-center gap-3 px-6 py-2.5 hover:bg-muted/40 transition-colors group"
+            className="flex flex-wrap items-center gap-3 px-6 py-2.5 hover:bg-muted/40 transition-colors group"
           >
             <Avatar name={m.user.name} image={m.user.image} />
             <div className="flex-1 min-w-0">
@@ -265,7 +265,7 @@ function MembersCard({
             </div>
 
             {isOwner ? (
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2 shrink-0 ml-auto">
                 <Select
                   value={m.role}
                   onValueChange={(v) =>

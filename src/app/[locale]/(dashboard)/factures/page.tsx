@@ -14,7 +14,7 @@ export default async function FacturesPage({ params }: { params: Promise<{ local
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden space-y-6 animate-in fade-in">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{t("nav.invoices")}</h1>
           <p className="text-sm text-muted-foreground mt-0.5">

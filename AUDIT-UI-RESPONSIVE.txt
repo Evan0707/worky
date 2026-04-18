@@ -1,0 +1,415 @@
+================================================================================
+  OPENCHANTIER — AUDIT UI, ILLUSTRATIONS & RESPONSIVE
+  Date : 2026-04-18
+  Scope : Empty states, Illustrations, Responsive, Micro-interactions, Coherence
+================================================================================
+
+
+================================================================================
+  1. EMPTY STATES — INVENTAIRE COMPLET
+================================================================================
+
+  1.1. Empty states CORRECTS (icone + titre + description)
+  ---------------------------------------------------------
+  [OK] dashboard/page.tsx:121-140 — HardHat icon, titre, desc, CTA "Creer"
+  [OK] notes-view.tsx:144-149 — StickyNote icon, titre, desc
+  [OK] messages-view.tsx:104-109 — MessageCircle icon, titre, desc
+  [OK] photos-view.tsx:650-656 — ImagePlus icon, titre, desc
+  [OK] time-entry-view.tsx:190-195 — Clock icon, titre, hint
+  [OK] materials-view.tsx:214-219 — Package icon, titre, hint
+  [OK] team-view.tsx:518-548 — Users icon, titre, desc, CTA
+  [OK] client-view (c/[token]):149-160 — ImageIcon, titre, desc
+
+  1.2. Empty states FAIBLES (a ameliorer)
+  -----------------------------------------
+  [FAIBLE] safety-checklist-view.tsx:155-156
+           Juste t("empty") en texte brut. Aucun icone, aucun style.
+           → Ajouter ShieldAlert icon (h-8 w-8), titre "emptyTitle",
+             description "emptyDesc", padding py-12
+
+  [FAIBLE] tasks-view.tsx:124-125
+           Juste t("empty") en texte brut dans chaque colonne kanban.
+           → Ajouter CheckSquare icon, centrer, titre + description
+
+  [FAIBLE] team-assignment-view.tsx:91-99
+           Icon Users + titre mais pas de description.
+           → Ajouter desc: "Assignez des membres de l'equipe a ce chantier"
+
+  [FAIBLE] team-activity.tsx:195-199
+           Icon Activity basique, pas de description contextuelle.
+           → Ajouter desc: "L'activite apparaitra ici quand l'equipe
+             ajoutera des photos, materiaux ou heures"
+
+  [FAIBLE] templates-view.tsx (si aucun template)
+           Verifier si empty state existe pour la liste vide de templates.
+           → Ajouter FileCode icon, titre, desc, CTA "Creer un modele"
+
+  [FAIBLE] rapports-view.tsx (si aucun projet)
+           Verifier si un empty state s'affiche quand il n'y a pas de donnees.
+           → Ajouter BarChart3 icon, titre, desc
+
+  [MANQUANT] planning-view.tsx (si aucun evenement)
+             Le composant affiche t("noEvents") mais sans hierarchie visuelle.
+             → Ajouter CalendarDays icon large, titre, description
+
+
+================================================================================
+  2. ILLUSTRATIONS MINIMALISTES SUGGEREES
+================================================================================
+
+  Pour chaque empty state, une illustration minimaliste en SVG inline
+  ou un icone Lucide agrandi peut remplacer l'icone seul. Voici les
+  suggestions d'illustrations par zone :
+
+  2.1. Dashboard — Aucun chantier
+  --------------------------------
+  Illustration : Maison en construction avec echafaudage (traits fins)
+  Style : SVG monochrome, 120x100px, stroke-width 1.5, text-muted-foreground/30
+  Fallback actuel : HardHat icon (acceptable mais moins engageant)
+
+  2.2. Photos — Aucune photo
+  ----------------------------
+  Illustration : Appareil photo ou polaroid vide avec un "+"
+  Style : SVG minimaliste, 100x100px
+  Deja present : ImagePlus icon — correcte, peut etre agrandi a h-12 w-12
+
+  2.3. Notes — Aucune note
+  --------------------------
+  Illustration : Bloc-notes avec crayon, lignes horizontales
+  Style : SVG traits fins, couleur muted
+  Actuel : StickyNote icon — OK, agrandi a h-12 w-12
+
+  2.4. Taches — Aucune tache
+  ----------------------------
+  Illustration : Checklist avec cases vides et un crayon
+  Style : SVG minimaliste
+  Lucide alternative : ListTodo (h-10 w-10) + texte
+
+  2.5. Messages — Aucun message
+  --------------------------------
+  Illustration : Bulles de conversation vides
+  Style : 2-3 bulles en traits pointilles
+  Actuel : MessageCircle — OK
+
+  2.6. Securite — Aucune checklist
+  ----------------------------------
+  Illustration : Bouclier avec check / casque de chantier
+  Style : SVG minimaliste
+  Lucide : ShieldCheck (h-10 w-10)
+
+  2.7. Planning — Aucun evenement
+  ---------------------------------
+  Illustration : Calendrier avec page blanche
+  Style : SVG minimaliste
+  Lucide : CalendarX2 (h-10 w-10)
+
+  2.8. Rapports — Aucune donnee
+  --------------------------------
+  Illustration : Graphique vide avec axes et pointilles
+  Style : SVG avec axes L + courbe pointillee
+  Lucide : TrendingUp (h-10 w-10)
+
+  2.9. Factures — Table vide (Data Table)
+  ------------------------------------------
+  Illustration : Feuille de facture avec lignes vides
+  Style : SVG document avec $ signe
+  Lucide : FileText (h-10 w-10)
+  Note : La data table a probablement deja un empty state via
+         le composant DataTable. Verifier et harmoniser.
+
+  2.10. Equipe — Aucun membre assigne
+  --------------------------------------
+  Illustration : 2-3 silhouettes avec "+"
+  Style : SVG minimaliste, groupes de personnes
+  Lucide : UserPlus (h-10 w-10)
+
+  2.11. Onboarding — Page d'accueil
+  -----------------------------------
+  Illustration : Progression en 3 etapes (profil → config → start)
+  Style : Stepper visuel avec icones
+  Fichier : onboarding/page.tsx
+  Actuel : Juste le logo, aucune illustration d'accueil
+
+  2.12. 404 / Page non trouvee
+  -------------------------------
+  [MANQUANT] Aucune page 404 personnalisee n'existe.
+  Illustration : Plan de chantier avec "?" ou panneau de chantier
+  Style : SVG humoristique minimaliste
+  → Creer src/app/[locale]/not-found.tsx
+
+
+================================================================================
+  3. RESPONSIVE — PROBLEMES IDENTIFIES
+================================================================================
+
+  3.1. Factures — Colonnes de table sur mobile (MEDIUM)
+  -------------------------------------------------------
+  Fichier : factures/_components/invoice-table.tsx:164-236
+  Probleme : 6 colonnes (numero, type, projet, statut, total, date)
+             debordent sur mobile.
+  Fix : Cacher les colonnes "type" et "issuedAt" sous md:
+    - type : <TableHead className="hidden md:table-cell">
+    - issuedAt : <TableHead className="hidden lg:table-cell">
+    Garder visible : numero, projet, statut, total
+
+  3.2. Formulaire temps — Grid trop serre sur tablette (MEDIUM)
+  ---------------------------------------------------------------
+  Fichier : time-entry-view.tsx, grid md:grid-cols-3
+  Probleme : 3 colonnes sur tablette (768px) = ~230px par champ,
+             les labels wrappent mal.
+  Fix : Changer md:grid-cols-3 → md:grid-cols-2 lg:grid-cols-3
+
+  3.3. Formulaire materiaux — Grid sur mobile (MEDIUM)
+  -------------------------------------------------------
+  Fichier : materials-view.tsx, grid grid-cols-2
+  Probleme : 2 colonnes forcees meme sur mobile < 375px.
+  Fix : Changer grid-cols-2 → grid-cols-1 sm:grid-cols-2
+
+  3.4. Kanban taches — Breakpoints trop serres (MEDIUM)
+  -------------------------------------------------------
+  Fichier : tasks-view.tsx, grid-cols-1 md:grid-cols-3
+  Probleme : 3 colonnes a 768px = ~230px par colonne, trop etroit.
+  Fix : Changer md:grid-cols-3 → md:grid-cols-2 lg:grid-cols-3
+
+  3.5. Equipe — Ligne membre deborde (MEDIUM)
+  ----------------------------------------------
+  Fichier : team-view.tsx:254-303
+  Probleme : Avatar + nom + email + role + bouton sur une ligne,
+             deborde sous ~340px.
+  Fix : Utiliser flex-wrap ou empiler sur 2 lignes en mobile :
+    ligne 1 : [avatar nom email]
+    ligne 2 : [badge role + bouton]
+
+  3.6. Chat messages — Hauteur fixe ne gere pas le clavier (MEDIUM)
+  -------------------------------------------------------------------
+  Fichier : messages-view.tsx:101
+  Code : h-[calc(100vh-280px)]
+  Probleme : Sur mobile quand le clavier s'ouvre, le calcul est faux.
+  Fix : Utiliser min-h-[300px] max-h-[calc(100dvh-280px)]
+        (dvh = dynamic viewport height, gere le clavier iOS/Android)
+
+  3.7. Factures header — Titre + bouton wrappent (LOW)
+  -------------------------------------------------------
+  Fichier : factures/page.tsx:16-30
+  Code : flex items-center justify-between
+  Probleme : Sur mobile, titre long + bouton se chevauchent.
+  Fix : flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3
+
+  3.8. Touch targets — Boutons trop petits (MEDIUM)
+  ---------------------------------------------------
+  Fichier : button.tsx, size "icon" = h-10 w-10 = 40px
+  Norme : Minimum 44px pour les cibles tactiles (WCAG 2.5.8)
+
+  Exemples de boutons < 44px :
+    - safety-checklist-view.tsx:287 → h-7 w-7 (28px)
+    - Boutons delete inline → h-7 (28px)
+    - Tag picker button → h-7 (28px)
+
+  Fix : Augmenter size "icon" de button.tsx a h-11 w-11 (44px)
+        OU ajouter padding transparent autour des petits boutons.
+
+  3.9. Photos dropzone — Padding excessif sur mobile (LOW)
+  -----------------------------------------------------------
+  Fichier : photos-view.tsx:419
+  Code : p-10 md:p-14
+  Fix : p-6 sm:p-8 md:p-14
+
+  3.10. Photo grid — skeleton ne match pas (LOW)
+  -------------------------------------------------
+  Fichier : photos/loading.tsx (corrige dans cette session)
+  Actuel : grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5
+  [OK] Aligne avec le layout final.
+
+
+================================================================================
+  4. INCOHERENCES UI
+================================================================================
+
+  4.1. Taille des icones dans les empty states
+  -----------------------------------------------
+  photos-view.tsx : h-8 w-8
+  notes-view.tsx : h-10 w-10
+  time-entry-view.tsx : h-8 w-8
+  materials-view.tsx : h-8 w-8
+  dashboard/page.tsx : h-10 w-10
+
+  → STANDARDISER : h-10 w-10 text-muted-foreground/30 pour tous
+
+  4.2. Structure des empty states
+  ---------------------------------
+  Certains : <div py-12 items-center> icone + <p font-medium> + <p text-xs>
+  Autres : juste <p text-sm text-center py-8>
+
+  → CREER un composant reutilisable EmptyState :
+    Props : icon, title, description, action? (bouton optionnel)
+    Style : flex flex-col items-center justify-center py-12 text-center
+            Icon: h-10 w-10 text-muted-foreground/30 mb-3
+            Title: text-sm font-medium text-foreground
+            Desc: text-xs text-muted-foreground mt-1
+
+  4.3. Ombres des cartes
+  -------------------------
+  card.tsx : shadow-[0_0_20px_-10px_rgba(0,0,0,0.05)]
+  team-view.tsx:522 : shadow-none
+  Certains composants : shadow-sm
+
+  → Standardiser. Utiliser la shadow du card.tsx partout ou shadow-none
+    pour les cartes imbriquees.
+
+  4.4. Style des CTA principaux
+  --------------------------------
+  dashboard/page.tsx:132 : shadow-md shadow-primary/20 (avec glow)
+  chantiers/page.tsx:18 : Button standard sans shadow
+  factures/page.tsx : Button standard
+
+  → Le CTA principal de chaque page devrait avoir le meme style.
+    Utiliser shadow-md shadow-primary/20 pour les CTA "Creer/Nouveau".
+
+  4.5. Dashed border pour empty states
+  ----------------------------------------
+  dashboard/page.tsx:121 : border-dashed (pour le card "pas de chantiers")
+  Autres empty states : pas de border dashed
+
+  → Utiliser border-dashed pour tous les empty states "premier element"
+    (premier chantier, premiere facture, etc.)
+
+
+================================================================================
+  5. MICRO-INTERACTIONS MANQUANTES
+================================================================================
+
+  5.1. Hover sur les cartes interactives (LOW)
+  -----------------------------------------------
+  Les cartes de stats, les cartes projet, les cartes facture n'ont pas
+  d'effet hover.
+  → Ajouter : hover:shadow-md hover:border-primary/20 transition-all
+    duration-200 cursor-pointer (sur les cartes cliquables)
+
+  5.2. Scale sur les photos au hover (LOW)
+  -------------------------------------------
+  Les photos dans la grille ont hover:border-border mais pas de scale.
+  → Ajouter : group-hover:scale-[1.02] transition-transform duration-200
+
+  5.3. Transition sur les badges de statut (LOW)
+  -------------------------------------------------
+  Les badges de statut (ACTIVE, PAUSED, DONE...) changent de couleur
+  sans transition.
+  → Ajouter : transition-colors duration-200
+
+  5.4. Active state sur les boutons (LOW)
+  ------------------------------------------
+  Les boutons ont hover mais pas d'active:scale-[0.98].
+  → Ajouter dans button.tsx : active:scale-[0.98] transition-transform
+
+
+================================================================================
+  6. PAGES MANQUANTES
+================================================================================
+
+  6.1. Page 404 personnalisee (MEDIUM)
+  ---------------------------------------
+  [MANQUANT] Aucun fichier not-found.tsx n'existe.
+  → Creer src/app/[locale]/not-found.tsx avec :
+    - Illustration minimaliste (panneau de chantier "Zone introuvable")
+    - Titre i18n
+    - Lien retour au dashboard
+
+  6.2. Page onboarding — pas d'illustration (LOW)
+  --------------------------------------------------
+  Fichier : onboarding/page.tsx
+  Actuel : Juste le logo et le formulaire.
+  → Ajouter une barre de progression visuelle ou illustration d'accueil
+
+  6.3. Login error — illustration faible (LOW)
+  -----------------------------------------------
+  Fichier : login/error/page.tsx
+  Actuel : Icon AlertTriangle + texte
+  → Ajouter un SVG decoratif (cadenas avec point d'exclamation)
+
+
+================================================================================
+  7. COMPOSANT EMPTY STATE REUTILISABLE (RECOMMANDE)
+================================================================================
+
+  Pour harmoniser tous les empty states, creer :
+
+  src/components/empty-state.tsx
+
+  Props :
+    icon: LucideIcon
+    title: string
+    description?: string
+    action?: { label: string; onClick: () => void } | ReactNode
+
+  Exemple d'utilisation :
+    <EmptyState
+      icon={ShieldCheck}
+      title={t("emptyTitle")}
+      description={t("empty")}
+      action={<Button onClick={handleCreate}>{t("create")}</Button>}
+    />
+
+  Ce composant garantit :
+    - Taille icone coherente (h-10 w-10)
+    - Espacement coherent (py-12 gap-3)
+    - Couleur icone coherente (text-muted-foreground/30)
+    - Typographie coherente (titre sm/medium, desc xs/muted)
+    - Animation coherente (animate-in fade-in)
+
+
+================================================================================
+  8. PLAN D'ACTIONS PAR PRIORITE
+================================================================================
+
+  HAUTE PRIORITE :
+  ------------------
+  [ ] Creer composant EmptyState reutilisable
+  [ ] Corriger empty state safety-checklist (icone + titre + desc)
+  [ ] Corriger empty state tasks-view (icone + titre + desc)
+  [ ] Cacher colonnes factures sur mobile (hidden md:table-cell)
+  [ ] Fix grid kanban taches : md:grid-cols-2 lg:grid-cols-3
+  [ ] Fix grid materiaux : grid-cols-1 sm:grid-cols-2
+  [ ] Fix chat messages hauteur : dvh au lieu de vh
+  [ ] Creer page not-found.tsx
+
+  MOYENNE PRIORITE :
+  --------------------
+  [ ] Standardiser taille icones empty states (h-10 w-10)
+  [ ] Harmoniser CTA shadow (shadow-md shadow-primary/20)
+  [ ] Augmenter touch targets boutons icon (h-11 w-11)
+  [ ] Fix grid temps : md:grid-cols-2 lg:grid-cols-3
+  [ ] Fix equipe ligne membre overflow mobile
+  [ ] Fix factures header flex-col sur mobile
+  [ ] Ajouter desc aux empty states faibles (equipe, activity)
+
+  BASSE PRIORITE :
+  -------------------
+  [ ] Hover sur cartes interactives
+  [ ] Scale sur photos au hover
+  [ ] Transition badges statut
+  [ ] Active state boutons (scale 0.98)
+  [ ] Standardiser shadows cartes
+  [ ] Illustrations SVG custom pour empty states majeurs
+  [ ] Ameliorer page onboarding avec progression visuelle
+  [ ] Reduire padding dropzone photos sur mobile
+
+
+================================================================================
+  RESUME
+================================================================================
+
+  EMPTY STATES CORRECTS         : 8
+  EMPTY STATES A AMELIORER      : 7
+  PROBLEMES RESPONSIVE          : 10
+  INCOHERENCES UI               : 5
+  MICRO-INTERACTIONS MANQUANTES : 4
+  PAGES MANQUANTES              : 1 (404)
+
+  RECOMMANDATION PRINCIPALE :
+  Creer un composant <EmptyState /> reutilisable qui harmonise
+  automatiquement tous les etats vides (icone h-10, titre, desc, CTA).
+  Puis l'appliquer systematiquement dans toutes les vues.
+
+================================================================================
+  FIN DU RAPPORT
+================================================================================

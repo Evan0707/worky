@@ -90,11 +90,18 @@ export function TeamAssignmentView({ projectId }: TeamAssignmentViewProps) {
 
   if (members.length === 0) {
     return (
-      <div className="rounded-xl border bg-card p-8 text-center">
-        <div className="mx-auto mb-4 h-12 w-12 rounded-2xl bg-muted flex items-center justify-center">
-          <Users className="h-6 w-6 text-muted-foreground" />
+      <div className="rounded-xl border bg-card">
+        <div className="px-5 py-4 border-b">
+          <h3 className="text-sm font-semibold">{t("title")}</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">{t("description")}</p>
         </div>
-        <p className="text-sm font-medium">{t("noMembers")}</p>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="mb-4 rounded-2xl bg-muted/60 p-4">
+            <Users className="h-8 w-8 text-muted-foreground/50" />
+          </div>
+          <p className="text-sm font-medium">{t("noMembers")}</p>
+          <p className="mt-1 text-xs text-muted-foreground max-w-[220px]">{t("noMembersDesc")}</p>
+        </div>
       </div>
     );
   }

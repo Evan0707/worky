@@ -164,5 +164,16 @@
   "validation": {
     "required": "Erforderlich",
     "invalidEmail": "Ungültige E-Mail"
+  },
+  "error": {
+    "title": "Ein Fehler ist aufgetreten",
+    "description": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
+    "retry": "Erneut versuchen",
+    "backToList": "Zurück zur Liste"
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+    "backHome": "Zur Startseite"
   }
 }

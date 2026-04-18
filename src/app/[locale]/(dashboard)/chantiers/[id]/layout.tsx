@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { api } from "@/trpc/server";
 import { ProjectTabs } from "./_components/project-tabs";
-import { ChevronRight, HardHat } from "lucide-react";
+import { ChevronLeft, ChevronRight, HardHat } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { auth } from "@/server/auth";
@@ -50,8 +50,19 @@ export default async function ProjectLayout({
 
   return (
     <div className="space-y-5 animate-in fade-in duration-300">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-1.5 text-sm text-muted-foreground">
+      {/* Mobile back button */}
+      <div className="sm:hidden">
+        <Link
+          href={`/${locale}/chantiers`}
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          {tProjects("title")}
+        </Link>
+      </div>
+
+      {/* Breadcrumb (desktop) */}
+      <nav className="hidden sm:flex items-center gap-1.5 text-sm text-muted-foreground">
         <Link href={`/${locale}/chantiers`} className="flex items-center gap-1 hover:text-foreground transition-colors">
           <HardHat className="h-3.5 w-3.5" />
           {tProjects("title")}

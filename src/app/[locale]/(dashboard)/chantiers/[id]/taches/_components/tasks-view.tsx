@@ -122,9 +122,13 @@ export function TasksView({ projectId }: TasksViewProps) {
       </div>
 
       {tasks.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-10">{t("empty")}</p>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <img src="/No_notes.svg" alt="" className="mx-auto h-[120px] mb-4 opacity-80" />
+          <p className="font-medium text-sm">{t("emptyTitle")}</p>
+          <p className="text-xs text-muted-foreground mt-1">{t("empty")}</p>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {STATUS_COLUMNS.map((status) => (
             <div key={status} className="space-y-2">
               <div className="flex items-center gap-2">

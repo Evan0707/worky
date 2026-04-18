@@ -42,10 +42,6 @@
     "required": "Ce champ est requis.",
     "invalidEmail": "Adresse email invalide."
   },
-  "validation": {
-    "required": "Ce champ est requis.",
-    "invalidEmail": "Adresse email invalide."
-  },
   "pagination": {
     "previous": "Précédent",
     "next": "Suivant",
@@ -164,5 +160,16 @@
   "validation": {
     "required": "Requis",
     "invalidEmail": "Email invalide"
+  },
+  "error": {
+    "title": "Une erreur s'est produite",
+    "description": "Quelque chose s'est mal passé. Veuillez réessayer.",
+    "retry": "Réessayer",
+    "backToList": "Retour à la liste"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "description": "La page que vous cherchez n'existe pas ou a été déplacée.",
+    "backHome": "Retour à l'accueil"
   }
 }

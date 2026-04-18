@@ -142,7 +142,11 @@ export function NotesView({ projectId }: NotesViewProps) {
 
       {/* Notes list */}
       {notes.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-8">{t("empty")}</p>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <img src="/No_notes.svg" alt="" className="mx-auto h-[120px] mb-4 opacity-80" />
+          <p className="font-medium text-sm">{t("emptyTitle")}</p>
+          <p className="text-xs text-muted-foreground mt-1">{t("empty")}</p>
+        </div>
       ) : (
         <div className="space-y-3">
           {notes.map((note) => (

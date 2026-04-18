@@ -25,7 +25,7 @@ export function MobileSidebar({ sections, user }: MobileSidebarProps) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="shrink-0 lg:hidden fixed left-4 top-4 z-40 bg-background shadow-sm border">
+        <Button variant="outline" size="icon" className="shrink-0 lg:hidden fixed left-4 top-4 z-50 bg-background shadow-sm border">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle navigation menu</span>
         </Button>

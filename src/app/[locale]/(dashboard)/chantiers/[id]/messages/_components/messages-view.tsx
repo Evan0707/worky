@@ -10,7 +10,7 @@ import { useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { Loader2, Send, Trash2 } from "lucide-react";
+import { Loader2, Send, Trash2, MessageCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -71,7 +71,7 @@ export function MessagesView({ projectId }: MessagesViewProps) {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col max-w-2xl h-[calc(100vh-280px)] min-h-[400px]">
+      <div className="flex flex-col max-w-2xl h-[calc(100dvh-280px)] min-h-[360px]">
         <div className="flex-1 space-y-3 pr-1 pb-4">
           {/* Alternating left/right bubble skeletons */}
           {["left", "right", "left", "right", "left"].map((side, i) => (
@@ -98,11 +98,15 @@ export function MessagesView({ projectId }: MessagesViewProps) {
   const myId = session?.user?.id;
 
   return (
-    <div className="flex flex-col max-w-2xl h-[calc(100vh-280px)] min-h-[400px]">
+    <div className="flex flex-col max-w-2xl h-[calc(100dvh-280px)] min-h-[360px]">
       {/* Messages list */}
       <div className="flex-1 overflow-y-auto space-y-3 pr-1 pb-4">
         {messages.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-10">{t("empty")}</p>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <MessageCircle className="h-10 w-10 text-muted-foreground/30 mb-3" />
+            <p className="font-medium text-sm">{t("emptyTitle")}</p>
+            <p className="text-xs text-muted-foreground mt-1">{t("empty")}</p>
+          </div>
         ) : (
           messages.map((msg) => (
             <MessageBubble

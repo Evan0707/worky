@@ -1,11 +1,9 @@
+import React from "react";
 import {
   Body,
   Container,
   Head,
   Html,
-  Img,
-  Row,
-  Column,
   Section,
   Text,
   Hr,
@@ -37,14 +35,9 @@ export function EmailLayout({
 
           {/* Logo */}
           <Section style={styles.logoSection}>
-            <Row>
-              <Column>
-                <Text style={styles.logoMark}>●</Text>
-              </Column>
-              <Column>
-                <Text style={styles.logoText}>OpenChantier</Text>
-              </Column>
-            </Row>
+            <Text style={styles.logoText}>
+              <span style={styles.logoMark}>●</span>{" "}OpenChantier
+            </Text>
           </Section>
 
           {/* Card */}
@@ -91,15 +84,10 @@ export const styles = {
     paddingLeft: "4px",
   },
   logoMark: {
-    display: "inline",
-    fontSize: "18px",
     color: "#0a0a0a",
-    margin: "0",
-    lineHeight: "1",
-    paddingRight: "6px",
-  },
+    marginRight: "4px",
+  } as React.CSSProperties,
   logoText: {
-    display: "inline",
     fontSize: "18px",
     fontWeight: "700",
     color: "#0a0a0a",

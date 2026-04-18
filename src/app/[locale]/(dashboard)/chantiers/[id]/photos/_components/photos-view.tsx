@@ -649,7 +649,7 @@ export function PhotosView({ projectId, locale }: { projectId: string; locale: s
         </div>
       ) : (
         <div className="flex flex-col items-center gap-2 py-12 text-center animate-in fade-in duration-500">
-          <ImagePlus className="h-8 w-8 text-muted-foreground/40 mb-1" />
+          <ImagePlus className="h-10 w-10 text-muted-foreground/40 mb-1" />
           <p className="text-sm font-medium">{t("photos.empty")}</p>
           <p className="text-xs text-muted-foreground">Ajoutez vos premières photos via la zone ci-dessus</p>
         </div>

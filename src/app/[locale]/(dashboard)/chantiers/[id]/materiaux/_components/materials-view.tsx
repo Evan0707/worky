@@ -97,7 +97,7 @@ export function MaterialsView({ projectId, locale }: { projectId: string; locale
                 className="h-9 text-sm"
               />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">{t("materials.quantity")}</Label>
                 <div className="flex gap-1.5">
@@ -213,7 +213,7 @@ export function MaterialsView({ projectId, locale }: { projectId: string; locale
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2 py-12 text-center">
-                <Package className="h-8 w-8 text-muted-foreground/40" />
+                <Package className="h-10 w-10 text-muted-foreground/40" />
                 <p className="text-sm font-medium">{t("materials.empty")}</p>
                 <p className="text-xs text-muted-foreground">{tCommon("subpages.materialsHint")}</p>
               </div>
