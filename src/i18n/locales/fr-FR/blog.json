@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "title": "Blog — Ressources pour artisans",
+    "description": "Guides pratiques, actualités réglementaires et conseils pour développer votre activité de BTP."
+  },
+  "listing": {
+    "badge": "Le Blog",
+    "title": "Ressources pour artisans",
+    "subtitle": "Guides pratiques, actualités réglementaires et conseils pour gérer et développer votre activité."
+  },
+  "article": {
+    "readingTime": "{minutes} min de lecture",
+    "publishedAt": "Publié le {date}",
+    "backToBlog": "← Retour au blog",
+    "by": "Par {name}",
+    "share": "Partager cet article",
+    "cta": {
+      "title": "Prêt à digitaliser votre activité ?",
+      "description": "Rejoignez les artisans qui gèrent leurs chantiers avec OpenChantier.",
+      "button": "Commencer gratuitement"
+    }
+  },
+  "categories": {
+    "regulation": "Réglementation",
+    "tips": "Conseils pratiques",
+    "tools": "Outils"
+  },
+  "empty": {
+    "title": "Bientôt de nouveaux articles",
+    "description": "Notre équipe rédige des guides pour vous. Revenez bientôt."
+  }
+}

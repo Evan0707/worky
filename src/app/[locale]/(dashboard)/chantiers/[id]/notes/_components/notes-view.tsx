@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import Image from "next/image";
 import { Loader2, Pin, PinOff, Trash2, Pencil, Check, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -143,7 +144,7 @@ export function NotesView({ projectId }: NotesViewProps) {
       {/* Notes list */}
       {notes.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <img src="/No_notes.svg" alt="" className="mx-auto h-[120px] mb-4 opacity-80" />
+          <Image src="/No_notes.svg" alt="" width={120} height={120} className="mx-auto mb-4 opacity-80" />
           <p className="font-medium text-sm">{t("emptyTitle")}</p>
           <p className="text-xs text-muted-foreground mt-1">{t("empty")}</p>
         </div>

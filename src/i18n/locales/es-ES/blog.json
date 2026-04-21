@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "title": "Blog — Recursos para artesanos",
+    "description": "Guías prácticas, actualizaciones regulatorias y consejos para desarrollar su negocio de construcción."
+  },
+  "listing": {
+    "badge": "El Blog",
+    "title": "Recursos para artesanos",
+    "subtitle": "Guías prácticas, actualizaciones regulatorias y consejos para gestionar y desarrollar su negocio."
+  },
+  "article": {
+    "readingTime": "{minutes} min de lectura",
+    "publishedAt": "Publicado el {date}",
+    "backToBlog": "← Volver al blog",
+    "by": "Por {name}",
+    "share": "Compartir este artículo",
+    "cta": {
+      "title": "¿Listo para digitalizar su actividad?",
+      "description": "Únase a los artesanos que gestionan sus obras con OpenChantier.",
+      "button": "Empezar gratis"
+    }
+  },
+  "categories": {
+    "regulation": "Regulación",
+    "tips": "Consejos prácticos",
+    "tools": "Herramientas"
+  },
+  "empty": {
+    "title": "Próximamente nuevos artículos",
+    "description": "Nuestro equipo está escribiendo guías para usted. Vuelva pronto."
+  }
+}

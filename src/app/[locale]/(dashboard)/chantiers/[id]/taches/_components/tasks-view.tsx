@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import Image from "next/image";
 import { Plus, Trash2, AlertCircle, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -123,7 +124,7 @@ export function TasksView({ projectId }: TasksViewProps) {
 
       {tasks.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <img src="/No_notes.svg" alt="" className="mx-auto h-[120px] mb-4 opacity-80" />
+          <Image src="/No_notes.svg" alt="" width={120} height={120} className="mx-auto mb-4 opacity-80" />
           <p className="font-medium text-sm">{t("emptyTitle")}</p>
           <p className="text-xs text-muted-foreground mt-1">{t("empty")}</p>
         </div>

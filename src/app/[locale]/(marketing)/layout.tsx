@@ -52,6 +52,11 @@ export default async function MarketingLayout({
                   </a>
                 </li>
                 <li>
+                  <Link href={`/${locale}/blog`} className="text-neutral-500 hover:text-white transition-colors">
+                    {t("nav.blog")}
+                  </Link>
+                </li>
+                <li>
                   <Link href={`/${locale}/login`} className="text-neutral-500 hover:text-white transition-colors">
                     {t("nav.login")}
                   </Link>

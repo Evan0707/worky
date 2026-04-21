@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "title": "Blog — Ressourcen für Handwerker",
+    "description": "Praxisleitfäden, regulatorische Updates und Tipps für Ihr Bauhandwerk."
+  },
+  "listing": {
+    "badge": "Der Blog",
+    "title": "Ressourcen für Handwerker",
+    "subtitle": "Praxisleitfäden, regulatorische Updates und Tipps zur Verwaltung und Entwicklung Ihres Unternehmens."
+  },
+  "article": {
+    "readingTime": "{minutes} Min. Lesezeit",
+    "publishedAt": "Veröffentlicht am {date}",
+    "backToBlog": "← Zurück zum Blog",
+    "by": "Von {name}",
+    "share": "Artikel teilen",
+    "cta": {
+      "title": "Bereit für die Digitalisierung?",
+      "description": "Schließen Sie sich Handwerkern an, die ihre Projekte mit OpenChantier verwalten.",
+      "button": "Kostenlos starten"
+    }
+  },
+  "categories": {
+    "regulation": "Vorschriften",
+    "tips": "Praxistipps",
+    "tools": "Werkzeuge"
+  },
+  "empty": {
+    "title": "Neue Artikel folgen bald",
+    "description": "Unser Team schreibt Leitfäden für Sie. Schauen Sie bald wieder vorbei."
+  }
+}

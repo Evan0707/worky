@@ -55,6 +55,12 @@ export function Navbar({ locale }: { locale: string }) {
           >
             {t("nav.pricing")}
           </a>
+          <Link
+            href={`/${locale}/blog`}
+            className="text-[13px] text-neutral-500 dark:text-neutral-400 transition-colors hover:text-neutral-900 dark:hover:text-white"
+          >
+            {t("nav.blog")}
+          </Link>
         </div>
 
         {/* Desktop actions */}
@@ -105,6 +111,13 @@ export function Navbar({ locale }: { locale: string }) {
             >
               {t("nav.pricing")}
             </a>
+            <Link
+              href={`/${locale}/blog`}
+              onClick={() => setMobileOpen(false)}
+              className="block px-3 py-2.5 rounded-lg text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/[0.04] transition-colors"
+            >
+              {t("nav.blog")}
+            </Link>
             <div className="pt-3 mt-2 border-t border-black/5 dark:border-white/[0.06] space-y-2">
               <Link
                 href={`/${locale}/login`}

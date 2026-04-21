@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "title": "Blog — Resources for tradespeople",
+    "description": "Practical guides, regulatory updates and tips to grow your construction business."
+  },
+  "listing": {
+    "badge": "The Blog",
+    "title": "Resources for tradespeople",
+    "subtitle": "Practical guides, regulatory updates and tips to manage and grow your business."
+  },
+  "article": {
+    "readingTime": "{minutes} min read",
+    "publishedAt": "Published on {date}",
+    "backToBlog": "← Back to blog",
+    "by": "By {name}",
+    "share": "Share this article",
+    "cta": {
+      "title": "Ready to go digital?",
+      "description": "Join tradespeople who manage their projects with OpenChantier.",
+      "button": "Start for free"
+    }
+  },
+  "categories": {
+    "regulation": "Regulation",
+    "tips": "Practical tips",
+    "tools": "Tools"
+  },
+  "empty": {
+    "title": "New articles coming soon",
+    "description": "Our team is writing guides for you. Check back soon."
+  }
+}

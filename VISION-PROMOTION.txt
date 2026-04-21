@@ -1,0 +1,409 @@
+================================================================================
+  OPENCHANTIER — AUDIT, VISION PRODUIT & PLAN DE PROMOTION
+  Date : 2026-04-20
+================================================================================
+
+
+PARTIE 1 — ÉTAT DES LIEUX (ce qui est déjà construit)
+================================================================================
+
+Tu es beaucoup plus loin que tu ne le crois. L'app est déjà une vraie suite
+de gestion de chantier, pas un MVP bancal.
+
+BACKEND (17 routers tRPC, 23 modèles Prisma)
+  • project, task, time-entry, material, photo, invoice
+  • message (chat temps-réel Pusher), project-note, notification
+  • tag, team + team-invitation, project-template
+  • safety-checklist, planning, report
+  • stripe (paiements), user (auth/profil)
+
+FRONTEND (dashboard 100% i18n — FR/EN/DE/ES)
+  Workspace chantier : photos, temps, matériaux, messages, notes, tâches,
+  équipe, sécurité. Plus : planning, rapports, factures.
+
+DIFFÉRENCIATEURS DÉJÀ EN PLACE
+  1. Factur-X / ZUGFeRD / Peppol → quasi aucun concurrent français le fait
+     bien pour les artisans solo.
+  2. Magic link client sans compte → UX ultra-fluide pour le client final.
+  3. Multi-lingue natif (rare dans la verticale BTP).
+  4. PWA → pas de store Apple/Google à gérer, installable, offline-ready.
+  5. Stack moderne (Next 15, tRPC, Neon, Edge) → vélocité de dev x10 vs
+     concurrents sur stacks legacy.
+
+CE QUI MANQUE ENCORE (gaps prioritaires)
+  • Devis/offres (DEVIS → facture conversion) — critique pour l'artisan.
+  • Signature électronique sur devis (Yousign / DocuSign / maison).
+  • OCR ticket de caisse → matériau auto (photo → ligne créée).
+  • Export compta (FEC, écritures CIEL/EBP/Sage).
+  • Géolocalisation pointage (anti-triche temps sur chantier).
+  • Mode hors-ligne PWA robuste (aujourd'hui l'app casse sans réseau).
+  • Intégration bancaire (Bridge/GoCardless) pour réconciliation paiements.
+  • App mobile native ? — PWA suffit 12 mois, mais Play Store/App Store
+    boostent le SEO "install".
+
+
+PARTIE 2 — VISION PRODUIT (où aller dans les 18 mois)
+================================================================================
+
+POSITIONNEMENT MARCHÉ
+  Tu n'es PAS Batappli, PAS Obat, PAS Hellio. Ceux-là visent des gros
+  artisans avec un contrôleur de gestion. Toi tu vises :
+
+      "Le plombier / électricien / maçon solo ou 1-3 salariés, 30-50 ans,
+       qui tient encore son chantier sur WhatsApp + Excel + carnet."
+
+  Ce segment = 600 000 entreprises artisanales en France. Personne ne les
+  sert correctement aujourd'hui. Les outils existants sont soit :
+    - trop chers (80-150€/mois pour Batappli, Obat)
+    - trop compliqués (CRM + ERP + compta mélangés)
+    - laids/datés (UX années 2010)
+
+TROIS HORIZONS
+
+  HORIZON 1 (T2 2026 — "Compléter le cœur métier")
+    → Devis PDF + signature client via magic link
+    → OCR ticket de caisse (Mistral OCR ou GPT-4o vision, 2 centimes l'appel)
+    → Mode offline PWA (Dexie + sync queue)
+    → Export FEC basique
+    Objectif : un artisan peut REMPLACER complètement son carnet + Excel.
+
+  HORIZON 2 (T3-T4 2026 — "Cross-sell & verrouillage")
+    → Intégration bancaire (Bridge API — réconciliation paiements auto)
+    → Module sous-traitance (2 artisans différents facturent le même chantier)
+    → Templates métier (plombier, électricien, peintre, maçon, chauffagiste)
+      avec checklists sécurité et matériaux pré-remplis par métier
+    → Application Play Store + App Store via PWA wrap (Bubblewrap / PWABuilder)
+    Objectif : une fois dedans, l'artisan ne peut plus sortir.
+
+  HORIZON 3 (2027 — "Plateforme & écosystème")
+    → API publique + webhooks (intégrateurs, comptables, assureurs)
+    → Marketplace matériaux (Leroy Merlin Pro, Cedeo, Rexel via API prix)
+    → "Réseau OpenChantier" : artisans se recommandent entre eux,
+      sous-traitance entre membres. Network effect = moat.
+    → Expansion DE puis BE/NL (Peppol déjà prêt).
+
+
+PARTIE 3 — VISION TECHNOLOGIQUE (paris à faire)
+================================================================================
+
+  IA UTILE (pas gadget) :
+    - Photo chantier → génération note auto (description visuelle)
+    - Ticket matériau → parsing auto (déjà mentionné)
+    - Génération devis à partir de 3 bullet points
+    - Résumé de conversation client (semaine = 1 paragraphe)
+
+  PLATEFORME :
+    - Ne pas partir sur React Native. La PWA couvre 95% des besoins.
+    - Investir dans le mode offline AVANT d'investir dans du natif.
+    - Pousser fort sur la WebShare API (partager photo chantier) + Media
+      Capture (photo directe depuis le navigateur).
+
+  MONITORING PRODUIT :
+    - PostHog (gratuit jusqu'à 1M events) pour funnel + feature flags
+    - Plausible Analytics pour marketing (RGPD friendly, pas de bandeau
+      cookie nécessaire)
+    - Sentry déjà en place.
+
+
+PARTIE 4 — PROMOTION : BRAINSTORM COMPLET
+================================================================================
+
+PRINCIPE DIRECTEUR
+  Tu n'as PAS de budget marketing, PAS d'équipe, PAS de réseau artisan.
+  Donc oublie Google Ads, Meta Ads, salons pros avant 500 clients payants.
+  Joue uniquement sur les leviers à CAC = 0 ou CAC organique.
+
+---
+
+PISTE 1 — CONTENU SEO "LONGUE TRAÎNE ARTISAN"
+===
+  Les artisans cherchent Google comme tout le monde :
+    - "modèle devis plomberie gratuit word"
+    - "comment faire une facture auto-entrepreneur plombier"
+    - "TVA 10% ou 20% rénovation"
+    - "facture électronique obligatoire 2026"
+    - "attestation TVA réduite 5.5 modèle"
+
+  ACTION
+    → Créer un blog /blog SEO-optimisé.
+    → 2 articles par semaine pendant 6 mois = 50 articles.
+    → Chaque article propose un template/outil gratuit qui amène à
+      OpenChantier (devis générateur, calculateur TVA, etc.).
+    → Next.js App Router + next-sitemap → indexation automatique.
+
+  IMPACT ESTIMÉ : 3-6 mois pour voir du trafic, 10-20 inscriptions
+  organiques par mois après 6 mois si tu tiens le rythme.
+
+  COÛT : 0€ (ou 200€/mois si tu délègues rédaction à un indé).
+
+---
+
+PISTE 2 — OUTILS GRATUITS (LEAD MAGNETS)
+===
+  Hack marketing éprouvé. Tu crées des mini-outils gratuits qui rankent
+  tout seuls et créent de la notoriété :
+
+    → generateur-devis.openchantier.com (sans compte)
+    → calculateur-tva-btp.openchantier.com
+    → facture-auto-entrepreneur.openchantier.com
+    → checklist-securite-chantier.openchantier.com
+
+  Chaque outil = 1 page SEO + CTA "créer compte pour sauvegarder".
+  Stratégie Canva / Notion à petite échelle. Très efficace dans le BTP
+  car les artisans Google tout.
+
+---
+
+PISTE 3 — TIKTOK / INSTAGRAM "ARTISAN DIGITAL"
+===
+  Sous-estimé en B2B. Le BTP est sur TikTok et Instagram Reels.
+  Hashtags #plombier #electricien #artisan font des millions de vues.
+
+  FORMAT VIDÉO (15-60s)
+    - "3 erreurs de facturation qui te coûtent cher"
+    - "Comment facturer quand un client te paye pas"
+    - "Timelapse de remplir un chantier sur OpenChantier" (dogfooding)
+    - "Réponse à @PlombierDu92 : voici comment je gère mes photos"
+
+  COÛT : temps uniquement. Un iPhone + CapCut suffisent.
+  IMPACT : 1 vidéo virale = 2000 inscriptions d'un coup.
+
+---
+
+PISTE 4 — COMMUNAUTÉS EXISTANTES
+===
+  Tu ne construis PAS une communauté, tu VAS DANS celles qui existent :
+
+    • Groupes Facebook "Artisans du bâtiment" (30k-100k membres)
+    • Groupes Facebook "Auto-entrepreneurs" (>200k)
+    • r/Plomberie_fr, r/electricien_fr, r/france_travail
+    • Forum Travaux.com, Forum Batiweb, Forum ForumConstruire
+    • Discord d'indépendants français ("IndéHackers FR", etc.)
+    • LinkedIn posts (ton réseau, puis réseaux des early users)
+
+  RÈGLE D'OR : tu n'y vas PAS pour promouvoir. Tu y vas pour aider.
+  Tu réponds aux questions (facturation, devis, outils). Ta signature
+  mentionne OpenChantier. Approche 80% aide / 20% pitch.
+
+---
+
+PISTE 5 — PROGRAMME DE PARRAINAGE
+===
+  Dans le BTP, le bouche à oreille entre artisans est énorme. Ils
+  s'échangent les outils comme des perceuses.
+
+  MÉCANIQUE
+    → 1 parrain offre 1 mois gratuit à un filleul.
+    → Parrain gagne 1 mois gratuit par filleul qui reste 60 jours.
+    → Affichage en dashboard : "3 artisans parrainés → 3 mois offerts".
+
+  Combiner avec un petit cadeau physique (t-shirt OpenChantier,
+  gobelet, mètre ruban marqué) à 5 filleuls. Coût dérisoire, impact
+  énorme sur l'identité de marque dans un milieu où le merch physique
+  a encore une valeur.
+
+---
+
+PISTE 6 — PARTENARIATS PRO
+===
+  CIBLES À APPROCHER (par ordre d'effort)
+    a) Experts-comptables indépendants → ils ont 50-200 clients artisans
+       chacun. Proposer un "compte pro comptable" qui voit les factures
+       des clients. Commission 20% récurrente.
+    b) Syndicats CAPEB (artisans bâtiment) et FFB → newsletters nationales.
+    c) Assureurs décennale (MAAF PRO, SMABTP) → partenariat "1 mois offert
+       à chaque nouveau client assuré".
+    d) Distributeurs matériaux (Cedeo, Rexel, Point P) → co-branding
+       sur OCR tickets de caisse.
+
+---
+
+PISTE 7 — PRODUCT HUNT + BETALIST + INDIE HACKERS
+===
+  Lancement global en anglais pour visibilité + crédibilité.
+
+    • Product Hunt : vise Top 5 du jour. Prépare 4 semaines à l'avance :
+      newsletters, teaser, screenshots, gif démo, hunter respecté.
+    • BetaList : 1 semaine avant PH, ça chauffe l'audience tech.
+    • IndieHackers : post "milestone 100 MRR" / "0 to 500 users" chaque
+      palier. Communauté adore les journaux de bord.
+    • Hacker News : post "Show HN: OpenChantier — construction manager
+      for solo artisans (open source soon?)". Titre modeste, contenu
+      technique.
+
+---
+
+PISTE 8 — OPEN CORE / OPEN SOURCE
+===
+  PARI STRATÉGIQUE (ambitieux mais puissant) :
+
+    Rendre une partie du code open source (ex: le module Factur-X, les
+    templates facture, le générateur de devis). Ça t'apporte :
+      - Trust massif côté artisan ("je vois le code, c'est pas une arnaque")
+      - Recrutement gratuit de contributors
+      - Crédibilité technique dans une verticale où les concurrents
+        sont des boîtes noires
+      - Presse tech ("la première alternative open source à Batappli")
+
+  RISQUE : quelqu'un self-host. Mais dans le BTP, PERSONNE ne self-host.
+  C'est un risque théorique uniquement.
+
+---
+
+PISTE 9 — EMAIL NEWSLETTER ("La Lettre de l'Artisan")
+===
+  1 email / semaine, 600 mots, utile même sans utiliser OpenChantier.
+  Sujets : évolutions légales, astuces fiscales, nouveautés produit, etc.
+
+  But : nurturing des inscrits free, remontée de conversions PRO,
+  entretien avec les églises paroissiales d'artisans.
+
+---
+
+PISTE 10 — PRESSE SPÉCIALISÉE
+===
+  Publications à contacter (journaliste précis, pas "contact@") :
+    • Le Moniteur, Batiactu, Artisans mag, Le Bâtiment Artisanal
+    • Capital, Le Journal du Net (angle startup / tech française)
+    • Korben, Frandroid, Numerama (angle techno / i18n / open source)
+    • Podcasts : "Dans la tête d'un indépendant", "Génération Do It
+      Yourself", "La Martingale" (angle solopreneur)
+
+  Pitch : "La facture électronique devient obligatoire en 2026 pour
+  TOUS les artisans. OpenChantier est la première solution française
+  à être prête, entièrement conforme Factur-X, et facturée 3x moins
+  cher que la concurrence."
+
+  → Ce narratif a un "why now" très fort et tombe à pic.
+
+
+PARTIE 5 — CALENDRIER DE PROMOTION (12 mois)
+================================================================================
+
+MAI 2026 (M1) — FONDATIONS
+-----------------------------------------------
+  Objectifs : base technique marketing en place, pas encore de bruit.
+  ☐ Installer Plausible Analytics + PostHog
+  ☐ Créer page /blog et publier 4 premiers articles SEO
+  ☐ Créer 2 outils gratuits (générateur devis + calculateur TVA)
+  ☐ Lancer compte TikTok + Instagram + tourner 5 premières vidéos
+  ☐ Landing page "merci" + séquence email welcome (3 emails)
+  ☐ Rejoindre 10 groupes Facebook pertinents, lire 2 semaines sans
+     poster (observer les patterns)
+
+JUIN 2026 (M2) — PREMIERS SIGNAUX
+-----------------------------------------------
+  ☐ 8 articles de blog publiés (rythme 2/semaine)
+  ☐ 8 vidéos TikTok/Reels postées
+  ☐ Commencer à répondre aux questions sur Facebook (sans pitch)
+  ☐ Programme de parrainage codé + lancé
+  ☐ Newsletter : 1er envoi, construire l'audience
+
+JUILLET 2026 (M3) — LANCEMENT PUBLIC (PH)
+-----------------------------------------------
+  ☐ Lancement Product Hunt (préparé depuis juin)
+  ☐ BetaList 1 semaine avant
+  ☐ Post IndieHackers "Show IH"
+  ☐ Post HackerNews "Show HN"
+  ☐ Post LinkedIn détaillé (ton réseau + early users taguent)
+  ☐ Activation email list accumulée
+  ☐ OBJECTIF : 500 inscriptions sur le mois
+
+AOÛT 2026 (M4) — CONSOLIDATION ÉTÉ
+-----------------------------------------------
+  Note : juillet-août c'est mort en BTP (congés). Pas grave, on capitalise.
+  ☐ Refonte SEO suite aux premières analytics
+  ☐ Articles "histoires de nos premiers clients" (3-5 témoignages)
+  ☐ Lancement pied du programme experts-comptables (20 emails A/B)
+
+SEPTEMBRE 2026 (M5) — RENTRÉE = PIC
+-----------------------------------------------
+  Septembre = meilleur mois pour toucher un artisan. Rentrée = budgets
+  nouveaux, nouveaux logiciels, inscriptions.
+  ☐ Campagne emailing vers base free (upgrade PRO -20% septembre only)
+  ☐ Push fort TikTok/Instagram (2 vidéos/jour)
+  ☐ 1er partenariat syndicat signé (CAPEB local au minimum)
+  ☐ Relances presse spé ("rentrée des artisans")
+  ☐ OBJECTIF : 100 clients PRO payants cumulés
+
+OCTOBRE 2026 (M6) — SCALE CONTENT
+-----------------------------------------------
+  ☐ Publier 20 articles SEO au total (marque le tournant long-tail)
+  ☐ Lancer podcast OpenChantier (1 artisan interviewé / semaine)
+  ☐ Co-content avec 1 expert-comptable influent (LinkedIn)
+
+NOVEMBRE 2026 (M7) — PUSH "FACTURE ÉLECTRONIQUE"
+-----------------------------------------------
+  ☐ Campagne "Prêt pour la facturation électronique 2026-2027 ?"
+  ☐ Webinaire gratuit (Zoom, 200 inscrits visés)
+  ☐ Livre blanc "Tout sur Factur-X pour artisans" (lead magnet)
+  ☐ Activation presse : Le Moniteur, Batiactu, Capital
+
+DÉCEMBRE 2026 (M8) — TRÊVE + BEST-OF
+-----------------------------------------------
+  ☐ Rapport "Année de l'artisan digital 2026" (data OpenChantier)
+  ☐ Offre Noël annuel -50% (1 an souscrit d'avance)
+  ☐ Recap année + vision 2027 sur le blog
+
+JANVIER 2027 (M9) — EXPANSION LOCALE
+-----------------------------------------------
+  ☐ Lancer Google Ads sur mots "devis plombier en ligne" (budget 500€/mois)
+     → maintenant que tu as de la data, ROI mesurable
+  ☐ Première version DE poussée auprès de communautés allemandes
+
+FÉVRIER 2027 (M10) — INDUSTRIALISATION
+-----------------------------------------------
+  ☐ Embauche/freelance d'un rédacteur SEO dédié
+  ☐ Premier salon pro testé (Artibat Rennes ou Batimat)
+    → stand à bas coût, démo live, distribution goodies
+
+MARS-AVRIL 2027 (M11-12) — OPTIMISATION
+-----------------------------------------------
+  ☐ A/B test landing page, tunnel onboarding, email séquence
+  ☐ Doubler le budget Ads sur canaux les plus ROI
+  ☐ Lancer programme "ambassadeurs" (50 super-users payés en crédit)
+
+
+PARTIE 6 — MÉTRIQUES À SUIVRE (North Star + secondary)
+================================================================================
+
+  NORTH STAR : MRR (revenu récurrent mensuel)
+
+  SECONDAIRES
+    • Taux de conversion free → PRO (cible : 4% mois 1, 8% à 6 mois)
+    • Activation : % d'inscrits qui créent 1 chantier dans les 7 jours
+    • Rétention : % actifs à J30, J90, J180
+    • CAC par canal (quand tu feras de l'ads)
+    • Référent : % de nouveaux inscrits via parrainage
+
+  ATTENTION : ne pas fétichiser le nombre d'inscrits. 1000 inscrits qui
+  ne payent pas < 50 clients PRO à 15€.
+
+
+PARTIE 7 — RISQUES & ANTI-PATTERNS
+================================================================================
+
+  À ÉVITER
+  ✗ Dépenser en Ads avant d'avoir un funnel qui convertit >3%
+  ✗ Construire des features avant de parler aux utilisateurs
+     (fais 20 interviews clients par mois — obligatoire)
+  ✗ Faire du "mode entreprise" (SSO, rôles complexes) avant 1000 clients
+  ✗ Sous-estimer l'UX mobile — l'artisan va utiliser à 80% sur téléphone
+  ✗ Copier Batappli/Obat dans leurs fonctionnalités — tu perdras.
+     Différencie-toi par la simplicité, le prix, l'UX.
+
+  À SURVEILLER
+  ⚠ Concurrents qui copient l'UX dès qu'ils te voient monter
+     → ta vitesse d'itération = ton seul vrai moat
+  ⚠ Réglementation facture électronique française (dates qui bougent)
+  ⚠ Stripe fees sur les petites transactions (15€/mois) — checker la
+     rentabilité unitaire
+
+
+================================================================================
+  EN UNE LIGNE
+================================================================================
+
+  Tu as le produit. Il te manque maintenant : 20 interviews clients
+  /mois, 50 articles SEO, 100 vidéos courtes, et tenir le rythme
+  12 mois sans fléchir.

@@ -29,6 +29,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       team: (await import(`./locales/${locale}/team.json`)).default,
       landing: (await import(`./locales/${locale}/landing.json`)).default,
       legal: (await import(`./locales/${locale}/legal.json`)).default,
+      blog: (await import(`./locales/${locale}/blog.json`)).default,
     },
   };
 });
