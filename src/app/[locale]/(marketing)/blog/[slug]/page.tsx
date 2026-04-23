@@ -4,10 +4,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { articles, getArticleBySlug, formatPublishedAt } from "@/lib/blog";
 import { Clock, ChevronRight } from "lucide-react";
-import { ArticleContent } from "@/lib/blog/articles/facture-electronique-artisans-2026";
+import { ArticleContent as FactureElectroniqueContent } from "@/lib/blog/articles/facture-electronique-artisans-2026";
+import { ArticleContent as RedigerDevisContent } from "@/lib/blog/articles/rediger-devis-batiment-mentions-obligatoires";
 
 const ARTICLE_COMPONENTS: Record<string, React.ComponentType<{ locale: string }>> = {
-  "facture-electronique-artisans-2026": ArticleContent,
+  "facture-electronique-artisans-2026": FactureElectroniqueContent,
+  "rediger-devis-batiment-mentions-obligatoires": RedigerDevisContent,
 };
 
 const CATEGORY_COLORS = {

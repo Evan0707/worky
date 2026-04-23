@@ -13,6 +13,17 @@ export type Article = {
 
 export const articles: Article[] = [
   {
+    slug: "rediger-devis-batiment-mentions-obligatoires",
+    title: "Rédiger un devis bâtiment : mentions obligatoires, structure et erreurs à éviter",
+    description:
+      "Le guide complet pour rédiger des devis BTP conformes, signés rapidement et juridiquement solides : mentions légales, assurance décennale, médiation, erreurs fréquentes.",
+    publishedAt: "2026-04-23",
+    readingTime: 10,
+    category: "tips",
+    tags: ["devis", "bâtiment", "mentions légales", "facturation"],
+    author: { name: "Équipe OpenChantier", role: "Rédaction" },
+  },
+  {
     slug: "facture-electronique-artisans-2026",
     title: "Facture électronique obligatoire pour les artisans : tout comprendre",
     description:

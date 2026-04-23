@@ -1,0 +1,1024 @@
+================================================================================
+  OPENCHANTIER - ROADMAP DES FUTURES FEATURES
+  Fonctionnalites essentielles pour artisans solo & petites entreprises du BTP
+  Date: 2026-04-20
+================================================================================
+
+Ce document liste les features manquantes ou a etendre, organisees par priorite
+(P0 = critique, bloquant pour conversion ; P1 = fort impact, a faire dans
+6 mois ; P2 = moyen terme 6-12 mois ; P3 = long terme 12+ mois) et par theme.
+
+Deja en place (a ne pas redocumenter) :
+  - Projets, photos, time-entries, materiaux, factures (Factur-X via Python)
+  - Notes de chantier, tags, taches, planning, rapports, safety checklist
+  - Templates de projet, messagerie interne, equipes, notifications
+  - Magic link client (lecture + actions), Stripe, multilingue
+  - Blog marketing, onboarding, dashboard, settings, billing
+
+================================================================================
+  TABLE DES MATIERES
+================================================================================
+
+  P0 - CRITIQUE (bloquant conversion PRO)
+    1.  Devis / Estimations
+    2.  Signature electronique
+    3.  Relances automatiques impayes
+    4.  OCR tickets & factures fournisseurs
+    5.  Mode hors-ligne (PWA offline-first)
+
+  P1 - FORT IMPACT (sous 6 mois)
+    6.  Paiements en ligne client (Stripe payment links)
+    7.  Bibliotheque d'ouvrages & metres
+    8.  Avenants & modifications de devis
+    9.  Connexion bancaire (Bridge / Budget Insight)
+    10. Export comptable (FEC, Ciel, EBP, Sage)
+    11. TVA multi-taux & autoliquidation BTP
+    12. Application mobile native (React Native)
+    13. Dictee vocale / notes audio
+    14. Pointage geolocalise
+    15. PAD-ES attestation 10% (TVA reduite particuliers)
+
+  P2 - MOYEN TERME (6-12 mois)
+    16. CRM artisan (prospects, pipeline, relances)
+    17. Catalogue fournisseurs (Point.P, Cedeo, Legallais)
+    18. Gestion de stock / inventaire outillage
+    19. Documents administratifs (Kbis, RC Pro, decennale)
+    20. Bon de commande fournisseur
+    21. Bon d'intervention / fiche SAV
+    22. Planning Gantt avance & dependances
+    23. Heures supplementaires & conventions collectives BTP
+    24. Conges, RTT, arret maladie
+    25. Sous-traitance (DC4, attestations URSSAF)
+    26. DOE (Dossier des Ouvrages Executes)
+    27. PPSPS & plan de prevention
+    28. Analytics artisan (marge par chantier, CA previsionnel)
+    29. Multi-societes / multi-entites
+
+  P3 - LONG TERME (12+ mois)
+    30. IA - Estimation automatique par photo
+    31. IA - Assistant redaction devis
+    32. IA - Analyse risques chantier
+    33. Marketplace apporteurs d'affaires
+    34. API publique & webhooks
+    35. Integrations tierces (Zapier, Make, Notion)
+    36. Version architecte / MOE
+    37. Version entreprise (10-50 salaries)
+    38. Internationalisation (BE, LU, CH, CA-QC)
+
+  AXES TRANSVERSES
+    A. Accessibilite & RGPD
+    B. Performance & scalabilite
+    C. Observabilite & support
+    D. Conformite reglementaire
+
+================================================================================
+  P0 - CRITIQUE (bloquant conversion PRO)
+================================================================================
+
+--------------------------------------------------------------------------------
+1. DEVIS / ESTIMATIONS
+--------------------------------------------------------------------------------
+
+Constat :
+  Aujourd'hui OpenChantier gere la facture (Invoice) mais PAS le devis. Or
+  le workflow artisan est : prospect -> devis -> signature -> acompte ->
+  chantier -> factures intermediaires -> facture finale. Sans devis, on
+  attaque le marche par le milieu.
+
+Modele Prisma (nouveau) :
+
+  model Quote {
+    id                String        @id @default(cuid())
+    number            String        // DEV-2026-0001
+    artisanId         String
+    clientId          String?       // ref Contact si CRM
+    clientName        String
+    clientEmail       String?
+    clientAddress     String?
+    clientVatNumber   String?
+    projectId         String?       // optionnel : converti plus tard
+    status            QuoteStatus   // DRAFT, SENT, VIEWED, ACCEPTED, REFUSED, EXPIRED
+    validUntil        DateTime
+    currency          String        @default("EUR")
+    totalHtCents      Int
+    totalVatCents     Int
+    totalTtcCents     Int
+    depositPercent    Int?          // 30 (acompte)
+    depositCents      Int?
+    paymentTerms      String?       // 30 jours fin de mois
+    penaltyRate       Float?        // taux interet de retard
+    notes             String?       @db.Text
+    acceptedAt        DateTime?
+    acceptedSignature String?       // base64 signature
+    acceptedIp        String?
+    refusedAt         DateTime?
+    refusedReason     String?
+    viewedAt          DateTime?
+    pdfUrl            String?
+    items             QuoteItem[]
+    createdAt         DateTime      @default(now())
+    updatedAt         DateTime      @updatedAt
+  }
+
+  model QuoteItem {
+    id            String   @id @default(cuid())
+    quoteId       String
+    position      Int
+    type          ItemType // LABOR, MATERIAL, SECTION_TITLE, DISCOUNT
+    description   String   @db.Text
+    quantity      Float
+    unit          String   // m2, ml, u, h, forfait
+    unitPriceCents Int
+    vatRate       Float    // 0.20, 0.10, 0.055
+    totalHtCents  Int
+    quote         Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+    @@index([quoteId])
+  }
+
+Points critiques :
+  - Mentions legales obligatoires (raison sociale, SIRET, RCS, TVA
+    intracommunautaire, assurance decennale avec nom assureur + zone,
+    mediation conso art. L.616-1 code conso, delai de retractation pour
+    particuliers demarchage art. L.221-18).
+  - Taux TVA BTP : 20% neuf, 10% amelioration, 5,5% renovation energetique
+    (avec attestation).
+  - Convertible en facture en 1 clic (preserve la ref du devis).
+  - PDF genere par le microservice Python (meme pipeline que Factur-X).
+
+Plan : PRO uniquement. C'est le feature #1 qui justifie les 15 EUR/mois.
+
+--------------------------------------------------------------------------------
+2. SIGNATURE ELECTRONIQUE
+--------------------------------------------------------------------------------
+
+Constat :
+  Pour passer d'un devis a un chantier, il faut la signature du client. Aujourd
+  'hui les artisans impriment le devis, font signer, scannent. OpenChantier
+  peut remplacer ca par une signature dans le magic link.
+
+Niveaux de signature (eIDAS) :
+  - SES (Simple) : case a cocher + IP + user-agent + timestamp. Valeur legale
+    pour contrats < 10 000 EUR en general. C'est le MVP.
+  - AES (Avancee) : envoi SMS OTP + certificat a usage unique. Requis pour
+    devis > 10 000 EUR ou contentieux probables. Via DocuSign / Yousign API.
+  - QES (Qualifiee) : equivalent manuscrit. Hors scope court terme.
+
+Implementation MVP (SES) :
+  - Dans magic link, bouton "Accepter le devis"
+  - Modal : afficher prix, conditions, ouverture pad de signature (SignaturePad
+    react)
+  - Stocker : signature base64 + IP + user-agent + timestamp + hash SHA-256 du
+    PDF au moment de la signature (horodatage RFC 3161 via freeTSA.org ou
+    universign)
+  - Genere un certificat de signature PDF attache au devis signe
+  - Email de confirmation automatique artisan + client avec PDF signe
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+3. RELANCES AUTOMATIQUES IMPAYES
+--------------------------------------------------------------------------------
+
+Constat :
+  Les artisans perdent 5-15% de leur CA en impayes. Les relances manuelles sont
+  chronophages et souvent oubliees. Automatiser ca a une valeur enorme.
+
+Scenario :
+  Par facture emise, 3 relances automatiques :
+    - J+3 apres echeance : email courtois ("petit rappel amical")
+    - J+15 : email ferme + SMS (Twilio / OVH SMS)
+    - J+30 : mise en demeure recommandee digitale (AR24 / Docaposte) OU
+      PDF a signer par l'artisan et envoyer en LRAR papier
+
+Config par artisan :
+  - Delais personnalisables
+  - Templates de relance multilingues (auto-traduit selon locale client)
+  - Toggle ON/OFF par facture
+  - Penalites de retard calculees automatiquement (3x taux legal +
+    indemnite forfaitaire 40 EUR pour pro-a-pro, art. L.441-10 code commerce)
+
+Schema additions :
+
+  model InvoiceReminder {
+    id          String     @id @default(cuid())
+    invoiceId   String
+    stage       Int        // 1, 2, 3
+    sentAt      DateTime
+    channel     String     // EMAIL, SMS, LRAR
+    opened      Boolean    @default(false)
+    invoice     Invoice    @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  }
+
+Technique :
+  - Cron Vercel (vercel.json) ou QStash : run toutes les 6h
+  - Hook sur Invoice.paidAt pour arreter la sequence
+  - Dashboard : widget "A relancer" sur home
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+4. OCR TICKETS & FACTURES FOURNISSEURS
+--------------------------------------------------------------------------------
+
+Constat :
+  Un artisan passe 2-5h/semaine a saisir ses achats. Scanner ticket Point.P,
+  relever : fournisseur, date, montant HT, TVA, articles. L'OCR + IA est mature
+  en 2026 et cette feature se vend tres bien.
+
+Stack technique :
+  - Photo prise dans l'app (deja existant via UploadThing)
+  - Envoi a un microservice Python avec :
+      * Tesseract pour OCR brut
+      * Claude Haiku / GPT-4o-mini pour extraction structuree (JSON)
+  - Retour : { vendor, date, totalHt, vat, items[{description, qty, price}] }
+  - Pre-remplissage du formulaire Material (user valide)
+
+Alternatives commerciales :
+  - Mindee OCR (API francaise, modele recu specialisee, 0.10 EUR/scan)
+  - Klippa (0.08 EUR/scan)
+  - AWS Textract + Bedrock (plus technique, moins cher au volume)
+
+Quotas :
+  - FREE : 5 scans/mois
+  - PRO : 100 scans/mois inclus, au-dela 0.20 EUR/scan
+
+Plan : PRO (FREE teaser 5/mois pour conversion).
+
+--------------------------------------------------------------------------------
+5. MODE HORS-LIGNE (PWA OFFLINE-FIRST)
+--------------------------------------------------------------------------------
+
+Constat :
+  Sur chantier : cave, sous-sol, zone blanche, rase campagne = pas de reseau.
+  Si l'app ne marche pas hors-ligne, c'est un deal-breaker. C'est l'objection
+  n1 des artisans de terrain.
+
+Architecture :
+  - Service Worker (next-pwa) : cache shell + assets
+  - IndexedDB (Dexie.js) : cache des projets recents + time entries non
+    sync + photos en attente d'upload
+  - Queue de mutations : tRPC calls stockes offline, rejoues a la reconnexion
+  - Resolution de conflits : "last write wins" pour notes, "merge" pour
+    time entries (jamais perdre un pointage)
+  - Indicateur UI : banniere "Mode hors ligne - X modifications en attente"
+
+Scope offline (MVP) :
+  - Lecture : projets actifs, photos deja chargees, notes, taches
+  - Ecriture : pointer temps, prendre une photo (upload differe), ajouter
+    une note, cocher une tache, scanner un materiau
+
+Scope exclu offline :
+  - Creation nouveau projet (pas critique)
+  - Facturation / devis (necessite verif PRO + numero sequentiel)
+  - Settings
+
+Plan : FREE + PRO (c'est un fondamental du produit).
+
+================================================================================
+  P1 - FORT IMPACT (sous 6 mois)
+================================================================================
+
+--------------------------------------------------------------------------------
+6. PAIEMENTS EN LIGNE CLIENT
+--------------------------------------------------------------------------------
+
+Dans le magic link, bouton "Payer par CB" sur une facture :
+  - Stripe Payment Link genere a la volee (account Stripe de l'artisan via
+    Stripe Connect, PAS compte OpenChantier)
+  - Support acompte partiel, solde, paiement en 3 fois sans frais (SEPA)
+  - Webhook Stripe met a jour Invoice.paidAt
+
+Revenue : OpenChantier prend 0.5% sur chaque paiement (en plus des frais
+Stripe 1.5% + 0.25 EUR). Deuxieme revenu apres l'abonnement.
+
+Plan : PRO + commission.
+
+--------------------------------------------------------------------------------
+7. BIBLIOTHEQUE D'OUVRAGES & METRES
+--------------------------------------------------------------------------------
+
+Pour eviter de retaper a chaque devis les lignes recurrentes :
+
+  model WorkItem {
+    id             String   @id @default(cuid())
+    artisanId      String
+    category       String   // plomberie, electricite, platrerie, gros-oeuvre
+    code           String?  // code interne (PLB-01)
+    title          String
+    description    String   @db.Text
+    unit           String   // m2, ml, u, h, forfait
+    defaultPriceCents Int
+    defaultVatRate Float    @default(0.20)
+    defaultLaborHours Float?
+    materialsJson  Json?    // [{name, qty, unit, price}]
+    tags           String[]
+    createdAt      DateTime @default(now())
+  }
+
+  - Recherche dans le formulaire devis : "sanitaire" -> liste des ouvrages
+  - Import CSV pour bibliotheque batiCA/BatiChiffrage (si l'user a acces)
+  - Export vers autres outils
+
+Bonus : bibliotheque partagee par corps de metier (opt-in "publier") avec
+moderation, pour que la communaute enrichisse la base.
+
+Plan : FREE (10 ouvrages) | PRO (illimite + import/export).
+
+--------------------------------------------------------------------------------
+8. AVENANTS & MODIFICATIONS DE DEVIS
+--------------------------------------------------------------------------------
+
+Quand un client demande un supplement en cours de chantier, il faut formaliser.
+Aujourd'hui les artisans oublient ou acceptent a l'oral -> impayes.
+
+  model QuoteAmendment {
+    id          String       @id @default(cuid())
+    quoteId     String       // devis original
+    number      String       // AV-2026-0001
+    status      AmendmentStatus
+    reason      String       @db.Text
+    items       QuoteItem[]  // items ajoutes/modifies
+    totalDeltaCents Int      // +/-
+    signedAt    DateTime?
+    signature   String?
+  }
+
+UX : sur un devis SENT/ACCEPTED, bouton "Creer un avenant". Le client le
+signe dans le magic link comme un devis.
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+9. CONNEXION BANCAIRE (BRIDGE / BUDGET INSIGHT)
+--------------------------------------------------------------------------------
+
+Agregation des transactions du compte pro de l'artisan via Bridge API
+(ex-Budget Insight, francais, homologue ACPR).
+
+Cas d'usage :
+  - Detecter automatiquement les paiements recus -> marquer factures payees
+    (matching par montant + date + libelle)
+  - Categoriser automatiquement les achats -> pre-remplir Material
+  - Tableau de bord tresorerie : CA reel vs facture, solde previsionnel
+  - Alerte : "Tu n'as pas encore recu le paiement de FAC-2026-0042 alors
+    que le client a signe il y a 30 jours"
+
+Cout : Bridge = ~0.80 EUR/utilisateur/mois. Integre dans PRO.
+
+RGPD : consentement explicite (PSD2), rafraichissement tous les 90 jours
+avec reauth SCA, stockage chiffre des tokens.
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+10. EXPORT COMPTABLE (FEC, CIEL, EBP, SAGE)
+--------------------------------------------------------------------------------
+
+Tout expert-comptable demande un export. Sans ca, l'artisan doit ressaisir.
+
+Formats :
+  - FEC (Fichier des Ecritures Comptables) : norme DGFiP obligatoire, TXT
+    tabulaire. Indispensable en cas de controle fiscal.
+  - Ciel Compta : XIMPORT.TXT
+  - EBP Compta : CSV format EBP
+  - Sage : PNM (via Sage 50 Cloud API)
+  - CSV generique + Pennylane / Indy / Dougs API (cabinets modernes)
+
+UX : settings > comptabilite > choisir format > export mensuel auto envoye
+a l'expert-comptable par email.
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+11. TVA MULTI-TAUX & AUTOLIQUIDATION BTP
+--------------------------------------------------------------------------------
+
+Cas complexes a gerer correctement :
+  - Neuf : 20%
+  - Amelioration maison +2 ans : 10%
+  - Renovation energetique eligible : 5,5% (avec attestation particulier)
+  - Monuments historiques : 10%
+  - Franchise en base (micro-entreprise < 36 800 EUR) : pas de TVA, mention
+    "TVA non applicable art. 293 B du CGI"
+  - Autoliquidation BTP sous-traitance : mention "Autoliquidation" sur
+    facture, pas de TVA facturee
+  - Intracommunautaire B2B : mention "Exoneration TVA art. 262 ter I CGI"
+
+UX : formulaire de facture detecte le contexte et propose le bon regime,
+avec info-bulle expliquant pourquoi. Attestations PDF automatiques pour
+TVA reduite.
+
+Plan : FREE (standards) | PRO (cas complexes + attestations auto).
+
+--------------------------------------------------------------------------------
+12. APPLICATION MOBILE NATIVE (REACT NATIVE)
+--------------------------------------------------------------------------------
+
+La PWA marche mais a des limites :
+  - Acces camera pro (photos RAW, flash controle)
+  - Notifications push iOS fiables (la PWA iOS reste faible)
+  - Widget iOS/Android "pointer arrivee"
+  - Integration contacts / calendrier natif
+  - Partage direct vers WhatsApp business
+
+Stack : Expo (React Native) + partage maximal avec le monorepo :
+  - tRPC React client identique
+  - Composants UI reecrits (Tamagui ou Gluestack)
+  - NextAuth mobile via Expo AuthSession
+
+Priorite : apres product-market fit confirme sur web (> 500 PRO).
+
+Plan : FREE + PRO (le mobile est une commodite, pas un PRO).
+
+--------------------------------------------------------------------------------
+13. DICTEE VOCALE / NOTES AUDIO
+--------------------------------------------------------------------------------
+
+Sur chantier, taper sur un ecran avec des gants pleins de platre = galere.
+
+Options :
+  - Dictee native iOS/Android (gratuit, deja dans keyboard)
+  - Transcription Whisper API pour les notes audio (1 clic mic -> texte)
+  - Commandes vocales : "OpenChantier, ajoute note au projet X : mur nord
+    termine"
+
+Implementation :
+  - Bouton micro dans formulaire de note
+  - Enregistrement audio (MediaRecorder API)
+  - Upload vers /api/transcribe
+  - Whisper-1 OpenAI ou Deepgram (meilleur fr-FR, accent artisan)
+  - Pre-remplit le champ, user valide
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+14. POINTAGE GEOLOCALISE
+--------------------------------------------------------------------------------
+
+Pour les patrons de 2-10 salaries :
+  - Le salarie pointe arrivee/depart : l'app capture GPS
+  - Verifie qu'il est bien dans un rayon de 200m du chantier
+  - Si non : alerte patron + demande justification
+  - RGPD : consentement explicite, desactivation possible par salarie,
+    geolocalisation UNIQUEMENT au moment du pointage (pas de tracking continu)
+
+Conformite :
+  - CNIL : geolocalisation salaries reglementee, declaration RGPD obligatoire
+  - Convention collective BTP : temps de trajet a prendre en compte
+  - Code du travail : droit a la deconnexion, pas de pointage apres 20h
+
+Plan : PRO uniquement (feature pro). Option activable par compte.
+
+--------------------------------------------------------------------------------
+15. PAD-ES ATTESTATION 10% / 5,5% (TVA REDUITE PARTICULIERS)
+--------------------------------------------------------------------------------
+
+Pour facturer a taux reduit a un particulier, l'artisan doit obtenir de lui
+une attestation signee (CERFA 13947*05). Aujourd'hui c'est du papier.
+
+Feature :
+  - Generation PDF pre-rempli avec infos chantier
+  - Envoi via magic link au client
+  - Signature electronique (SES, voir feature 2)
+  - Archivage 5 ans (obligation fiscale)
+  - Bloque la facturation a taux reduit tant que non signee
+
+Plan : PRO.
+
+================================================================================
+  P2 - MOYEN TERME (6-12 mois)
+================================================================================
+
+--------------------------------------------------------------------------------
+16. CRM ARTISAN (PROSPECTS, PIPELINE, RELANCES)
+--------------------------------------------------------------------------------
+
+  model Contact {
+    id           String    @id @default(cuid())
+    artisanId    String
+    type         ContactType // INDIVIDUAL, COMPANY
+    firstName    String?
+    lastName     String?
+    companyName  String?
+    email        String?
+    phone        String?
+    address      String?
+    source       String?   // bouche-a-oreille, google, Leboncoin, Houzz
+    vatNumber    String?
+    notesInternal String?  @db.Text
+    projects     Project[]
+    quotes       Quote[]
+    createdAt    DateTime  @default(now())
+  }
+
+  model Lead {
+    id           String     @id @default(cuid())
+    contactId    String
+    stage        LeadStage  // NEW, CONTACTED, VISITED, QUOTED, WON, LOST
+    estimatedValueCents Int?
+    expectedCloseAt DateTime?
+    lostReason   String?
+    tags         String[]
+    nextAction   String?
+    nextActionAt DateTime?
+  }
+
+  - Vue Kanban pipeline
+  - Rappels automatiques (si stage = VISITED et > 7 jours -> notif)
+  - Conversion en un clic : Lead gagnant -> Projet
+
+Plan : FREE (20 contacts) | PRO (illimite + pipeline + rappels).
+
+--------------------------------------------------------------------------------
+17. CATALOGUE FOURNISSEURS (POINT.P, CEDEO, LEGALLAIS)
+--------------------------------------------------------------------------------
+
+Integrer les catalogues des grossistes pour rechercher/commander :
+  - Point.P (Saint-Gobain Distribution) : API disponible
+  - Cedeo (Saint-Gobain plomberie/chauffage) : API
+  - Legallais : API
+  - Brico-depot : scraping (legalement delicat)
+  - ManoMano Pro : API
+
+Feature :
+  - Recherche globale produits par reference, EAN, mots-cles
+  - Ajout direct au devis avec prix temps reel
+  - Commande directe (deep-link ou API selon fournisseur)
+  - Historique des commandes par chantier
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+18. GESTION DE STOCK / INVENTAIRE OUTILLAGE
+--------------------------------------------------------------------------------
+
+Pour les artisans avec 5k-50k EUR d'outillage :
+
+  model Tool {
+    id            String     @id @default(cuid())
+    artisanId     String
+    name          String
+    brand         String?
+    model         String?
+    serialNumber  String?
+    purchasePrice Int?       // cents
+    purchasedAt   DateTime?
+    warrantyUntil DateTime?
+    status        ToolStatus // AVAILABLE, IN_USE, BROKEN, LOST
+    assignedToId  String?    // salarie
+    projectId     String?    // chantier actuel
+    photos        String[]   // photo de l'outil
+    qrCode        String     // scan pour check-in/out
+  }
+
+Fonctions :
+  - QR code generes, colles sur outils
+  - Scan pour emprunter/rendre
+  - Alerte outils non rendus fin de chantier
+  - Inventaire annuel (compta)
+  - Rappel renouvellement (echelles, EPI, extincteurs verifies chaque annee)
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+19. DOCUMENTS ADMINISTRATIFS (KBIS, RC PRO, DECENNALE)
+--------------------------------------------------------------------------------
+
+Stockage centralise + alertes renouvellement :
+  - Kbis (renouveler < 3 mois pour appels d'offres)
+  - Attestation URSSAF vigilance (3 mois)
+  - RC Pro (annuelle)
+  - Decennale (annuelle)
+  - Attestations fiscales
+  - Cartes BTP salaries
+  - CACES, habilitations electriques (2-3 ans)
+
+Feature :
+  - Upload + tagging type + date expiration
+  - Notifs 30j / 7j / J-1 avant expiration
+  - Partage avec clients (appels d'offres) via lien securise signe
+  - Check-list DUER (Document Unique Evaluation Risques)
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+20. BON DE COMMANDE FOURNISSEUR
+--------------------------------------------------------------------------------
+
+  model PurchaseOrder {
+    id          String     @id @default(cuid())
+    artisanId   String
+    vendorId    String?    // ref Contact type vendor
+    projectId   String?
+    number      String     // BC-2026-0001
+    status      POStatus   // DRAFT, SENT, PARTIAL_RECEIVED, RECEIVED, CANCELLED
+    items       POItem[]
+    totalHtCents Int
+    totalTtcCents Int
+    expectedAt  DateTime?
+    receivedAt  DateTime?
+    pdfUrl      String?
+  }
+
+  - PDF genere et envoye au fournisseur par email
+  - Reception (quantites recues) pour comparaison avec facture fournisseur
+  - Liaison avec chantier (cout reel)
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+21. BON D'INTERVENTION / FICHE SAV
+--------------------------------------------------------------------------------
+
+Pour les depannages (plombier, electricien de garde) :
+
+  model ServiceCall {
+    id          String   @id @default(cuid())
+    artisanId   String
+    clientId    String?
+    address     String
+    complaint   String   @db.Text     // probleme signale
+    diagnosis   String?  @db.Text     // constat artisan
+    workDone    String?  @db.Text     // travail effectue
+    recommendations String? @db.Text  // conseils
+    startedAt   DateTime
+    endedAt     DateTime?
+    billable    Boolean  @default(true)
+    signature   String?  // signature client sur place
+    photos      Photo[]  @relation("ServiceCallPhotos")
+  }
+
+  - Mobile-first : demarrer en arrivant
+  - Chronometre auto
+  - Signature sur ecran du client en fin d'intervention
+  - PDF genere + envoye au client + facturable en 1 clic
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+22. PLANNING GANTT AVANCE & DEPENDANCES
+--------------------------------------------------------------------------------
+
+Le planning actuel est basique. Evolution :
+  - Vue Gantt (librairie : @frappe/gantt ou dhtmlx-gantt)
+  - Dependances entre taches (FS, SS, FF, SF)
+  - Chemin critique calcule
+  - Ressources (qui fait quoi) avec detection surcharge
+  - Export Microsoft Project (.mpp) ou PDF
+  - Vue "planning d'equipe" avec swimlanes par salarie
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+23. HEURES SUPPLEMENTAIRES & CONVENTIONS COLLECTIVES BTP
+--------------------------------------------------------------------------------
+
+Le time-tracking actuel additionne les heures. Pour les salaries, il faut :
+  - Distinguer heures normales / sup 25% / sup 50%
+  - Conv. coll. nationale Batiment (IDCC 1596, 1597, 2609, 2614)
+  - Plafond hebdo 48h / 44h sur 12 sem
+  - Indemnites repas (MG = 10.10 EUR 2026) selon zone
+  - Indemnites trajet + transport
+  - Primes : panier, salissure, outillage
+  - Export DSN (Declaration Sociale Nominative) ou pre-paie via API Silae /
+    Nibelis / Payfit
+
+Plan : PRO entreprise (tier superieur eventuel 29 EUR/mois).
+
+--------------------------------------------------------------------------------
+24. CONGES, RTT, ARRET MALADIE
+--------------------------------------------------------------------------------
+
+Pour salaries :
+  - Solde de conges par salarie
+  - Demande + validation patron
+  - Calendrier equipe avec absences
+  - Arret maladie (upload justif) -> deduction conges / heures
+  - Conges BTP (caisse CNETP / Pro-BTP) : declaration automatique
+
+Plan : PRO (multi-salaries uniquement).
+
+--------------------------------------------------------------------------------
+25. SOUS-TRAITANCE (DC4, ATTESTATIONS URSSAF)
+--------------------------------------------------------------------------------
+
+Gestion des sous-traitants :
+  - Fiche sous-traitant (SIRET, RC Pro, decennale, URSSAF vigilance)
+  - Verification automatique URSSAF attestation (scraping ou API si
+    disponible, sinon upload + alerte J-30 renouvellement)
+  - Contrat de sous-traitance genere (loi 75-1334 du 31/12/1975)
+  - DC4 pour marches publics
+  - Facture sous-traitant avec autoliquidation BTP auto-detectee
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+26. DOE (DOSSIER DES OUVRAGES EXECUTES)
+--------------------------------------------------------------------------------
+
+A la fin d'un chantier, l'artisan doit remettre au client :
+  - Plans "as-built"
+  - Notices produits poses (chaudieres, fenetres, radiateurs)
+  - Fiches de garantie
+  - Attestations (conformite gaz, electricite Consuel)
+  - PV reception
+
+Feature : generation automatique d'un ZIP structure ou d'un mini-site
+web dedie (lien magique perpetuel pour le client).
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+27. PPSPS & PLAN DE PREVENTION
+--------------------------------------------------------------------------------
+
+Pour chantiers > 500 h/hommes ou > 2 entreprises :
+  - PPSPS (Plan Particulier de Securite et Protection de la Sante)
+  - Plan de prevention (pour interventions chez donneur d'ordre)
+  - DIUO (Dossier d'Intervention Ulterieure sur l'Ouvrage)
+
+Generation PDF a partir de templates paramatrables. Signature numerique
+coordinateur SPS + artisans.
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+28. ANALYTICS ARTISAN (MARGE PAR CHANTIER, CA PREVISIONNEL)
+--------------------------------------------------------------------------------
+
+Tableau de bord etendu :
+  - Marge reelle = facture - (main d'oeuvre * taux + materiaux + sous-trait)
+  - Top 5 chantiers rentables / deficitaires
+  - Saisonnalite (CA par mois sur 24 mois)
+  - CA previsionnel = sum(devis SENT * P(accept))
+  - Taux de transformation devis -> chantiers
+  - Taux horaire effectif vs affiche
+  - Rotation du portefeuille clients
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+29. MULTI-SOCIETES / MULTI-ENTITES
+--------------------------------------------------------------------------------
+
+Certains artisans ont 2 SIRET (SASU holding + SARL opaque, micro + SASU
+future croissance). Aujourd'hui : 2 comptes OpenChantier = 30 EUR.
+
+Feature : switcher d'entite dans l'UI, numerotation factures indep, compta
+separee, 1 seul login.
+
+Plan : PRO+ (tier superieur, 29 EUR/mois).
+
+================================================================================
+  P3 - LONG TERME (12+ mois)
+================================================================================
+
+--------------------------------------------------------------------------------
+30. IA - ESTIMATION AUTOMATIQUE PAR PHOTO
+--------------------------------------------------------------------------------
+
+L'artisan prend une photo d'une piece -> l'IA propose :
+  - Surface estimee (via LiDAR iPhone Pro ou SLAM monovision)
+  - Lignes d'ouvrage probables (refaire peinture, changer parquet)
+  - Fourchette de prix (basee sur historique + bibliotheque)
+  - Pre-remplissage devis
+
+Stack : Vision model (Claude Opus 4.7 vision, Gemini 2.5 Pro, GPT-5V).
+
+Plan : PRO+ (feature premium).
+
+--------------------------------------------------------------------------------
+31. IA - ASSISTANT REDACTION DEVIS
+--------------------------------------------------------------------------------
+
+L'artisan dicte : "Refaire la salle de bain de Madame Dupont, 6m2, douche
+italienne, carrelage sol et mur, meuble vasque et WC suspendu. Budget 8k."
+
+L'IA genere :
+  - Structure de devis avec toutes les lignes
+  - Materiaux estimes (quantites + refs fournisseurs)
+  - Heures estimees par corps de metier
+  - Prix cales sur les prix de l'artisan
+  - User valide / ajuste
+
+Stack : Claude Opus 4.7 + RAG sur la bibliotheque d'ouvrages de l'artisan.
+
+Plan : PRO+ (consommation tokens = cout variable, modele a trouver).
+
+--------------------------------------------------------------------------------
+32. IA - ANALYSE RISQUES CHANTIER
+--------------------------------------------------------------------------------
+
+A partir du devis + description + photos :
+  - "Attention : plomb probable dans peintures batiment < 1949, diagnostic
+    obligatoire"
+  - "Amiante suspectee (dalles vinyle < 1997), DTA requis"
+  - "Reglementation DPE : isolation requise si Reno > 25% parois"
+
+Plan : PRO+.
+
+--------------------------------------------------------------------------------
+33. MARKETPLACE APPORTEURS D'AFFAIRES
+--------------------------------------------------------------------------------
+
+Mise en relation artisans / clients finaux (concurrent Houzz, Travaux.com,
+IzyBat). OpenChantier prend une commission sur le devis signe (5-10%).
+
+Risque : business different (b2c lead gen vs b2b saas). A etudier comme
+spin-off ou partenariat avec une plateforme existante.
+
+Plan : FREE cote client | PRO cote artisan (leads inclus).
+
+--------------------------------------------------------------------------------
+34. API PUBLIQUE & WEBHOOKS
+--------------------------------------------------------------------------------
+
+Pour integrations :
+  - API REST publique (OpenAPI) + cles API
+  - Webhooks : project.created, invoice.paid, time.started...
+  - OAuth2 pour apps tierces
+  - Rate limiting (Upstash) 1000 req/min PRO, 100 FREE
+
+Plan : PRO+ (developer tier 49 EUR/mois).
+
+--------------------------------------------------------------------------------
+35. INTEGRATIONS TIERCES (ZAPIER, MAKE, NOTION)
+--------------------------------------------------------------------------------
+
+Sur la base de l'API :
+  - Zapier : triggers + actions
+  - Make.com (Integromat)
+  - Notion : sync projets -> database Notion
+  - Google Calendar : sync planning
+  - Outlook 365
+  - Slack / Discord : notifs webhook
+
+Plan : PRO.
+
+--------------------------------------------------------------------------------
+36. VERSION ARCHITECTE / MOE
+--------------------------------------------------------------------------------
+
+Variante pour architectes, MOE, bureaux d'etudes :
+  - Gestion lots (CCTP par lot)
+  - Appels d'offres aux artisans
+  - Suivi de chantier multi-entreprises
+  - Situation de travaux / retenue de garantie 5%
+  - PV reception avec reserves
+  - Honoraires au % DOC (coefficient honoraires)
+
+Plan : SaaS dedie (potentiellement 50 EUR/mois).
+
+--------------------------------------------------------------------------------
+37. VERSION ENTREPRISE (10-50 SALARIES)
+--------------------------------------------------------------------------------
+
+Tier pro+ avec :
+  - SSO (Google Workspace, Azure AD)
+  - Audit log complet
+  - Roles granulaires (chef d'equipe, conducteur de travaux, RH, compta)
+  - Portail RH basique
+  - Multi-agences geographiques
+  - SLA support
+
+Plan : Entreprise 99 EUR/mois ou quote.
+
+--------------------------------------------------------------------------------
+38. INTERNATIONALISATION (BE, LU, CH, CA-QC)
+--------------------------------------------------------------------------------
+
+Apres consolidation FR :
+  - Belgique : TVA 21/12/6, Peppol obligatoire B2B 2026, attestation 6%
+    renovation
+  - Luxembourg : TVA 17/8/3, e-invoicing Peppol
+  - Suisse romande : TVA 8.1/2.6/3.8, format QR-facture
+  - Quebec : TPS/TVQ, RBQ license BTP
+  - Allemagne : XRechnung obligatoire public 2025 + mandat e-invoice B2B
+    en cours
+  - Italie : FatturaPA obligatoire (SDI)
+
+Complexite : tax engine a etendre + localisations fiscales.
+
+Plan : FREE + PRO (avec supplement local si besoin).
+
+================================================================================
+  AXES TRANSVERSES
+================================================================================
+
+--------------------------------------------------------------------------------
+A. ACCESSIBILITE & RGPD
+--------------------------------------------------------------------------------
+
+  - Audit WCAG 2.2 AA (requis pour appels d'offres publics fr)
+  - Lecteur d'ecran : labels ARIA, focus-visible, navigation clavier
+  - Contraste minimum 4.5:1 (deja bon en dark, verifier light)
+  - Texte alternatif photos (IA auto-generation comme bonus)
+  - Export RGPD complet : 1 clic -> ZIP de toutes les donnees utilisateur
+  - Droit a l'oubli : suppression sous 30 jours avec purge backups
+  - DPA (Data Processing Agreement) telechargeable pour B2B
+  - Registre des traitements accessible user
+  - Hebergement EU confirme + mention sur site (Vercel FRA1, Neon EU)
+
+--------------------------------------------------------------------------------
+B. PERFORMANCE & SCALABILITE
+--------------------------------------------------------------------------------
+
+  - Core Web Vitals : LCP < 2.5s, INP < 200ms, CLS < 0.1 (cibles GA)
+  - Bundle analyzer mensuel, < 150kb First Load JS
+  - Images : Next/Image partout, AVIF + blur placeholder
+  - CDN UploadThing + edge caching
+  - DB : index sur tous les foreign keys + champs recherche
+  - Read replicas Neon si > 10k users
+  - Rate limiting tRPC (upstash) anti-abus
+  - Monitoring perf : Vercel Analytics + Web Vitals Sentry
+
+--------------------------------------------------------------------------------
+C. OBSERVABILITE & SUPPORT
+--------------------------------------------------------------------------------
+
+  - Sentry (deja prevu) : errors + performance + session replay
+  - PostHog : funnel d'activation, heatmaps, feature flags
+  - Intercom ou Crisp : chat support
+  - Status page (Instatus / BetterStack) : uptime public
+  - Changelog public (in-app + site)
+  - Documentation d'aide (Mintlify ou GitBook) FR/EN/DE/ES
+  - Help center avec videos Loom courtes (< 90s) par feature
+  - Onboarding email sequence 14 jours (Customer.io)
+
+--------------------------------------------------------------------------------
+D. CONFORMITE REGLEMENTAIRE
+--------------------------------------------------------------------------------
+
+  - Factur-X V1.07.3 (actuelle) -> suivre evolutions DGFiP
+  - PDP (Plateforme de Dematerialisation Partenaire) France : inscription
+    obligatoire 2026-2027 pour e-invoicing B2B
+  - Norme AFNOR Z42-013 (archivage fiscal longue duree) : 10 ans
+  - EN 16931 (base europeenne e-invoice)
+  - Peppol : connecter a un Access Point certifie (Storecove, Pagero,
+    B2Brouter). Cout ~30-100 EUR/mois/client
+  - KYC-B : verification SIRET API INSEE/Sirene gratuit (+ BFC score risque
+    impaye optionnel via Ellisphere / Creditsafe)
+
+================================================================================
+  PRIORISATION RECOMMANDEE (12 prochains mois)
+================================================================================
+
+Sprint 1-2 (8 sem)  : Devis (#1) + Bibliotheque ouvrages (#7)
+Sprint 3   (4 sem)  : Signature electronique SES (#2)
+Sprint 4   (4 sem)  : Relances auto (#3) + TVA multi-taux (#11)
+Sprint 5-6 (8 sem)  : Mode offline PWA (#5)
+Sprint 7   (4 sem)  : OCR tickets (#4)
+Sprint 8   (4 sem)  : Paiements en ligne Stripe Connect (#6)
+Sprint 9-10(8 sem)  : Export compta FEC + CSV (#10) + PAD-ES (#15)
+Sprint 11  (4 sem)  : Connexion bancaire Bridge (#9)
+Sprint 12  (4 sem)  : Dictee vocale (#13) + avenants (#8)
+
+En parallele : axes transverses (A accessibilite, C support) +
+polish UX continu.
+
+Apres 12 mois : mobile native + CRM + analytics avances + version
+entreprise selon PMF.
+
+================================================================================
+  CRITERES DE PRIORISATION
+================================================================================
+
+Chaque feature a ete evaluee sur :
+  - Valeur utilisateur (pain actuel * frequence)
+  - Willingness to pay (converti PRO ?)
+  - Cout de dev (en semaines)
+  - Risque reglementaire (retard = contentieux)
+  - Differentiation vs concurrents (Evoliz, Tolteck, Obat, Clicfacture,
+    Archipad, Kizeo)
+
+Regle d'or : une feature P0 manquante empeche un artisan de remplacer
+son outil actuel. Une feature P3 est un +.
+
+================================================================================
+  CONCURRENCE - MAPPING RAPIDE
+================================================================================
+
+Tolteck          : devis/factures mobile, pas de photos ni planning -> on
+                   gagne sur polyvalence
+Obat             : BTP specifique, tres complet mais UX desuete -> on gagne
+                   sur design + mobile PWA
+Evoliz           : compta+facturation, pas specialise BTP -> on gagne sur
+                   features metier (safety, planning, photos)
+Clicfacture      : micro-BTP simple -> on gagne sur completude
+Archipad         : chantier + reception + reserves (iPad) -> ils gagnent
+                   sur fonctionnalites lourdes, on gagne sur prix + web
+Kizeo Forms      : formulaires custom -> parallele, pas vrai concurrent
+Batappli         : logiciel desktop vieillissant -> on gagne sur tout
+Mediabat / EBP   : suite desktop complete -> on gagne sur prix + web
+Houzz Pro (US)   : marche US, peu implante FR -> a surveiller si entree EU
+
+Positionnement OpenChantier : le meilleur rapport polyvalence / prix /
+UX moderne pour artisans solo et TPE (< 10 salaries). Focus metiers du
+batiment second oeuvre (plomberie, electricite, peinture, menuiserie,
+carrelage, platrerie) avant gros oeuvre.
+
+================================================================================
+  FIN DU DOCUMENT
+  Mise a jour : 2026-04-20
+================================================================================
